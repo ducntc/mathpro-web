@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết khóa học - MathPro</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo"><a href="/" style="margin:0; text-decoration:none; color:inherit;">MATH<span>PRO</span></a></div>
+    <nav>
+      <a href="/">Trang chủ</a>
+      <a href="/#courses">Tất cả khóa học</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div id="course-detail" class="card" style="padding: 32px;">
+      <p>Đang tải thông tin khóa học...</p>
+    </div>
+  </main>
+
+  <script>
+    async function loadCourseDetail() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const container = document.getElementById('course-detail');
+
+      if (!id) {
+        container.innerHTML = '<p>Chưa chọn khóa học. <a href="/">Quay lại trang chủ</a></p>';
+        return;
+      }
+
+      const res = await fetch(`/api/courses/${id}`);
+      if (!res.ok) {
+        container.innerHTML = '<p>Không tìm thấy khóa học. <a href="/">Quay lại trang chủ</a></p>';
+        return;
+      }
+
+      const course = await res.json();
+      const total = course.lessons.length;
+      const doneCount = course.lessons.filter(l => l.completed === 1).length;
+      const percent = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+
+      const lessonsHtml = total
+        ? course.lessons.map(l => {
+            const badge = l.completed
+              ? `<span style="color:#2e7d32; font-weight:700; margin-left:8px;">✅ Đã xong${l.quiz_total ? ` (${l.quiz_score}/${l.quiz_total} điểm)` : ''}</span>`
+              : '';
+            return `
+              <li style="border-bottom: 1px solid #eee;">
+                <a href="/lesson.html?id=${l.id}" style="padding: 12px 8px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #333;">
+                  <span><strong>Bài ${l.lesson_order}:</strong> ${l.title} ${badge}</span>
+                  <span style="color: #0b5ed7; font-size: 14px; font-weight: 600;">⏱ ${l.duration} →</span>
+                </a>
+              </li>
+            `;
+          }).join('')
+        : '<li>Chưa có bài học nào trong khóa này.</li>';
+
+      container.innerHTML = `
+        <span style="color:#0b5ed7; font-weight:700;">${course.grade}</span>
+        <h1 style="margin: 8px 0 12px; color:#ff7a00;">${course.title}</h1>
+        <p style="font-size:17px; margin-bottom:20px;">${course.description}</p>
+
+        <div style="background:#f1f5f9; padding:14px 18px; border-radius:8px; margin-bottom:24px;">
+          <div style="display:flex; justify-content:space-between; font-weight:600; margin-bottom:6px;">
+            <span>Tiến độ học tập</span>
+            <span>${doneCount}/${total} bài (${percent}%)</span>
+          </div>
+          <div style="background:#dbeafe; height:10px; border-radius:6px; overflow:hidden;">
+            <div style="background:#0b5ed7; width:${percent}%; height:100%; transition:width 0.3s;"></div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:10px; color:#333;">Nội dung khóa học (${total} bài)</h3>
+        <ul style="list-style: none; margin-bottom: 24px;">
+          ${lessonsHtml}
+        </ul>
+
+        <a href="/?register=${encodeURIComponent(course.grade)}#register" class="btn-primary">Đăng ký khóa học này</a>
+        <a href="/" style="margin-left:16px; color:#0b5ed7; font-weight:600;">← Quay lại trang chủ</a>
+      `;
+    }
+
+    loadCourseDetail();
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+html { scroll-behavior: smooth; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+body { background: #f5f7fb; color: #333; line-height: 1.6; }
+
+.navbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 15px 40px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.logo { font-size: 24px; font-weight: 800; color: #0b5ed7; }
+.logo span { color: #ff7a00; }
+.navbar a { margin-left: 20px; text-decoration: none; color: #333; font-weight: 600; }
+
+.hero {
+  background: linear-gradient(135deg, #0b5ed7, #1e88e5);
+  color: white; text-align: center; padding: 70px 20px;
+}
+.hero h1 { font-size: 32px; margin-bottom: 12px; }
+.hero p { font-size: 18px; margin-bottom: 24px; opacity: 0.9; }
+
+.btn-primary {
+  display: inline-block; background: #ff7a00; color: white; border: none;
+  padding: 12px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none;
+}
+.btn-primary:hover { background: #e06b00; }
+
+.container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+.container h2 { text-align: center; margin-bottom: 24px; color: #0b5ed7; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.card {
+  background: white; padding: 20px; border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 4px solid #0b5ed7;
+}
+.card h3 { color: #ff7a00; margin-bottom: 10px; }
+
+.register-box { background: white; padding: 30px; border-radius: 10px; max-width: 500px; }
+form { display: flex; flex-direction: column; gap: 12px; }
+input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+#form-message { margin-top: 12px; text-align: center; font-weight: 600; }

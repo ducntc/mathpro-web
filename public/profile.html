@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hồ sơ học tập - MathPro</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: #fff; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 4px solid #0b5ed7; }
+    .stat-num { font-size: 28px; font-weight: 800; color: #ff7a00; margin-bottom: 4px; }
+    .progress-bar-bg { background: #dbeafe; height: 10px; border-radius: 6px; overflow: hidden; margin: 10px 0; }
+    .progress-bar-fill { background: #0b5ed7; height: 100%; transition: width 0.3s; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    th, td { padding: 12px 14px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+    th { background: #0b5ed7; color: #fff; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo"><a href="/" style="margin:0; text-decoration:none; color:inherit;">MATH<span>PRO</span></a></div>
+    <nav>
+      <a href="/">Trang chủ</a>
+      <a href="/#courses">Khóa học</a>
+      <a href="#" id="logout-btn">Đăng xuất</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div id="profile-header" style="margin-bottom: 24px;">
+      <h1 style="color:#0b5ed7;">🎓 Hồ Sơ Học Tập</h1>
+      <p id="user-info" style="color:#555;"></p>
+    </div>
+
+    <!-- Thống kê nhanh -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-completed">0</div>
+        <div>Bài học đã xong</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-avg">0%</div>
+        <div>Điểm TB trắc nghiệm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-stars">⭐ 0</div>
+        <div>Sao tích lũy</div>
+      </div>
+    </div>
+
+    <!-- Tiến độ từng khóa học -->
+    <h2 style="text-align:left; margin-bottom:16px;">📚 Tiến Độ Theo Khóa Học</h2>
+    <div id="course-progress-grid" class="grid" style="margin-bottom: 36px;"></div>
+
+    <!-- Lịch sử bài học -->
+    <h2 style="text-align:left; margin-bottom:16px;">🕒 Lịch Sử Học Tập &amp; Điểm Số</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Khối lớp</th>
+          <th>Bài học</th>
+          <th>Điểm trắc nghiệm</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="history-body">
+        <tr><td colspan="4">Đang tải dữ liệu...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    async function loadProfile() {
+      const res = await fetch('/api/profile');
+      if (res.status === 401) {
+        alert('Vui lòng đăng nhập để xem hồ sơ học tập!');
+        window.location.href = '/login.html';
+        return;
+      }
+
+      const data = await res.json();
+      document.getElementById('user-info').textContent =
+        `Học viên: ${data.user.name} (${data.user.email})`;
+
+      document.getElementById('stat-completed').textContent = data.stats.completedCount;
+      document.getElementById('stat-avg').textContent = `${data.stats.avgPercent}%`;
+      document.getElementById('stat-stars').textContent = `⭐ ${data.stats.stars}`;
+
+      // Render tiến độ từng khóa
+      document.getElementById('course-progress-grid').innerHTML = data.courseProgress.map(c => {
+        const pct = c.total_lessons > 0 ? Math.round((c.completed_lessons / c.total_lessons) * 100) : 0;
+        return `
+          <div class="card">
+            <h3>${c.grade}</h3>
+            <p><strong>${c.title}</strong></p>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width:${pct}%;"></div>
+            </div>
+            <p style="font-size:13px; color:#555; margin-bottom:12px;">
+              Đã học: <strong>${c.completed_lessons}/${c.total_lessons}</strong> bài (${pct}%)
+            </p>
+            <a href="/course.html?id=${c.id}" class="btn-primary" style="padding:6px 14px; font-size:13px;">
+              ${pct > 0 && pct < 100 ? 'Học tiếp →' : 'Xem khóa học'}
+            </a>
+          </div>
+        `;
+      }).join('');
+
+      // Render lịch sử bài học
+      document.getElementById('history-body').innerHTML = data.history.length
+        ? data.history.map(h => {
+            const scoreText = h.quiz_total
+              ? `<strong>${h.quiz_score}/${h.quiz_total}</strong> (${Math.round((h.quiz_score / h.quiz_total) * 100)}%)`
+              : '<span style="color:#888;">Đã đọc xong</span>';
+            return `
+              <tr>
+                <td><strong>${h.grade}</strong></td>
+                <td>Bài ${h.lesson_order}: ${h.lesson_title}</td>
+                <td>${scoreText}</td>
+                <td><a href="/lesson.html?id=${h.lesson_id}" style="color:#0b5ed7; font-weight:600;">Ôn lại →</a></td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="4">Bạn chưa hoàn thành bài học nào. Hãy bắt đầu ngay nhé!</td></tr>';
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathPro - Học Toán Tư Duy Trực Tuyến</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    html { scroll-behavior: smooth; }
+    .filter-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+    .filter-btn {
+      padding: 8px 18px; border: 1px solid #0b5ed7; background: #fff; color: #0b5ed7;
+      border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .filter-btn.active, .filter-btn:hover { background: #0b5ed7; color: #fff; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">MATH<span>PRO</span></div>
+    <nav>
+      <a href="#courses">Khóa học</a>
+      <a href="#register">Đăng ký học</a>
+      <span id="auth-nav"><a href="/login.html">Đăng nhập</a></span>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Hiểu Sâu – Tư Duy Rõ – Tiến Bộ Vững Chắc</h1>
+    <p>Hệ thống bài giảng Toán trực tuyến tương tác từ Mầm non đến Tiểu học.</p>
+    <a href="#courses" class="btn-primary">Khám phá khóa học</a>
+  </section>
+
+  <section id="courses" class="container">
+    <h2>Các Khóa Học Theo Khối Lớp</h2>
+
+    <!-- Thanh tìm kiếm bài học -->
+    <div style="max-width: 520px; margin: 0 auto 20px; display: flex; gap: 8px;">
+      <input type="text" id="search-input" placeholder="🔍 Tìm bài học (VD: phân số, sơ đồ, đếm số...)" style="flex: 1;" />
+      <button id="clear-search" class="btn-primary" style="background: #6c757d; display: none;">Xóa</button>
+    </div>
+    <div id="search-results" style="max-width: 720px; margin: 0 auto 24px;"></div>
+
+    <div id="grade-filters" class="filter-bar"></div>
+    <div id="course-grid" class="grid">
+      <p>Đang tải danh sách khóa học...</p>
+    </div>
+  </section>
+
+  <section id="register" class="container register-box">
+    <h2>Đăng Ký Học Thử Miễn Phí</h2>
+    <form id="signup-form">
+      <input type="text" id="student-name" placeholder="Họ và tên học sinh" required />
+      <input type="email" id="student-email" placeholder="Email phụ huynh / học sinh" required />
+      <select id="grade-select" required>
+        <option value="">Đang tải danh sách lớp...</option>
+      </select>
+      <button type="submit" class="btn-primary">Đăng Ký Ngay</button>
+    </form>
+    <p id="form-message"></p>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
