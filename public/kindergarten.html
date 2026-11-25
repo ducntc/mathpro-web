@@ -678,6 +678,58 @@
       .video-grid { grid-template-columns: 1fr; }
     }
 
+    /* Bài học bị khóa cho khách chưa đăng nhập */
+    .topic-link-item.locked {
+      opacity: 0.72;
+      background: #f8fafc;
+    }
+    .topic-link-item.locked:hover {
+      background: #fff7ed;
+    }
+    .skill-badge.locked-badge {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Modal yêu cầu đăng nhập / đăng ký */
+    .lock-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .lock-overlay.open { display: flex; }
+    .lock-modal {
+      background: #fff;
+      border-radius: 22px;
+      max-width: 420px;
+      width: 100%;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    }
+    .lock-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .lock-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-size: 0.95rem;
+    }
+
   </style>
 </head>
 
@@ -755,6 +807,24 @@
     </section>
   </div>
 
+  <!-- MODAL KHÓA BÀI HỌC (90% DÀNH CHO THÀNH VIÊN) -->
+  <div class="lock-overlay" id="lockModal">
+    <div class="lock-modal">
+      <div style="font-size: 3rem; margin-bottom: 8px;">🔒</div>
+      <h2 style="margin: 0 0 8px; color: #1e293b;">Nội dung dành cho Thành viên</h2>
+      <p style="margin: 0; color: #64748b; line-height: 1.6;">
+        Bạn đang xem bản học thử miễn phí (4/42 bài). Hãy đăng nhập tài khoản thành viên hoặc đăng ký gói học để mở khóa toàn bộ <strong>42 bài Toán Mầm non</strong>!
+      </p>
+      <div class="lock-actions">
+        <a href="/subscribe.html" class="lock-btn" style="background: #f97316; color: #fff;">Đăng ký học ngay</a>
+        <a href="/login.html" class="lock-btn" style="background: #4f46e5; color: #fff;">Đăng nhập</a>
+      </div>
+      <button onclick="document.getElementById('lockModal').classList.remove('open')" style="margin-top: 14px; background: none; border: none; color: #64748b; font-weight: 600; cursor: pointer;">
+        Để sau, quay lại học thử
+      </button>
+    </div>
+  </div>
+
   <!-- 1. Nhúng bộ sinh đề từ file riêng -->
   <script src="/js/kindergartenGenerators.js"></script>
 
@@ -780,13 +850,18 @@
 
     let savedProgress = {};
 
+    let isLoggedIn = false;
+    // 4 bài học thử miễn phí trải đều các chủ đề (~10% của 42 bài)
+    const FREE_LESSONS = new Set(["a-1", "b-1", "g-1", "t-1"]);
+
     async function loadProgress() {
       try {
         const res = await fetch('/api/skill-progress');
         const data = await res.json();
+        isLoggedIn = Boolean(data.loggedIn);
         if (data.loggedIn) savedProgress = data.progress;
       } catch (e) {
-        console.warn('Chế độ khách: không lưu điểm lên server');
+        isLoggedIn = false;
       }
       renderLessonList();
     }
@@ -815,21 +890,26 @@
         list.className = "topic-links";
 
         items.forEach(ls => {
+          const isLocked = !isLoggedIn && !FREE_LESSONS.has(ls.id);
           const prog = savedProgress[ls.id];
           const best = prog ? prog.best : 0;
 
           let badgeHtml = "";
-          if (best >= 100) {
+          if (isLocked) {
+            badgeHtml = `<span class="skill-badge locked-badge">🔒 Thành viên</span>`;
+          } else if (best >= 100) {
             badgeHtml = `<span class="skill-badge mastered">🏆 100</span>`;
           } else if (best >= 80) {
             badgeHtml = `<span class="skill-badge mastered">🥇 ${best}</span>`;
           } else if (best > 0) {
             badgeHtml = `<span class="skill-badge progress">⭐ ${best}</span>`;
+          } else if (!isLoggedIn) {
+            badgeHtml = `<span class="skill-badge progress">🆓 Học thử</span>`;
           }
 
           const row = document.createElement("div");
-          row.className = "topic-link-item";
-          row.title = ls.desc;
+          row.className = "topic-link-item" + (isLocked ? " locked" : "");
+          row.title = isLocked ? "Đăng nhập thành viên để mở khóa" : ls.desc;
           row.innerHTML = `
             <div class="topic-left">
               <span class="topic-code">${ls.code}</span>
@@ -837,7 +917,13 @@
             </div>
             ${badgeHtml}
           `;
-          row.onclick = () => openLesson(ls.id);
+          row.onclick = () => {
+            if (isLocked) {
+              document.getElementById("lockModal").classList.add("open");
+            } else {
+              openLesson(ls.id);
+            }
+          };
           list.appendChild(row);
         });
 
@@ -847,6 +933,11 @@
     }
 
     function openLesson(lessonId) {
+      if (!isLoggedIn && !FREE_LESSONS.has(lessonId)) {
+        document.getElementById("lockModal").classList.add("open");
+        return;
+      }
+
       currentLesson = lessonId;
       score = savedProgress[lessonId]?.score || 0;
       scoreVal.textContent = score;
