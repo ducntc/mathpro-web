@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathPro - Toán Mầm Non</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warn: #ea580c;
+      --warn-bg: #ffedd5;
+      --bg: #f0f9ff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      color: var(--text);
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .back-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ===== VIEW 1: DANH SÁCH NỘI DUNG KHÓA HỌC ===== */
+    .course-banner {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+
+    .course-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .course-banner h1 {
+      margin: 4px 0 8px;
+      font-size: 1.65rem;
+    }
+
+    .course-banner p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .section-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0 0 14px;
+    }
+
+    .lesson-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lesson-item {
+      background: var(--card);
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .lesson-item:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.08);
+    }
+
+    .lesson-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lesson-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .lesson-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 2px;
+    }
+
+    .lesson-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .start-pill {
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    /* ===== VIEW 2: GIAO DIỆN LÀM BÀI ===== */
+    .practice-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .score-box {
+      background: var(--card);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 28px 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      text-align: center;
+    }
+
+    .lesson-title {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .prompt-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .prompt-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .speak-btn {
+      background: var(--primary-light);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .speak-btn:hover {
+      background: #e0e7ff;
+    }
+
+    .visual-area {
+      min-height: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .emoji-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      max-width: 460px;
+      font-size: 3.2rem;
+      line-height: 1.2;
+    }
+
+    .ten-frame {
+      display: grid;
+      grid-template-columns: repeat(5, 68px);
+      gap: 8px;
+      background: #e2e8f0;
+      padding: 10px;
+      border-radius: 14px;
+    }
+
+    .frame-cell {
+      width: 68px;
+      height: 68px;
+      background: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.3rem;
+    }
+
+    .seq-row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .seq-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      border: 3px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      background: #f8fafc;
+    }
+
+    .seq-box.missing {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .compare-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .group-card {
+      border: 3px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+
+    .group-label {
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .group-icons {
+      font-size: 2.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Phép cộng trực quan */
+    .math-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .math-visual-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 2.5rem;
+    }
+
+    .math-op {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .math-equation {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 8px 22px;
+      border-radius: 14px;
+    }
+
+    .options-area {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .opt-btn {
+      min-width: 96px;
+      min-height: 70px;
+      padding: 14px 22px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      border-radius: 16px;
+      border: 3px solid #cbd5e1;
+      background: #fff;
+      cursor: pointer;
+      transition: transform 0.1s, border-color 0.15s;
+    }
+
+    .opt-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .opt-btn.group-opt {
+      min-width: 160px;
+      font-size: 2.3rem;
+    }
+
+    .feedback {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .feedback.ok {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .feedback.err {
+      display: block;
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .next-btn {
+      margin-top: 14px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 26px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 600px) {
+      .ten-frame {
+        grid-template-columns: repeat(5, 52px);
+      }
+
+      .frame-cell {
+        width: 52px;
+        height: 52px;
+        font-size: 1.8rem;
+      }
+
+      .compare-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt-text {
+        font-size: 1.25rem;
+      }
+
+      .lesson-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .start-pill {
+        align-self: flex-end;
+      }
+    }
+
+    .sub-item {
+      position: relative;
+      display: inline-block;
+    }
+
+    .sub-item.crossed {
+      opacity: 0.35;
+    }
+
+    .sub-item.crossed::after {
+      content: "✖";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #dc2626;
+      font-size: 2.2rem;
+      font-weight: 900;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .topic-card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 18px 20px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .topic-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 0 0 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .topic-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .topic-link-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .topic-link-item:hover {
+      background: var(--primary-light);
+    }
+
+    .topic-code {
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 8px;
+      border-radius: 6px;
+      min-width: 42px;
+      text-align: center;
+    }
+
+    .topic-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    @media (max-width: 700px) {
+      .topic-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .big-equation { font-size: 2.3rem; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 16px 28px; border-radius: 18px; }
+    .pos-box { display: flex; gap: 18px; padding: 18px 26px; background: #f8fafc; border: 3px solid #e2e8f0; border-radius: 18px; font-size: 3rem; }
+    .pos-box.vertical { flex-direction: column; }
+    .vnd-bill { width: 220px; height: 105px; border-radius: 14px; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 800; font-size: 1.8rem; box-shadow: 0 6px 14px rgba(0,0,0,0.15); border: 3px dashed rgba(255,255,255,0.6); }
+    .chart-table { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
+    .chart-row { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 1.8rem; }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <a href="/" class="brand">🧮 MathPro • Mầm Non</a>
+      <a href="/" class="back-link">🏠 Trang chủ</a>
+    </header>
+
+    <!-- VIEW 1: DANH SÁCH BÀI HỌC -->
+    <section id="view-list">
+      <div class="course-banner">
+        <span class="course-badge">Mầm non (Kindergarten)</span>
+        <h1>Làm quen Toán tư duy</h1>
+        <p>Đếm số trực quan, khung 10 ô, quy luật, hình học và phép cộng theo chuẩn IXL.</p>
+      </div>
+
+      <h2 class="section-heading">📚 Nội dung khóa học (42 bài học)</h2>
+      <div class="topic-grid" id="lessonList"></div>
+    </section>
+
+    <!-- VIEW 2: GIAO DIỆN LÀM BÀI -->
+    <section id="view-practice" class="hidden">
+      <div class="practice-top">
+        <button class="back-link" id="backToListBtn">← Danh sách bài học</button>
+        <div class="score-box">
+          <span>Điểm thông minh:</span>
+          <span class="score-badge" id="scoreVal">0</span>
+        </div>
+      </div>
+
+      <main class="card">
+        <div class="lesson-title" id="lessonTitle">Bài 1</div>
+        <div class="prompt-row">
+          <h2 class="prompt-text" id="promptText">Đang tải...</h2>
+          <button class="speak-btn" id="speakBtn" title="Nghe đọc câu hỏi">🔊</button>
+        </div>
+
+        <div class="visual-area" id="visualArea"></div>
+        <div class="options-area" id="optionsArea"></div>
+
+        <div class="feedback" id="feedbackBox">
+          <div id="feedbackMsg"></div>
+          <button class="next-btn" id="nextBtn">Câu tiếp theo ➜</button>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <!-- 1. Nhúng bộ sinh đề từ file riêng -->
+  <script src="/js/kindergartenGenerators.js"></script>
+
+  <!-- 2. Điều khiển giao diện -->
+  <script>
+    const { LESSONS, GENERATORS } = window.MathProKindergarten;
+
+    const viewList = document.getElementById("view-list");
+    const viewPractice = document.getElementById("view-practice");
+    const lessonListEl = document.getElementById("lessonList");
+    const lessonTitle = document.getElementById("lessonTitle");
+    const promptText = document.getElementById("promptText");
+    const visualArea = document.getElementById("visualArea");
+    const optionsArea = document.getElementById("optionsArea");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const feedbackMsg = document.getElementById("feedbackMsg");
+    const scoreVal = document.getElementById("scoreVal");
+
+    let currentLesson = "k-1";
+    let currentQuestion = null;
+    let score = 0;
+    let answered = false;
+
+    let savedProgress = {};
+
+    async function loadProgress() {
+      try {
+        const res = await fetch('/api/skill-progress');
+        const data = await res.json();
+        if (data.loggedIn) savedProgress = data.progress;
+      } catch (e) {
+        console.warn('Chế độ khách: không lưu điểm lên server');
+      }
+      renderLessonList();
+    }
+
+
+    function renderLessonList() {
+      lessonListEl.innerHTML = "";
+
+      // Gom nhóm bài học theo chủ đề
+      const grouped = {};
+      LESSONS.forEach(ls => {
+        if (!grouped[ls.topic]) grouped[ls.topic] = [];
+        grouped[ls.topic].push(ls);
+      });
+
+      Object.entries(grouped).forEach(([topicName, items]) => {
+        const card = document.createElement("div");
+        card.className = "topic-card";
+
+        const title = document.createElement("h3");
+        title.className = "topic-title";
+        title.textContent = topicName;
+        card.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "topic-links";
+
+        items.forEach(ls => {
+          const row = document.createElement("div");
+          row.className = "topic-link-item";
+          row.title = ls.desc;
+          row.innerHTML = `
+         <span class="topic-code">${ls.code}</span>
+         <span class="topic-label">${ls.label}</span>
+       `;
+          row.onclick = () => openLesson(ls.id);
+          list.appendChild(row);
+        });
+
+        card.appendChild(list);
+        lessonListEl.appendChild(card);
+      });
+    }
+
+    function openLesson(lessonId) {
+      currentLesson = lessonId;
+      score = savedProgress[lessonId]?.score || 0;
+      scoreVal.textContent = score;
+      viewList.classList.add("hidden");
+      viewPractice.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    document.getElementById("backToListBtn").onclick = () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      viewPractice.classList.add("hidden");
+      viewList.classList.remove("hidden");
+    };
+
+    function speakPrompt(text) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "vi-VN";
+      utter.rate = 0.95;
+      window.speechSynthesis.speak(utter);
+    }
+
+    document.getElementById("speakBtn").onclick = () => {
+      if (currentQuestion) speakPrompt(currentQuestion.prompt);
+    };
+
+    function loadQuestion() {
+      answered = false;
+      feedbackBox.className = "feedback";
+      currentQuestion = GENERATORS[currentLesson]();
+
+      lessonTitle.textContent = currentQuestion.title;
+      promptText.textContent = currentQuestion.prompt;
+
+      renderVisuals(currentQuestion);
+      renderOptions(currentQuestion);
+    }
+
+    function renderVisuals(q) {
+      visualArea.innerHTML = "";
+
+      if (q.template === "visual_count") {
+        const div = document.createElement("div");
+        div.className = "emoji-grid";
+        div.textContent = q.visualData.icons.join(" ");
+        visualArea.appendChild(div);
+      }
+      else if (q.template === "frame_count") {
+        const grid = document.createElement("div");
+        grid.className = "ten-frame";
+        q.visualData.cells.forEach(icon => {
+          const cell = document.createElement("div");
+          cell.className = "frame-cell";
+          cell.textContent = icon || "";
+          grid.appendChild(cell);
+        });
+        visualArea.appendChild(grid);
+      }
+      else if (q.template === "sequence_fill") {
+        const row = document.createElement("div");
+        row.className = "seq-row";
+        q.visualData.sequence.forEach(val => {
+          const box = document.createElement("div");
+          box.className = "seq-box" + (val === "?" ? " missing" : "");
+          box.textContent = val;
+          row.appendChild(box);
+        });
+        visualArea.appendChild(row);
+      }
+      else if (q.template === "compare_groups") {
+        const wrap = document.createElement("div");
+        wrap.className = "compare-wrap";
+        ["left", "right"].forEach(side => {
+          const grp = q.visualData[side];
+          const card = document.createElement("div");
+          card.className = "group-card";
+          card.innerHTML = `
+            <div class="group-label">${grp.label}</div>
+            <div class="group-icons">${grp.icons.join(" ")}</div>
+          `;
+          wrap.appendChild(card);
+        });
+        visualArea.appendChild(wrap);
+      }
+      else if (q.template === "pick_group") {
+        visualArea.innerHTML = `<div style="color:#64748b;font-weight:600;">👇 Bé hãy bấm chọn vào khung đúng ở bên dưới nhé!</div>`;
+      }
+      else if (q.template === "shape_svg") {
+        const { shape, color } = q.visualData;
+        let svgInner = "";
+        if (shape === "circle") svgInner = `<circle cx="80" cy="80" r="62" fill="${color}" />`;
+        if (shape === "square") svgInner = `<rect x="22" y="22" width="116" height="116" rx="6" fill="${color}" />`;
+        if (shape === "rectangle") svgInner = `<rect x="10" y="38" width="140" height="84" rx="6" fill="${color}" />`;
+        if (shape === "triangle") svgInner = `<polygon points="80,16 146,138 14,138" fill="${color}" />`;
+        visualArea.innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160">${svgInner}</svg>`;
+      }
+      else if (q.template === "visual_add") {
+        const { icon, a, b } = q.visualData;
+        visualArea.innerHTML = `
+          <div class="math-wrap">
+            <div class="math-visual-row">
+              <span>${Array(a).fill(icon).join(" ")}</span>
+              <span class="math-op">+</span>
+              <span>${Array(b).fill(icon).join(" ")}</span>
+            </div>
+            <div class="math-equation">${a} + ${b} = ?</div>
+          </div>
+        `;
+      }
+      else if (q.template === "text_compare") {
+        if (q.visualData.equation) {
+          visualArea.innerHTML = `<div class="big-equation">${q.visualData.equation}</div>`;
+        } else {
+          visualArea.innerHTML = `<div class="big-equation">${q.visualData.left} &nbsp; và &nbsp; ${q.visualData.right}</div>`;
+        }
+      }
+      else if (q.template === "position_grid") {
+        const cls = q.visualData.mode === "vertical" ? "pos-box vertical" : "pos-box";
+        visualArea.innerHTML = `<div class="${cls}">${q.visualData.items.map(i => `<span>${i}</span>`).join("")}</div>`;
+      }
+      else if (q.template === "clock_svg") {
+        const angle = (q.visualData.hour % 12) * 30;
+        visualArea.innerHTML = `
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="70" fill="#fff" stroke="#4f46e5" stroke-width="6"/>
+            <text x="72" y="28" font-size="14" font-weight="700">12</text>
+            <text x="134" y="85" font-size="14" font-weight="700">3</text>
+            <text x="76" y="143" font-size="14" font-weight="700">6</text>
+            <text x="18" y="85" font-size="14" font-weight="700">9</text>
+            <line x1="80" y1="80" x2="80" y2="32" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+            <line x1="80" y1="80" x2="80" y2="44" stroke="#1e293b" stroke-width="6" stroke-linecap="round" transform="rotate(${angle} 80 80)"/>
+            <circle cx="80" cy="80" r="5" fill="#4f46e5"/>
+          </svg>`;
+      }
+      else if (q.template === "money_vnd") {
+        visualArea.innerHTML = `<div class="vnd-bill" style="background:${q.visualData.color}"><div>${q.visualData.val}</div><div style="font-size:0.8rem;opacity:0.9;">TIỀN VIỆT NAM</div></div>`;
+      }
+      else if (q.template === "fraction_svg") {
+        const eq = q.visualData.equalSide === "left";
+        const drawBox = (isEq, label) => `
+          <div style="text-align:center">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <rect x="5" y="5" width="90" height="90" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="4"/>
+              <line x1="${isEq ? 50 : 24}" y1="5" x2="${isEq ? 50 : 24}" y2="95" stroke="#4f46e5" stroke-width="4"/>
+            </svg>
+            <div style="font-weight:700;margin-top:6px;">${label}</div>
+          </div>`;
+        visualArea.innerHTML = `<div style="display:flex;gap:36px;">${drawBox(eq, "Hình A")}${drawBox(!eq, "Hình B")}</div>`;
+      }
+      else if (q.template === "shape3d_svg") {
+        const s = q.visualData.shape;
+        let inner = "";
+        if (s === "sphere") inner = `<circle cx="80" cy="80" r="56" fill="#3b82f6"/><ellipse cx="64" cy="60" rx="18" ry="10" fill="#93c5fd" opacity="0.6"/>`;
+        if (s === "cube") inner = `<polygon points="40,50 100,50 100,110 40,110" fill="#6366f1"/><polygon points="40,50 65,30 125,30 100,50" fill="#a5b4fc"/><polygon points="100,50 125,30 125,90 100,110" fill="#4338ca"/>`;
+        if (s === "cylinder") inner = `<rect x="45" y="40" width="70" height="80" fill="#10b981"/><ellipse cx="80" cy="40" rx="35" ry="12" fill="#6ee7b7"/><ellipse cx="80" cy="120" rx="35" ry="12" fill="#059669"/>`;
+        if (s === "cone") inner = `<polygon points="80,22 40,122 120,122" fill="#f59e0b"/><ellipse cx="80" cy="122" rx="40" ry="12" fill="#d97706"/>`;
+        visualArea.innerHTML = `<svg width="160" height="150" viewBox="0 0 160 150">${inner}</svg>`;
+      }
+      else if (q.template === "chart_bar") {
+        visualArea.innerHTML = `<div class="chart-table">${q.visualData.rows.map(r => `<div class="chart-row"><span>${r.icon}</span><span>|</span><span>${Array(r.count).fill(r.icon).join(" ")}</span></div>`).join("")}</div>`;
+      }
+    }
+
+    function renderOptions(q) {
+      optionsArea.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn";
+
+        let optValue = opt;
+        if (q.template === "pick_group") {
+          btn.classList.add("group-opt");
+          btn.textContent = opt.icons.join(" ");
+          optValue = opt.value;
+        } else if (q.template === "compare_groups") {
+          btn.textContent = opt.label;
+          optValue = opt.value;
+        } else {
+          btn.textContent = opt;
+        }
+
+        btn.onclick = () => checkAnswer(optValue, btn);
+        optionsArea.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected, btnElement) {
+      if (answered) return;
+      answered = true;
+
+      if (selected === currentQuestion.correctAnswer) {
+        score = Math.min(100, score + 10);
+        scoreVal.textContent = score;
+        btnElement.style.borderColor = "var(--success)";
+        btnElement.style.background = "var(--success-bg)";
+        feedbackBox.className = "feedback ok";
+        feedbackMsg.textContent = "🎉 Tuyệt vời! Bé trả lời chính xác rồi!";
+      } else {
+        score = Math.max(0, score - 5);
+        scoreVal.textContent = score;
+        btnElement.style.borderColor = "var(--warn)";
+        btnElement.style.background = "var(--warn-bg)";
+        feedbackBox.className = "feedback err";
+        feedbackMsg.textContent = `💡 Chưa đúng rồi! Gợi ý: ${currentQuestion.hint}`;
+      }
+
+      savedProgress[currentLesson] = {
+        score,
+        best: Math.max(savedProgress[currentLesson]?.best || 0, score)
+      };
+
+      fetch('/api/skill-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skillId: currentLesson, score })
+      }).catch(() => {});
+    }
+
+    document.getElementById("nextBtn").onclick = loadQuestion;
+
+    loadProgress();
+  </script>
+</body>
+
+</html>

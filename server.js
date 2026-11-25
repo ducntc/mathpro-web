@@ -91,6 +91,17 @@ async function initDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (lesson_id) REFERENCES lessons(id)
     );
+
+    CREATE TABLE IF NOT EXISTS skill_progress (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      skill_id TEXT NOT NULL,
+      smart_score INTEGER DEFAULT 0,
+      best_score INTEGER DEFAULT 0,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, skill_id),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
   `);
 
   // 1. Tài khoản Admin mặc định
@@ -516,6 +527,55 @@ app.post('/api/lessons/:id/complete', async (req, res) => {
 
   res.json({ message: 'Đã lưu trạng thái hoàn thành bài học!' });
 });
+
+// --- API LƯU ĐIỂM SMARTSCORE (MẦM NON) ---
+app.get('/api/skill-progress', async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ loggedIn: false, progress: {} });
+  }
+  try {
+    const result = await db.execute({
+      sql: 'SELECT skill_id, smart_score, best_score FROM skill_progress WHERE user_id = ?',
+      args: [req.session.user.id]
+    });
+    const progress = {};
+    result.rows.forEach(r => {
+      progress[r.skill_id] = { score: r.smart_score, best: r.best_score };
+    });
+    res.json({ loggedIn: true, progress });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi tải tiến độ.' });
+  }
+});
+
+app.post('/api/skill-progress', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ message: 'Chưa đăng nhập.' });
+  }
+  const { skillId, score } = req.body;
+  if (!skillId) {
+    return res.status(400).json({ message: 'Thiếu mã bài học.' });
+  }
+  const safeScore = Math.max(0, Math.min(100, Number(score) || 0));
+
+  try {
+    await db.execute({
+      sql: `
+        INSERT INTO skill_progress (user_id, skill_id, smart_score, best_score, updated_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(user_id, skill_id) DO UPDATE SET
+          smart_score = excluded.smart_score,
+          best_score = MAX(skill_progress.best_score, excluded.smart_score),
+          updated_at = CURRENT_TIMESTAMP
+      `,
+      args: [req.session.user.id, skillId, safeScore, safeScore]
+    });
+    res.json({ ok: true, smartScore: safeScore });
+  } catch (err) {
+    res.status(500).json({ message: 'Không thể lưu điểm.' });
+  }
+});
+
 
 // --- API ĐĂNG KÝ HỌC THỬ & XUẤT CSV ---
 app.post('/api/register', async (req, res) => {

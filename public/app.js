@@ -38,19 +38,25 @@ function renderFilters() {
 
 function renderCourses(courses) {
   const grid = document.getElementById('course-grid');
-  grid.innerHTML = courses.map(c => `
-    <div class="card">
-      <h3>${c.grade}</h3>
-      <p><strong>${c.title}</strong></p>
-      <p style="margin: 8px 0; font-size: 14px; color: #555;">${c.description}</p>
-      <p style="font-size: 13px; color: #0b5ed7; font-weight: 600; margin-bottom: 12px;">
-        📚 ${c.lesson_count || 0} bài học
-      </p>
-      <a href="/course.html?id=${c.id}" class="btn-primary" style="padding:8px 16px; font-size:14px;">
-        Vào học ngay →
-      </a>
-    </div>
-  `).join('');
+  grid.innerHTML = courses.map(c => {
+    const isKindergarten = (c.grade || '').toLowerCase().includes('mầm non');
+    const href = isKindergarten ? '/kindergarten.html' : `/course.html?id=${c.id}`;
+    const lessonCount = isKindergarten ? 42 : (c.lesson_count || 0);
+
+    return `
+      <div class="card">
+        <h3>${c.grade}</h3>
+        <p><strong>${c.title}</strong></p>
+        <p style="margin: 8px 0; font-size: 14px; color: #555;">${c.description}</p>
+        <p style="font-size: 13px; color: #0b5ed7; font-weight: 600; margin-bottom: 12px;">
+          📚 ${lessonCount} bài học
+        </p>
+        <a href="${href}" class="btn-primary" style="padding:8px 16px; font-size:14px;">
+          Vào học ngay →
+        </a>
+      </div>
+    `;
+  }).join('');
 }
 
 function populateGradeSelect(courses) {
