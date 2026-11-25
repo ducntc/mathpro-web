@@ -858,7 +858,8 @@
       try {
         const res = await fetch('/api/skill-progress');
         const data = await res.json();
-        isLoggedIn = Boolean(data.loggedIn);
+        // Chỉ mở khóa 100% bài khi đã đăng nhập VÀ gói học còn hạn
+        isLoggedIn = Boolean(data.loggedIn && data.hasAccess);
         if (data.loggedIn) savedProgress = data.progress;
       } catch (e) {
         isLoggedIn = false;

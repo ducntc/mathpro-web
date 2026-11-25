@@ -122,6 +122,8 @@ async function initDatabase() {
   // Tự động bổ sung cột mới nếu bảng subscriptions đã tồn tại từ trước
   try { await db.execute('ALTER TABLE subscriptions ADD COLUMN login_user TEXT'); } catch (e) {}
   try { await db.execute('ALTER TABLE subscriptions ADD COLUMN temp_pass TEXT'); } catch (e) {}
+  // Thêm cột lưu ngày hết hạn gói học cho tài khoản
+  try { await db.execute('ALTER TABLE users ADD COLUMN vip_expires_at DATETIME'); } catch (e) {}
 
   // 1. Tài khoản Admin mặc định
   const adminRes = await db.execute("SELECT id FROM users WHERE role = 'admin'");
@@ -550,9 +552,18 @@ app.post('/api/lessons/:id/complete', async (req, res) => {
 // --- API LƯU ĐIỂM SMARTSCORE (MẦM NON) ---
 app.get('/api/skill-progress', async (req, res) => {
   if (!req.session.user) {
-    return res.json({ loggedIn: false, progress: {} });
+    return res.json({ loggedIn: false, hasAccess: false, progress: {} });
   }
   try {
+    const userRes = await db.execute({
+      sql: 'SELECT role, vip_expires_at FROM users WHERE id = ?',
+      args: [req.session.user.id]
+    });
+    const u = userRes.rows[0];
+    const hasAccess = Boolean(
+      u && (u.role === 'admin' || (u.vip_expires_at && new Date(u.vip_expires_at) > new Date()))
+    );
+
     const result = await db.execute({
       sql: 'SELECT skill_id, smart_score, best_score FROM skill_progress WHERE user_id = ?',
       args: [req.session.user.id]
@@ -561,7 +572,13 @@ app.get('/api/skill-progress', async (req, res) => {
     result.rows.forEach(r => {
       progress[r.skill_id] = { score: r.smart_score, best: r.best_score };
     });
-    res.json({ loggedIn: true, progress });
+
+    res.json({
+      loggedIn: true,
+      hasAccess,
+      vipExpiresAt: u?.vip_expires_at || null,
+      progress
+    });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi tải tiến độ.' });
   }
@@ -643,11 +660,31 @@ app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
     const loginUser = sub.contact.trim();
 
-    // Tạo tài khoản mới trong bảng users (nếu chưa tồn tại)
-    // Lưu ý: kiểm tra tên cột bảng users của bạn là 'password' hay 'password_hash' cho khớp nhé
+    // 1. Tạo tài khoản mới nếu chưa có
     await db.execute({
       sql: `INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'student')`,
       args: [sub.parent_name, loginUser, hashedPassword]
+    });
+
+    // 2. Tính thời hạn: 12 tháng nếu là yearly, 1 tháng nếu là monthly
+    const monthsToAdd = sub.billing_cycle === 'yearly' ? 12 : 1;
+    const existingUser = await db.execute({
+      sql: 'SELECT vip_expires_at FROM users WHERE LOWER(email) = LOWER(?)',
+      args: [loginUser]
+    });
+
+    const now = new Date();
+    const oldExp = existingUser.rows[0]?.vip_expires_at ? new Date(existingUser.rows[0].vip_expires_at) : null;
+    const baseDate = (oldExp && oldExp > now) ? oldExp : now;
+
+    const newExpireDate = new Date(baseDate);
+    newExpireDate.setMonth(newExpireDate.getMonth() + monthsToAdd);
+    const expireIso = newExpireDate.toISOString();
+
+    // 3. Lưu ngày hết hạn mới vào bảng users
+    await db.execute({
+      sql: 'UPDATE users SET vip_expires_at = ? WHERE LOWER(email) = LOWER(?)',
+      args: [expireIso, loginUser]
     });
 
     // Lưu mã xác nhận & thông tin đăng nhập vào đơn hàng
@@ -656,7 +693,7 @@ app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
       args: [confirmCode, loginUser, rawPassword, req.params.id]
     });
 
-    res.json({ ok: true, confirmCode, loginUser, tempPass: rawPassword });
+    res.json({ ok: true, confirmCode, loginUser, tempPass: rawPassword, expiresAt: expireIso });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi duyệt đơn: ' + err.message });
   }

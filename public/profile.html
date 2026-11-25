@@ -71,7 +71,11 @@
 
   <script>
     async function loadProfile() {
-      const res = await fetch('/api/profile');
+      const [res, skillRes] = await Promise.all([
+        fetch('/api/profile'),
+        fetch('/api/skill-progress')
+      ]);
+
       if (res.status === 401) {
         alert('Vui lòng đăng nhập để xem hồ sơ học tập!');
         window.location.href = '/login.html';
@@ -79,16 +83,27 @@
       }
 
       const data = await res.json();
+      const skillData = await skillRes.json();
+
+      // Đếm số bài Mầm non đã hoàn thành (điểm SmartScore >= 80) trên tổng 42 bài
+      const kCompleted = Object.values(skillData.progress || {})
+        .filter(p => p.best >= 80).length;
+
       document.getElementById('user-info').textContent =
         `Học viên: ${data.user.name} (${data.user.email})`;
 
-      document.getElementById('stat-completed').textContent = data.stats.completedCount;
+      document.getElementById('stat-completed').textContent = data.stats.completedCount + kCompleted;
       document.getElementById('stat-avg').textContent = `${data.stats.avgPercent}%`;
-      document.getElementById('stat-stars').textContent = `⭐ ${data.stats.stars}`;
+      document.getElementById('stat-stars').textContent = `⭐ ${data.stats.stars + kCompleted * 10}`;
 
       // Render tiến độ từng khóa
       document.getElementById('course-progress-grid').innerHTML = data.courseProgress.map(c => {
-        const pct = c.total_lessons > 0 ? Math.round((c.completed_lessons / c.total_lessons) * 100) : 0;
+        const isKindergarten = (c.grade || '').toLowerCase().includes('mầm non');
+        const total = isKindergarten ? 42 : c.total_lessons;
+        const completed = isKindergarten ? kCompleted : c.completed_lessons;
+        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const href = isKindergarten ? '/kindergarten.html' : `/course.html?id=${c.id}`;
+
         return `
           <div class="card">
             <h3>${c.grade}</h3>
@@ -97,9 +112,9 @@
               <div class="progress-bar-fill" style="width:${pct}%;"></div>
             </div>
             <p style="font-size:13px; color:#555; margin-bottom:12px;">
-              Đã học: <strong>${c.completed_lessons}/${c.total_lessons}</strong> bài (${pct}%)
+              Đã học: <strong>${completed}/${total}</strong> bài (${pct}%)
             </p>
-            <a href="/course.html?id=${c.id}" class="btn-primary" style="padding:6px 14px; font-size:13px;">
+            <a href="${href}" class="btn-primary" style="padding:6px 14px; font-size:13px;">
               ${pct > 0 && pct < 100 ? 'Học tiếp →' : 'Xem khóa học'}
             </a>
           </div>
@@ -132,6 +147,75 @@
 
     loadProfile();
   </script>
+
+<section style="max-width:460px;margin:24px auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06);">
+  <h3 style="margin-top:0;color:#0b5ed7;">💎 Trạng thái gói học (VIP)</h3>
+  <div id="vipStatusBox" style="padding:14px;border-radius:12px;background:#f8fafc;line-height:1.7;">
+    Đang kiểm tra thông tin gói học...
+  </div>
+</section>
+
+<script>
+  async function loadVipStatus() {
+    const box = document.getElementById('vipStatusBox');
+    try {
+      const [meRes, progRes] = await Promise.all([
+        fetch('/api/me'),
+        fetch('/api/skill-progress')
+      ]);
+      const { user } = await meRes.json();
+      const prog = await progRes.json();
+
+      if (!user) {
+        box.innerHTML = 'Bạn chưa đăng nhập. <a href="/login.html" style="color:#0b5ed7;font-weight:700;">Đăng nhập ngay →</a>';
+        return;
+      }
+
+      if (user.role === 'admin') {
+        box.style.background = '#eef2ff';
+        box.style.color = '#3730a3';
+        box.innerHTML = '👑 <strong>Tài khoản Quản trị viên</strong><br>Toàn quyền truy cập không giới hạn.';
+        return;
+      }
+
+      if (prog.hasAccess && prog.vipExpiresAt) {
+        const expDate = new Date(prog.vipExpiresAt);
+        const daysLeft = Math.max(1, Math.ceil((expDate - new Date()) / (1000 * 60 * 60 * 24)));
+        const dateStr = expDate.toLocaleDateString('vi-VN', {
+          timeZone: 'Asia/Bangkok',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        box.style.background = '#dcfce7';
+        box.style.color = '#166534';
+        box.innerHTML = `
+          <div>✅ <strong>Gói học đang hoạt động</strong></div>
+          <div>📅 Ngày hết hạn: <strong>${dateStr}</strong> (còn <strong>${daysLeft}</strong> ngày)</div>
+          <a href="/subscribe.html" style="display:inline-block;margin-top:10px;background:#16a34a;color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.9rem;">
+            Gia hạn thêm →
+          </a>
+        `;
+      } else {
+        box.style.background = '#fff7ed';
+        box.style.color = '#c2410c';
+        box.innerHTML = `
+          <div>🔒 <strong>Chưa kích hoạt gói học (hoặc đã hết hạn)</strong></div>
+          <div style="font-size:0.9rem;">Bạn hiện chỉ xem được các bài học thử miễn phí.</div>
+          <a href="/subscribe.html" style="display:inline-block;margin-top:10px;background:#f97316;color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.9rem;">
+            Đăng ký / Gia hạn ngay →
+          </a>
+        `;
+      }
+    } catch (err) {
+      box.textContent = 'Không thể tải trạng thái gói học.';
+    }
+  }
+
+  loadVipStatus();
+</script>
+
 
 <section style="max-width:460px;margin:24px auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06);">
   <h3 style="margin-top:0;color:#0b5ed7;">🔑 Đổi mật khẩu</h3>
