@@ -561,6 +561,122 @@
     .vnd-bill { width: 220px; height: 105px; border-radius: 14px; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 800; font-size: 1.8rem; box-shadow: 0 6px 14px rgba(0,0,0,0.15); border: 3px dashed rgba(255,255,255,0.6); }
     .chart-table { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
     .chart-row { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 1.8rem; }
+    .topic-link-item {
+      justify-content: space-between;
+    }
+    .topic-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .skill-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .skill-badge.mastered {
+      background: #fef08a;
+      color: #854d0e;
+      border: 1px solid #eab308;
+    }
+    .skill-badge.progress {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    /* ===== 3 TABS (KỸ NĂNG - VIDEO - TRÒ CHƠI) ===== */
+    .mode-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .mode-tab {
+      flex: 1;
+      min-width: 140px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 2px solid #e2e8f0;
+      background: var(--card);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .mode-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .mode-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    /* Video cards */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .video-card {
+      background: var(--card);
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .video-thumb {
+      background: #1e293b;
+      color: #fff;
+      border-radius: 12px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      position: relative;
+    }
+    .video-thumb small { font-size: 0.85rem; color: #cbd5e1; margin-top: 6px; }
+
+    /* Mini-game Bắt bóng */
+    .game-box {
+      background: var(--card);
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+    }
+    .game-board {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 22px 0;
+      min-height: 130px;
+      align-items: center;
+    }
+    .balloon-btn {
+      width: 96px;
+      height: 110px;
+      border-radius: 50% 50% 45% 45%;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: inset -6px -8px 12px rgba(0,0,0,0.15), 0 6px 14px rgba(0,0,0,0.12);
+      transition: transform 0.15s;
+    }
+    .balloon-btn:hover { transform: scale(1.08); }
+
+    @media (max-width: 700px) {
+      .video-grid { grid-template-columns: 1fr; }
+    }
 
   </style>
 </head>
@@ -573,7 +689,6 @@
       <a href="/" class="back-link">🏠 Trang chủ</a>
     </header>
 
-    <!-- VIEW 1: DANH SÁCH BÀI HỌC -->
     <section id="view-list">
       <div class="course-banner">
         <span class="course-badge">Mầm non (Kindergarten)</span>
@@ -581,8 +696,35 @@
         <p>Đếm số trực quan, khung 10 ô, quy luật, hình học và phép cộng theo chuẩn IXL.</p>
       </div>
 
-      <h2 class="section-heading">📚 Nội dung khóa học (42 bài học)</h2>
-      <div class="topic-grid" id="lessonList"></div>
+      <!-- Thanh 3 Tab -->
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-tab="skills">📚 Kỹ năng (42)</button>
+        <button class="mode-tab" data-tab="videos">🎬 Video hướng dẫn</button>
+        <button class="mode-tab" data-tab="games">🎮 Trò chơi toán học</button>
+      </div>
+
+      <!-- TAB 1: KỸ NĂNG -->
+      <div id="panel-skills">
+        <h2 class="section-heading">📚 Nội dung khóa học (42 bài học)</h2>
+        <div class="topic-grid" id="lessonList"></div>
+      </div>
+
+      <!-- TAB 2: VIDEO HƯỚNG DẪN -->
+      <div id="panel-videos" class="hidden">
+        <h2 class="section-heading">🎬 Video bài giảng ngắn cho bé</h2>
+        <div class="video-grid" id="videoGrid"></div>
+      </div>
+
+      <!-- TAB 3: TRÒ CHƠI -->
+      <div id="panel-games" class="hidden">
+        <div class="game-box">
+          <h2 style="margin-top:0;">🎈 Trò chơi: Bắt bóng số đúng</h2>
+          <p id="gamePrompt" style="font-size:1.25rem;font-weight:700;color:var(--primary);">Đang tải...</p>
+          <div style="font-weight:700;color:var(--success);">Điểm trò chơi: <span id="gameScore">0</span> ⭐</div>
+          <div class="game-board" id="gameBoard"></div>
+          <div id="gameMsg" style="font-weight:700;min-height:24px;"></div>
+        </div>
+      </div>
     </section>
 
     <!-- VIEW 2: GIAO DIỆN LÀM BÀI -->
@@ -673,13 +815,28 @@
         list.className = "topic-links";
 
         items.forEach(ls => {
+          const prog = savedProgress[ls.id];
+          const best = prog ? prog.best : 0;
+
+          let badgeHtml = "";
+          if (best >= 100) {
+            badgeHtml = `<span class="skill-badge mastered">🏆 100</span>`;
+          } else if (best >= 80) {
+            badgeHtml = `<span class="skill-badge mastered">🥇 ${best}</span>`;
+          } else if (best > 0) {
+            badgeHtml = `<span class="skill-badge progress">⭐ ${best}</span>`;
+          }
+
           const row = document.createElement("div");
           row.className = "topic-link-item";
           row.title = ls.desc;
           row.innerHTML = `
-         <span class="topic-code">${ls.code}</span>
-         <span class="topic-label">${ls.label}</span>
-       `;
+            <div class="topic-left">
+              <span class="topic-code">${ls.code}</span>
+              <span class="topic-label">${ls.label}</span>
+            </div>
+            ${badgeHtml}
+          `;
           row.onclick = () => openLesson(ls.id);
           list.appendChild(row);
         });
@@ -702,6 +859,7 @@
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       viewPractice.classList.add("hidden");
       viewList.classList.remove("hidden");
+      renderLessonList(); // Cập nhật lại huy hiệu mới đạt được
     };
 
     function speakPrompt(text) {
@@ -854,6 +1012,63 @@
       }
     }
 
+    function launchFireworks() {
+      const canvas = document.getElementById("fireworksCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#ef4444", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899"];
+      const particles = [];
+
+      // Tạo 4 chùm pháo hoa ở các vị trí ngẫu nhiên nửa trên màn hình
+      for (let b = 0; b < 4; b++) {
+        const cx = canvas.width * (0.2 + Math.random() * 0.6);
+        const cy = canvas.height * (0.15 + Math.random() * 0.35);
+        for (let i = 0; i < 45; i++) {
+          const angle = (Math.PI * 2 * i) / 45 + Math.random() * 0.2;
+          const speed = 2 + Math.random() * 5.5;
+          particles.push({
+            x: cx, y: cy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            alpha: 1,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: 3 + Math.random() * 3
+          });
+        }
+      }
+
+      const startTime = Date.now();
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.08; // Trọng lực rơi nhẹ
+          p.alpha -= 0.015;
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        if (particles.length > 0 && Date.now() - startTime < 3500) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
     function renderOptions(q) {
       optionsArea.innerHTML = "";
       q.options.forEach(opt => {
@@ -881,13 +1096,21 @@
       if (answered) return;
       answered = true;
 
+
       if (selected === currentQuestion.correctAnswer) {
+        const prevScore = score;
         score = Math.min(100, score + 10);
         scoreVal.textContent = score;
         btnElement.style.borderColor = "var(--success)";
         btnElement.style.background = "var(--success-bg)";
         feedbackBox.className = "feedback ok";
-        feedbackMsg.textContent = "🎉 Tuyệt vời! Bé trả lời chính xác rồi!";
+
+        if (prevScore < 100 && score === 100) {
+          feedbackMsg.textContent = "🏆 XUẤT SẮC! Bé đã đạt 100 điểm và giành huy hiệu Vàng!";
+          launchFireworks();
+        } else {
+          feedbackMsg.textContent = "🎉 Tuyệt vời! Bé trả lời chính xác rồi!";
+        }
       } else {
         score = Math.max(0, score - 5);
         scoreVal.textContent = score;
@@ -911,8 +1134,86 @@
 
     document.getElementById("nextBtn").onclick = loadQuestion;
 
+    // --- CHUYỂN ĐỔI 3 TAB ---
+    const tabs = document.querySelectorAll(".mode-tab");
+    const panels = {
+      skills: document.getElementById("panel-skills"),
+      videos: document.getElementById("panel-videos"),
+      games: document.getElementById("panel-games")
+    };
+
+    tabs.forEach(btn => {
+      btn.onclick = () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        btn.classList.add("active");
+        Object.values(panels).forEach(p => p.classList.add("hidden"));
+        panels[btn.dataset.tab].classList.remove("hidden");
+        if (btn.dataset.tab === "games") startBalloonRound();
+      };
+    });
+
+    // --- TAB VIDEO (Dễ dàng gắn link YouTube ID thật của bạn) ---
+    const VIDEOS = [
+      { title: "Bài giảng 1: Tập đếm từ 1 đến 10", desc: "Học đếm qua đồ vật quen thuộc.", emoji: "🔢", youtubeId: "" },
+      { title: "Bài giảng 2: Nhận biết Hình tròn, Vuông, Tam giác", desc: "Phân biệt các hình 2D cơ bản.", emoji: "🔺", youtubeId: "" },
+      { title: "Bài giảng 3: Làm quen Phép cộng bằng hình ảnh", desc: "Gộp 2 nhóm đồ vật trong phạm vi 10.", emoji: "➕", youtubeId: "" },
+      { title: "Bài giảng 4: Xem đồng hồ giờ đúng", desc: "Cách nhìn kim ngắn và kim dài.", emoji: "🕒", youtubeId: "" }
+    ];
+
+    const videoGrid = document.getElementById("videoGrid");
+    videoGrid.innerHTML = VIDEOS.map(v => `
+      <div class="video-card">
+        ${v.youtubeId
+          ? `<iframe width="100%" height="170" style="border-radius:12px;border:none;" src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen></iframe>`
+          : `<div class="video-thumb"><span>${v.emoji}</span><small>Chưa gắn YouTube ID</small></div>`
+        }
+        <div style="font-weight:700;font-size:1.05rem;">${v.title}</div>
+        <div style="font-size:0.9rem;color:var(--muted);">${v.desc}</div>
+      </div>
+    `).join("");
+
+    // --- TAB TRÒ CHƠI: BẮT BÓNG SỐ ĐÚNG ---
+    let gameScore = 0;
+    function startBalloonRound() {
+      const target = Math.floor(Math.random() * 10) + 1;
+      const gamePrompt = document.getElementById("gamePrompt");
+      const gameBoard = document.getElementById("gameBoard");
+      const gameMsg = document.getElementById("gameMsg");
+
+      gamePrompt.textContent = `Bé hãy bấm vào quả bóng mang số ${target} nhé!`;
+      gameMsg.textContent = "";
+
+      const set = new Set([target]);
+      while (set.size < 5) set.add(Math.floor(Math.random() * 10) + 1);
+      const nums = Array.from(set).sort(() => Math.random() - 0.5);
+      const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+
+      gameBoard.innerHTML = "";
+      nums.forEach((num, idx) => {
+        const b = document.createElement("button");
+        b.className = "balloon-btn";
+        b.style.background = colors[idx % colors.length];
+        b.textContent = num;
+        b.onclick = () => {
+          if (num === target) {
+            gameScore += 10;
+            document.getElementById("gameScore").textContent = gameScore;
+            gameMsg.style.color = "var(--success)";
+            gameMsg.textContent = "🎉 Đúng rồi! Đang tạo bóng mới...";
+            setTimeout(startBalloonRound, 900);
+          } else {
+            gameMsg.style.color = "var(--warn)";
+            gameMsg.textContent = `Ôi, đó là số ${num} rồi! Tìm số ${target} cơ mà.`;
+          }
+        };
+        gameBoard.appendChild(b);
+      });
+    }
+
     loadProgress();
   </script>
 </body>
+
+<canvas id="fireworksCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
 
 </html>
