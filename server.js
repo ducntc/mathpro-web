@@ -117,6 +117,10 @@ async function initDatabase() {
       temp_pass TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    // Tự động bổ sung cột mới nếu bảng subscriptions đã tồn tại từ trước
+    try { await db.execute('ALTER TABLE subscriptions ADD COLUMN login_user TEXT'); } catch (e) {}
+    try { await db.execute('ALTER TABLE subscriptions ADD COLUMN temp_pass TEXT'); } catch (e) {}
   `);
 
   // 1. Tài khoản Admin mặc định
