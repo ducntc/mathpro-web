@@ -19,9 +19,15 @@
   <header class="navbar">
     <div class="logo">MATH<span>PRO</span></div>
     <nav>
-      <a href="#courses">Khóa học</a>
-      <a href="#register">Đăng ký học</a>
-      <span id="auth-nav"><a href="/login.html">Đăng nhập</a></span>
+      <!-- Ví dụ cụm menu sau khi sửa -->
+      <a href="/subscribe.html">Đăng ký học</a>
+      <span id="auth-nav">
+        <a href="/login.html">Đăng nhập</a>
+      </span>
+      <select id="langSelect" onchange="switchLang(this.value)" style="padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;font-weight:600;cursor:pointer;">
+        <option value="vi">🇻🇳 VN</option>
+        <option value="en">🇺🇸 EN</option>
+      </select>
     </nav>
   </header>
 
@@ -45,19 +51,6 @@
     <div id="course-grid" class="grid">
       <p>Đang tải danh sách khóa học...</p>
     </div>
-  </section>
-
-  <section id="register" class="container register-box">
-    <h2>Đăng Ký Học Thử Miễn Phí</h2>
-    <form id="signup-form">
-      <input type="text" id="student-name" placeholder="Họ và tên học sinh" required />
-      <input type="email" id="student-email" placeholder="Email phụ huynh / học sinh" required />
-      <select id="grade-select" required>
-        <option value="">Đang tải danh sách lớp...</option>
-      </select>
-      <button type="submit" class="btn-primary">Đăng Ký Ngay</button>
-    </form>
-    <p id="form-message"></p>
   </section>
 
   <script src="app.js"></script>

@@ -102,6 +102,21 @@ async function initDatabase() {
       UNIQUE(user_id, skill_id),
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_code TEXT UNIQUE NOT NULL,
+      parent_name TEXT NOT NULL,
+      contact TEXT NOT NULL,
+      plan_name TEXT NOT NULL,
+      billing_cycle TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      status TEXT DEFAULT 'pending',
+      confirm_code TEXT,
+      login_user TEXT,
+      temp_pass TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // 1. Tài khoản Admin mặc định
@@ -576,6 +591,90 @@ app.post('/api/skill-progress', async (req, res) => {
   }
 });
 
+// --- API ĐĂNG KÝ GÓI HỌC & XÁC NHẬN THANH TOÁN ---
+// 1. Khách tạo đơn đăng ký (lưu trạng thái pending)
+app.post('/api/subscribe', async (req, res) => {
+  const { parentName, contact, planName, billingCycle, amount } = req.body;
+  if (!parentName || !contact || !planName || !amount) {
+    return res.status(400).json({ message: 'Vui lòng điền đầy đủ thông tin.' });
+  }
+  const orderCode = 'MP' + Math.floor(100000 + Math.random() * 900000);
+  try {
+    await db.execute({
+      sql: `INSERT INTO subscriptions (order_code, parent_name, contact, plan_name, billing_cycle, amount)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [orderCode, parentName, contact, planName, billingCycle, Number(amount)]
+    });
+    res.json({ ok: true, orderCode });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi tạo đơn đăng ký.' });
+  }
+});
+
+// 2. Admin xem danh sách đơn đăng ký
+app.get('/api/admin/subscriptions', async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Không có quyền truy cập.' });
+  }
+  const result = await db.execute('SELECT * FROM subscriptions ORDER BY created_at DESC');
+  res.json(result.rows);
+});
+
+// 3. Admin duyệt thanh toán -> Tự sinh Mã xác nhận + Tạo tài khoản đăng nhập
+app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Không có quyền truy cập.' });
+  }
+
+  try {
+    const subRes = await db.execute({
+      sql: 'SELECT * FROM subscriptions WHERE id = ?',
+      args: [req.params.id]
+    });
+    const sub = subRes.rows[0];
+    if (!sub) return res.status(404).json({ message: 'Không tìm thấy đơn hàng.' });
+
+    const confirmCode = 'MP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const rawPassword = 'mp' + Math.floor(100000 + Math.random() * 900000);
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
+    const loginUser = sub.contact.trim();
+
+    // Tạo tài khoản mới trong bảng users (nếu chưa tồn tại)
+    // Lưu ý: kiểm tra tên cột bảng users của bạn là 'password' hay 'password_hash' cho khớp nhé
+    await db.execute({
+      sql: `INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'student')`,
+      args: [sub.parent_name, loginUser, hashedPassword]
+    });
+
+    // Lưu mã xác nhận & thông tin đăng nhập vào đơn hàng
+    await db.execute({
+      sql: `UPDATE subscriptions SET status = 'approved', confirm_code = ?, login_user = ?, temp_pass = ? WHERE id = ?`,
+      args: [confirmCode, loginUser, rawPassword, req.params.id]
+    });
+
+    res.json({ ok: true, confirmCode, loginUser, tempPass: rawPassword });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi duyệt đơn: ' + err.message });
+  }
+});
+
+// 4. Khách hàng tra cứu trạng thái đơn & nhận tài khoản
+app.get('/api/subscribe/status/:orderCode', async (req, res) => {
+  try {
+    const result = await db.execute({
+      sql: 'SELECT order_code, plan_name, status, confirm_code, login_user, temp_pass FROM subscriptions WHERE order_code = ?',
+      args: [req.params.orderCode.trim().toUpperCase()]
+    });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy mã đơn hàng này.' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi tra cứu đơn hàng.' });
+  }
+});
+
+
 
 // --- API ĐĂNG KÝ HỌC THỬ & XUẤT CSV ---
 app.post('/api/register', async (req, res) => {
@@ -632,16 +731,68 @@ app.post('/api/signup', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  const result = await db.execute({ sql: 'SELECT * FROM users WHERE email = ?', args: [email] });
+  const loginInput = (email || '').trim();
+
+  const result = await db.execute({
+    sql: 'SELECT * FROM users WHERE LOWER(email) = LOWER(?)',
+    args: [loginInput]
+  });
   const user = result.rows[0];
 
   if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-    return res.status(401).json({ message: 'Sai email hoặc mật khẩu.' });
+    return res.status(401).json({ message: 'Sai email/SĐT hoặc mật khẩu.' });
   }
 
   req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role };
   res.json({ message: 'Đăng nhập thành công!', user: req.session.user });
 });
+
+
+// --- API ĐỔI MẬT KHẨU (ĐÃ SỬA LỖI SQL) ---
+app.post('/api/change-password', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ message: 'Vui lòng đăng nhập trước.' });
+  }
+
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword || newPassword.length < 6) {
+    return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 6 ký tự.' });
+  }
+
+  try {
+    const result = await db.execute({
+      sql: 'SELECT id, email, password_hash FROM users WHERE id = ?',
+      args: [req.session.user.id]
+    });
+    const user = result.rows[0];
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy tài khoản.' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng.' });
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await db.execute({
+      sql: 'UPDATE users SET password_hash = ? WHERE id = ?',
+      args: [newHash, user.id]
+    });
+
+    // Truyền '(Đã đổi)' qua tham số ? để tránh lỗi dấu ngoặc kép của SQLite/Turso
+    await db.execute({
+      sql: 'UPDATE subscriptions SET temp_pass = ? WHERE LOWER(login_user) = LOWER(?)',
+      args: ['(Đã đổi)', user.email]
+    });
+
+    res.json({ ok: true, message: 'Đổi mật khẩu thành công!' });
+  } catch (err) {
+    console.error('Lỗi đổi mật khẩu:', err);
+    res.status(500).json({ message: 'Lỗi đổi mật khẩu: ' + err.message });
+  }
+});
+
 
 app.get('/api/me', (req, res) => {
   res.json({ user: req.session.user || null });

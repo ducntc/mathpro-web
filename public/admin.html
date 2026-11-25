@@ -346,5 +346,81 @@
 
     checkAdminAuth();
   </script>
+
+<section style="margin-top: 32px; background: #fff; padding: 20px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+  <h3 style="margin-top: 0; color: #0b5ed7;">💳 Danh sách đơn đăng ký gói học</h3>
+  <div style="overflow-x: auto;">
+    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; border-color: #e2e8f0;">
+      <thead style="background: #f1f5f9;">
+        <tr>
+          <th>Mã đơn</th>
+          <th>Phụ huynh</th>
+          <th>Zalo / Email</th>
+          <th>Gói học</th>
+          <th>Số tiền</th>
+          <th>Trạng thái / Tài khoản</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="subTableBody">
+        <tr><td colspan="7" style="text-align:center;">Đang tải...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  async function loadSubscriptions() {
+    const tbody = document.getElementById('subTableBody');
+    try {
+      const res = await fetch('/api/admin/subscriptions');
+      if (!res.ok) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">Bạn cần đăng nhập tài khoản Admin để xem mục này.</td></tr>';
+        return;
+      }
+      const rows = await res.json();
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Chưa có đơn đăng ký nào.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.order_code}</strong></td>
+          <td>${r.parent_name}</td>
+          <td>${r.contact}</td>
+          <td>${r.plan_name} (${r.billing_cycle})</td>
+          <td>${Number(r.amount).toLocaleString('vi-VN')}đ</td>
+          <td>
+            ${r.status === 'approved'
+              ? `<span style="color:#16a34a;font-weight:700;">✅ Đã duyệt</span><br>Mã: <b>${r.confirm_code}</b><br>TK: ${r.login_user} / MK: ${r.temp_pass}`
+              : '<span style="color:#ea580c;font-weight:600;">⏳ Chờ chuyển khoản</span>'}
+          </td>
+          <td style="text-align:center;">
+            ${r.status === 'pending'
+              ? `<button onclick="approveOrder(${r.id})" style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;">Duyệt & Cấp TK</button>`
+              : 'Đã xong'}
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">Lỗi tải danh sách đơn.</td></tr>';
+    }
+  }
+
+  async function approveOrder(id) {
+    if (!confirm('Xác nhận đã nhận được tiền chuyển khoản cho đơn này?')) return;
+    const res = await fetch(`/api/admin/subscriptions/${id}/approve`, { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`✅ Đã duyệt thành công!\n\nMã xác nhận: ${data.confirmCode}\nTên đăng nhập: ${data.loginUser}\nMật khẩu: ${data.tempPass}`);
+      loadSubscriptions();
+    } else {
+      alert(data.message || 'Có lỗi xảy ra khi duyệt!');
+    }
+  }
+
+  loadSubscriptions();
+</script>
 </body>
 </html>
