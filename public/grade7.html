@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathPro</title>
+  <style>
+    :root { --primary:#10b981; --primary-dark:#059669; --accent:#f59e0b; --danger:#ef4444; --bg:#f0fdf4; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+    header { background:linear-gradient(135deg,#059669,#10b981); color:#fff; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:20px; font-weight:800; }
+    .brand a { color:#fff; text-decoration:none; }
+    .nav-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .nav-btn { background:rgba(255,255,255,0.18); color:#fff; border:1px solid rgba(255,255,255,0.35); padding:7px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; cursor:pointer; }
+    .container { max-width:1100px; margin:24px auto; padding:0 16px; }
+    .tabs { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; justify-content:center; }
+    .tab-btn { padding:12px 22px; border:2px solid var(--primary); background:#fff; color:var(--primary-dark); border-radius:30px; font-size:15px; font-weight:700; cursor:pointer; }
+    .tab-btn.active { background:var(--primary); color:#fff; }
+    .section { display:none; }
+    .section.active { display:block; }
+    .topics-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:18px; }
+    .topic-card { background:var(--card); border-radius:16px; padding:20px; border:1px solid var(--border); }
+    .topic-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid #f1f5f9; }
+    .topic-code { width:34px; height:34px; background:var(--primary); color:#fff; border-radius:10px; display:grid; place-items:center; font-weight:800; }
+    .topic-title { font-size:16px; font-weight:700; }
+    .skill-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .skill-item { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:#f8fafc; border:1px solid #e2e8f0; cursor:pointer; }
+    .skill-item:hover { border-color:var(--primary); background:#ecfdf5; }
+    .skill-name { font-size:14px; font-weight:600; }
+    .skill-meta { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; }
+    .badge-free { background:#dbeafe; color:#1d4ed8; padding:2px 8px; border-radius:10px; }
+    .badge-vip { background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:10px; }
+    .score-pill { background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:10px; }
+    #practice-arena { display:none; background:#fff; border-radius:20px; padding:28px; border:2px solid var(--primary); max-width:780px; margin:0 auto; }
+    .arena-top { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+    .smartscore-box { display:flex; align-items:center; gap:12px; background:#f0fdf4; padding:8px 16px; border-radius:14px; border:1px solid #bbf7d0; }
+    .ss-val { font-size:24px; font-weight:800; color:var(--primary-dark); }
+    .progress-bar-wrap { width:100%; height:10px; background:#e2e8f0; border-radius:99px; overflow:hidden; margin-bottom:24px; }
+    .progress-bar-fill { height:100%; width:0%; background:linear-gradient(90deg,#10b981,#3b82f6); transition:width 0.35s; }
+    .question-box { font-size:24px; font-weight:700; text-align:center; margin:20px 0 28px; }
+    .options-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+    .opt-btn { padding:16px; font-size:18px; font-weight:700; border:2px solid #cbd5e1; border-radius:14px; background:#fff; cursor:pointer; }
+    .opt-btn:hover { border-color:var(--primary); background:#f0fdf4; }
+    .feedback-msg { margin-top:20px; text-align:center; font-size:18px; font-weight:700; min-height:28px; }
+    .fb-ok { color:var(--primary-dark); } .fb-err { color:var(--danger); }
+    .media-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+    .media-card { background:#fff; border-radius:16px; padding:20px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:space-between; gap:12px; }
+    .fluency-panel { background:#fffbeb; border:2px dashed var(--accent); border-radius:20px; padding:32px; text-align:center; max-width:600px; margin:0 auto; }
+    .fluency-input { font-size:28px; width:130px; text-align:center; padding:10px; border:2px solid var(--accent); border-radius:12px; }
+    .btn-primary { display:inline-block; background:var(--primary); color:#fff; border:none; padding:12px 24px; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; text-decoration:none; margin-top:12px; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); place-items:center; z-index:1000; padding:16px; }
+    .modal-overlay.open { display:grid; }
+    .modal-card { background:#fff; max-width:440px; width:100%; border-radius:20px; padding:28px; text-align:center; }
+    #fireworks-canvas { position:fixed; inset:0; pointer-events:none; z-index:999; }
+  </style>
+</head>
+<body>
+<canvas id="fireworks-canvas"></canvas>
+<header>
+  <div class="brand"><a href="/">🧮 MathPro</a> <span id="grade-header-title"></span></div>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="toggleLang()">🌐 VN / EN</button>
+    <a href="/profile.html" class="nav-btn">👤 Hồ sơ</a>
+    <a href="/subscribe.html" class="nav-btn" style="background:#f59e0b;border-color:#f59e0b;">👑 Nâng cấp VIP</a>
+  </div>
+</header>
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('skills', this)">💎 Skills</button>
+    <button class="tab-btn" onclick="switchTab('videos', this)">🎬 Videos</button>
+    <button class="tab-btn" onclick="switchTab('games', this)">🛸 Games</button>
+    <button class="tab-btn" onclick="switchTab('fluency', this)">🔥 Fluency Zone</button>
+  </div>
+  <div id="tab-skills" class="section active">
+    <div id="topics-container" class="topics-grid"></div>
+    <div id="practice-arena">
+      <div class="arena-top">
+        <button class="opt-btn" style="padding:8px 14px;font-size:14px;" onclick="exitPractice()">⬅ Quay lại</button>
+        <div id="active-skill-title" style="font-weight:800;"></div>
+        <div class="smartscore-box"><span>SmartScore:</span><span class="ss-val" id="smart-score">0</span></div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ss-bar"></div></div>
+      <div class="question-box" id="q-text"></div>
+      <div class="options-grid" id="q-options"></div>
+      <div class="feedback-msg" id="q-feedback"></div>
+    </div>
+  </div>
+  <div id="tab-videos" class="section"><div id="videos-container" class="media-grid"></div></div>
+  <div id="tab-games" class="section">
+    <div class="media-card" style="max-width:600px;margin:0 auto;text-align:center;padding:32px;">
+      <h2>🎈 Bắn Bóng Phép Tính</h2>
+      <p id="game-prompt" style="font-size:20px;font-weight:700;margin:14px 0;"></p>
+      <div class="options-grid" id="game-options"></div>
+      <div id="game-fb" class="feedback-msg"></div>
+      <button class="btn-primary" style="align-self:center;" onclick="initGame()">🔄 Ván mới</button>
+    </div>
+  </div>
+  <div id="tab-fluency" class="section">
+    <div class="fluency-panel">
+      <h2>⚡ Fluency Zone - Tính nhanh 30s</h2>
+      <div style="font-size:20px;font-weight:800;color:#b45309;margin:14px 0;">⏱ <span id="fz-time">30</span>s | 🔥 Điểm: <span id="fz-score">0</span></div>
+      <div id="fz-question" style="font-size:32px;font-weight:800;margin:18px 0;">Nhấn Bắt đầu</div>
+      <input type="number" id="fz-input" class="fluency-input" disabled placeholder="?" /><br />
+      <button class="btn-primary" onclick="startFluency()">🚀 Bắt đầu</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="vip-modal">
+  <div class="modal-card">
+    <div style="font-size:46px;">👑</div>
+    <h2 style="margin:10px 0;">Mở khóa VIP để tiếp tục!</h2>
+    <p style="color:var(--muted);">Nâng cấp VIP để mở khóa toàn bộ 44 dạng bài và nhận huy hiệu 100%!</p>
+    <a href="/subscribe.html" class="btn-primary">Nâng cấp VIP ngay</a><br />
+    <button class="opt-btn" style="margin-top:10px;padding:8px 18px;font-size:14px;" onclick="closeVipModal()">Đóng</button>
+  </div>
+</div>
+<script src="/js/gradeEngine.js"></script>
+<!-- ĐỔI SỐ 2 THÀNH 3, 4, 5 CHO TỪNG FILE grade3.html, grade4.html, grade5.html -->
+<script src="/js/grade7Generators.js"></script>
+<script>
+  initGradePage({
+    grade: 7,
+    title: 'Lớp 7 (Grade 7)',
+    topics: window.GRADE7_TOPICS,
+    generator: window.generateGrade7Question,
+    videos: [
+      { title: 'Cộng trừ có nhớ trong phạm vi 100', desc: 'Kỹ thuật đặt tính thẳng hàng chục và đơn vị.' },
+      { title: 'Bảng nhân 2, 3, 4, 5', desc: 'Hiểu bản chất phép nhân qua các nhóm bằng nhau.' }
+    ],
+    fluencyMax: 30
+  });
+</script>
+</body>
+</html>

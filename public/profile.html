@@ -126,9 +126,13 @@
       const skillEntries = Object.entries(skillData.progress || {});
 
       const countDone = (prefix) => skillEntries.filter(([id, p]) => id.startsWith(prefix) && p.best >= 80).length;
-      const kDone = skillEntries.filter(([id, p]) => !/^g[1-5]-/.test(id) && p.best >= 80).length;
-      const g1Done = countDone('g1-'), g2Done = countDone('g2-'), g3Done = countDone('g3-'), g4Done = countDone('g4-'), g5Done = countDone('g5-');
-      const totalDynamicDone = kDone + g1Done + g2Done + g3Done + g4Done + g5Done;
+      const kDone = skillEntries.filter(([id, p]) => !/^g[1-9]-/.test(id) && p.best >= 80).length;
+      const gDone = {};
+      let totalDynamicDone = kDone;
+      for (let i = 1; i <= 9; i++) {
+        gDone[i] = countDone(`g${i}-`);
+        totalDynamicDone += gDone[i];
+      }
 
       document.getElementById('user-info').textContent = `Học viên: ${data.user.name} (${data.user.email})`;
       document.getElementById('stat-completed').textContent = data.stats.completedCount + totalDynamicDone;
@@ -140,12 +144,13 @@
         let total = c.total_lessons, completed = c.completed_lessons, href = `/course.html?id=${c.id}`;
 
         if (g.includes('mầm non')) { total = 42; completed = kDone; href = '/kindergarten.html'; }
-        else if (g.includes('lớp 1') || g.includes('grade 1')) { total = 44; completed = g1Done; href = '/grade1.html'; }
-        else if (g.includes('lớp 2') || g.includes('grade 2')) { total = 44; completed = g2Done; href = '/grade2.html'; }
-        else if (g.includes('lớp 3') || g.includes('grade 3')) { total = 44; completed = g3Done; href = '/grade3.html'; }
-        else if (g.includes('lớp 4') || g.includes('grade 4')) { total = 44; completed = g4Done; href = '/grade4.html'; }
-        else if (g.includes('lớp 5') || g.includes('grade 5')) { total = 44; completed = g5Done; href = '/grade5.html'; }
-
+        else {
+          for (let i = 1; i <= 9; i++) {
+            if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) {
+              total = 44; completed = gDone[i]; href = `/grade${i}.html`; break;
+            }
+          }
+        }
         const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
         return `
           <div class="card">

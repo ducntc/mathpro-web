@@ -47,20 +47,30 @@ function renderCourses(courses) {
     let href = `/course.html?id=${c.id}`;
     let lessonCount = c.lesson_count || 0;
 
-    if (g.includes('mầm non')) { href = '/kindergarten.html'; lessonCount = 42; }
-    else if (g.includes('lớp 1') || g.includes('grade 1')) { href = '/grade1.html'; lessonCount = 44; }
-    else if (g.includes('lớp 2') || g.includes('grade 2')) { href = '/grade2.html'; lessonCount = 44; }
-    else if (g.includes('lớp 3') || g.includes('grade 3')) { href = '/grade3.html'; lessonCount = 44; }
-    else if (g.includes('lớp 4') || g.includes('grade 4')) { href = '/grade4.html'; lessonCount = 44; }
-    else if (g.includes('lớp 5') || g.includes('grade 5')) { href = '/grade5.html'; lessonCount = 44; }
+    if (g.includes('mầm non')) {
+      href = '/kindergarten.html';
+      lessonCount = 42;
+    } else {
+      for (let i = 1; i <= 9; i++) {
+        if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) {
+          href = `/grade${i}.html`;
+          lessonCount = 44;
+          break;
+        }
+      }
+    }
 
     return `
       <div class="card">
         <h3>${c.grade}</h3>
         <p><strong>${c.title}</strong></p>
-        <p style="margin:8px 0;font-size:14px;color:#555;">${c.description}</p>
-        <p style="font-size:13px;color:#0b5ed7;font-weight:600;margin-bottom:12px;">📚 ${lessonCount} bài học</p>
-        <a href="${href}" class="btn-primary" style="padding:8px 16px;font-size:14px;">Vào học ngay →</a>
+        <p style="margin: 8px 0; font-size: 14px; color: #555;">${c.description}</p>
+        <p style="font-size: 13px; color: #0b5ed7; font-weight: 600; margin-bottom: 12px;">
+          📚 ${lessonCount} bài học
+        </p>
+        <a href="${href}" class="btn-primary" style="padding:8px 16px; font-size:14px;">
+          Vào học ngay →
+        </a>
       </div>
     `;
   }).join('');

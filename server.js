@@ -119,10 +119,9 @@ async function initDatabase() {
     );
   `);
 
-  // Tự động bổ sung cột mới nếu bảng subscriptions đã tồn tại từ trước
+  // Tự động bổ sung cột mới nếu bảng đã tồn tại từ trước
   try { await db.execute('ALTER TABLE subscriptions ADD COLUMN login_user TEXT'); } catch (e) {}
   try { await db.execute('ALTER TABLE subscriptions ADD COLUMN temp_pass TEXT'); } catch (e) {}
-  // Thêm cột lưu ngày hết hạn gói học cho tài khoản
   try { await db.execute('ALTER TABLE users ADD COLUMN vip_expires_at DATETIME'); } catch (e) {}
   try { await db.execute('ALTER TABLE skill_progress ADD COLUMN grade INTEGER DEFAULT 0'); } catch (e) {}
 
@@ -136,18 +135,26 @@ async function initDatabase() {
     });
   }
 
-  // 2. Danh sách 6 Khóa học (Mầm non -> Lớp 5)
-  const courseRes = await db.execute('SELECT COUNT(*) AS total FROM courses');
-  if (Number(courseRes.rows[0].total) === 0) {
-    const courses = [
-      ['Mầm non', 'Làm quen Toán tư duy', 'Nhận biết mặt số, đếm hình và phát triển tư duy logic.'],
-      ['Lớp 1', 'Toán cơ bản & Nâng cao', 'Bám sát SGK, toán nâng cao và phương pháp sơ đồ Singapore.'],
-      ['Lớp 2', 'Giải toán có lời văn', 'Bảng nhân chia, tính nhẩm nhanh và bài toán suy luận.'],
-      ['Lớp 3', 'Luyện thi & Toán Olympiad', 'Quy luật dãy số, rút về đơn vị và tư duy phản biện.'],
-      ['Lớp 4', 'Phân số & Toán Tổng - Hiệu', 'Thành thạo bài toán điển hình, phân số và hình học lớp 4.'],
-      ['Lớp 5', 'Chinh phục Toán Chuyển cấp', 'Tỉ số phần trăm, diện tích hình học và luyện đề vào lớp 6.']
-    ];
-    for (const c of courses) {
+  // 2. Danh sách 10 Khóa học (Mầm non -> Lớp 9)
+  const allCourses = [
+    ['Mầm non', 'Làm quen Toán tư duy', 'Nhận biết mặt số, đếm hình và phát triển tư duy logic.'],
+    ['Lớp 1', 'Toán cơ bản & Nâng cao', 'Bám sát SGK, toán nâng cao và phương pháp sơ đồ Singapore.'],
+    ['Lớp 2', 'Giải toán có lời văn', 'Bảng nhân chia, tính nhẩm nhanh và bài toán suy luận.'],
+    ['Lớp 3', 'Luyện thi & Toán Olympiad', 'Quy luật dãy số, rút về đơn vị và tư duy phản biện.'],
+    ['Lớp 4', 'Phân số & Toán Tổng - Hiệu', 'Thành thạo bài toán điển hình, phân số và hình học lớp 4.'],
+    ['Lớp 5', 'Chinh phục Toán Chuyển cấp', 'Tỉ số phần trăm, diện tích hình học và luyện đề vào lớp 6.'],
+    ['Lớp 6', 'Toán Số học & Hình học 6', 'Lũy thừa, ƯCLN/BCNN, số nguyên, tỉ số phần trăm và biểu thức đại số.'],
+    ['Lớp 7', 'Đại số & Hình học 7', 'Số hữu tỉ, tỉ lệ thức, phương trình 2 bước, tam giác và xác suất.'],
+    ['Lớp 8', 'Đại số & Hình học 8', 'Căn bậc hai, hằng đẳng thức, hàm số bậc nhất, định lý Pytago và hình khối.'],
+    ['Lớp 9', 'Đại số 1 & Luyện thi vào 10', 'Hệ phương trình, hàm số bậc hai, phương trình bậc hai, căn thức và lượng giác.']
+  ];
+
+  for (const c of allCourses) {
+    const exists = await db.execute({
+      sql: 'SELECT id FROM courses WHERE grade = ?',
+      args: [c[0]]
+    });
+    if (exists.rows.length === 0) {
       await db.execute({
         sql: 'INSERT INTO courses (grade, title, description) VALUES (?, ?, ?)',
         args: c
@@ -550,7 +557,7 @@ app.post('/api/lessons/:id/complete', async (req, res) => {
   res.json({ message: 'Đã lưu trạng thái hoàn thành bài học!' });
 });
 
-// --- API LƯU ĐIỂM SMARTSCORE (MẦM NON) ---
+// --- API LƯU ĐIỂM SMARTSCORE (MẦM NON & LỚP 1-9) ---
 app.get('/api/skill-progress', async (req, res) => {
   if (!req.session.user) {
     return res.json({ loggedIn: false, hasAccess: false, progress: {} });
@@ -613,7 +620,7 @@ app.post('/api/skill-progress', async (req, res) => {
   }
 });
 
-// Lưu hoặc cập nhật SmartScore vào bảng skill_progress
+// Lưu hoặc cập nhật SmartScore vào bảng skill_progress (cho Lớp 1 -> Lớp 9)
 app.post('/api/progress', async (req, res) => {
   try {
     const userId = req.session?.userId || req.session?.user?.id;
@@ -628,12 +635,6 @@ app.post('/api/progress', async (req, res) => {
 
     const score = Math.max(0, Math.min(100, Math.round(smart_score)));
 
-    // Kiểm tra xem user đã có tiến độ của skill này chưa
-    const existing = await db.execute({
-      sql: 'SELECT id, smart_score FROM skill_progress WHERE user_id = ? AND skill_id = ?',
-      args: [userId, skill_id]
-    });
-
     await db.execute({
       sql: `
         INSERT INTO skill_progress (user_id, skill_id, smart_score, best_score, grade, updated_at)
@@ -642,7 +643,7 @@ app.post('/api/progress', async (req, res) => {
           smart_score = excluded.smart_score,
           best_score = MAX(skill_progress.best_score, excluded.smart_score),
           grade = excluded.grade,
-        updated_at = CURRENT_TIMESTAMP
+          updated_at = CURRENT_TIMESTAMP
       `,
       args: [userId, skill_id, score, score, grade || 1]
     });
@@ -654,14 +655,14 @@ app.post('/api/progress', async (req, res) => {
   }
 });
 
-// Lấy toàn bộ tiến độ của user hiện tại (dùng cho grade1.html và profile.html)
+// Lấy toàn bộ tiến độ của user hiện tại (dùng cho grade1-9.html và profile.html)
 app.get('/api/progress', async (req, res) => {
   try {
     const userId = req.session?.userId || req.session?.user?.id;
     if (!userId) return res.json({ progress: [] });
 
     const result = await db.execute({
-      sql: 'SELECT skill_id, smart_score, grade, updated_at FROM skill_progress WHERE user_id = ?',
+      sql: 'SELECT skill_id, smart_score, best_score, grade, updated_at FROM skill_progress WHERE user_id = ?',
       args: [userId]
     });
 
@@ -673,7 +674,6 @@ app.get('/api/progress', async (req, res) => {
 });
 
 // --- API ĐĂNG KÝ GÓI HỌC & XÁC NHẬN THANH TOÁN ---
-// 1. Khách tạo đơn đăng ký (lưu trạng thái pending)
 app.post('/api/subscribe', async (req, res) => {
   const { parentName, contact, planName, billingCycle, amount } = req.body;
   if (!parentName || !contact || !planName || !amount) {
@@ -692,7 +692,6 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
-// 2. Admin xem danh sách đơn đăng ký
 app.get('/api/admin/subscriptions', async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'admin') {
     return res.status(403).json({ message: 'Không có quyền truy cập.' });
@@ -701,7 +700,6 @@ app.get('/api/admin/subscriptions', async (req, res) => {
   res.json(result.rows);
 });
 
-// 3. Admin duyệt thanh toán -> Tự sinh Mã xác nhận + Tạo tài khoản đăng nhập
 app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'admin') {
     return res.status(403).json({ message: 'Không có quyền truy cập.' });
@@ -720,13 +718,11 @@ app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
     const loginUser = sub.contact.trim();
 
-    // 1. Tạo tài khoản mới nếu chưa có
     await db.execute({
       sql: `INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'student')`,
       args: [sub.parent_name, loginUser, hashedPassword]
     });
 
-    // 2. Tính thời hạn: 12 tháng nếu là yearly, 1 tháng nếu là monthly
     const monthsToAdd = sub.billing_cycle === 'yearly' ? 12 : 1;
     const existingUser = await db.execute({
       sql: 'SELECT vip_expires_at FROM users WHERE LOWER(email) = LOWER(?)',
@@ -741,13 +737,11 @@ app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
     newExpireDate.setMonth(newExpireDate.getMonth() + monthsToAdd);
     const expireIso = newExpireDate.toISOString();
 
-    // 3. Lưu ngày hết hạn mới vào bảng users
     await db.execute({
       sql: 'UPDATE users SET vip_expires_at = ? WHERE LOWER(email) = LOWER(?)',
       args: [expireIso, loginUser]
     });
 
-    // Lưu mã xác nhận & thông tin đăng nhập vào đơn hàng
     await db.execute({
       sql: `UPDATE subscriptions SET status = 'approved', confirm_code = ?, login_user = ?, temp_pass = ? WHERE id = ?`,
       args: [confirmCode, loginUser, rawPassword, req.params.id]
@@ -759,7 +753,6 @@ app.post('/api/admin/subscriptions/:id/approve', async (req, res) => {
   }
 });
 
-// 4. Khách hàng tra cứu trạng thái đơn & nhận tài khoản
 app.get('/api/subscribe/status/:orderCode', async (req, res) => {
   try {
     const result = await db.execute({
@@ -774,8 +767,6 @@ app.get('/api/subscribe/status/:orderCode', async (req, res) => {
     res.status(500).json({ message: 'Lỗi tra cứu đơn hàng.' });
   }
 });
-
-
 
 // --- API ĐĂNG KÝ HỌC THỬ & XUẤT CSV ---
 app.post('/api/register', async (req, res) => {
@@ -848,8 +839,6 @@ app.post('/api/login', async (req, res) => {
   res.json({ message: 'Đăng nhập thành công!', user: req.session.user });
 });
 
-
-// --- API ĐỔI MẬT KHẨU (ĐÃ SỬA LỖI SQL) ---
 app.post('/api/change-password', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ message: 'Vui lòng đăng nhập trước.' });
@@ -881,7 +870,6 @@ app.post('/api/change-password', async (req, res) => {
       args: [newHash, user.id]
     });
 
-    // Truyền '(Đã đổi)' qua tham số ? để tránh lỗi dấu ngoặc kép của SQLite/Turso
     await db.execute({
       sql: 'UPDATE subscriptions SET temp_pass = ? WHERE LOWER(login_user) = LOWER(?)',
       args: ['(Đã đổi)', user.email]
