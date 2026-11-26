@@ -43,32 +43,24 @@ function renderCourses(courses) {
   if (!grid) return;
 
   grid.innerHTML = courses.map(c => {
-    const gradeLower = (c.grade || '').toLowerCase();
-    const isKindergarten = gradeLower.includes('mầm non');
-    const isGrade1 = gradeLower.includes('lớp 1') || gradeLower.includes('grade 1');
-
+    const g = (c.grade || '').toLowerCase();
     let href = `/course.html?id=${c.id}`;
     let lessonCount = c.lesson_count || 0;
 
-    if (isKindergarten) {
-      href = '/kindergarten.html';
-      lessonCount = 42;
-    } else if (isGrade1) {
-      href = '/grade1.html';
-      lessonCount = 44; // 44 dạng bài tương tác từ A-V
-    }
+    if (g.includes('mầm non')) { href = '/kindergarten.html'; lessonCount = 42; }
+    else if (g.includes('lớp 1') || g.includes('grade 1')) { href = '/grade1.html'; lessonCount = 44; }
+    else if (g.includes('lớp 2') || g.includes('grade 2')) { href = '/grade2.html'; lessonCount = 44; }
+    else if (g.includes('lớp 3') || g.includes('grade 3')) { href = '/grade3.html'; lessonCount = 44; }
+    else if (g.includes('lớp 4') || g.includes('grade 4')) { href = '/grade4.html'; lessonCount = 44; }
+    else if (g.includes('lớp 5') || g.includes('grade 5')) { href = '/grade5.html'; lessonCount = 44; }
 
     return `
       <div class="card">
         <h3>${c.grade}</h3>
         <p><strong>${c.title}</strong></p>
-        <p style="margin: 8px 0; font-size: 14px; color: #555;">${c.description}</p>
-        <p style="font-size: 13px; color: #0b5ed7; font-weight: 600; margin-bottom: 12px;">
-          📚 ${lessonCount} bài học
-        </p>
-        <a href="${href}" class="btn-primary" style="padding:8px 16px; font-size:14px;">
-          Vào học ngay →
-        </a>
+        <p style="margin:8px 0;font-size:14px;color:#555;">${c.description}</p>
+        <p style="font-size:13px;color:#0b5ed7;font-weight:600;margin-bottom:12px;">📚 ${lessonCount} bài học</p>
+        <a href="${href}" class="btn-primary" style="padding:8px 16px;font-size:14px;">Vào học ngay →</a>
       </div>
     `;
   }).join('');
