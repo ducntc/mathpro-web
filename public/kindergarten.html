@@ -29,15 +29,13 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 16px;
+      padding: 0; /* Bỏ padding để header tràn sát 2 mép màn hình */
     }
-
     .container {
       width: 100%;
-      max-width: 860px;
+      max-width: 1100px; /* Mở rộng bằng đúng Lớp 1-9 */
+      margin: 24px auto;
+      padding: 0 16px;
     }
 
     header {
@@ -729,18 +727,85 @@
       border: none;
       font-size: 0.95rem;
     }
+    /* Header chuẩn UX đồng bộ với Lớp 1-9 */
+    .mp-k-header {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+    .mp-k-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .mp-k-brand a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .mp-k-badge {
+      font-size: 15px;
+      font-weight: 600;
+      opacity: 0.92;
+    }
+    .mp-k-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .mp-k-btn {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 7px 14px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .mp-k-btn:hover { background: rgba(255, 255, 255, 0.3); }
+    .mp-k-btn-home {
+      background: #ffffff;
+      color: #059669;
+      border-color: #ffffff;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+    .mp-k-btn-home:hover { background: #ecfdf5; transform: translateY(-1px); }
+    .mp-k-btn-vip {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #fff;
+      font-weight: 700;
+    }
 
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <header>
-      <a href="/" class="brand">🧮 MathPro • Mầm Non</a>
-      <a href="/" class="back-link">🏠 Trang chủ</a>
-    </header>
+  <header class="mp-k-header">
+    <div class="mp-k-brand">
+      <a href="/">🧮 MathPro</a>
+      <span class="mp-k-badge">• Mầm Non</span>
+    </div>
+    <nav class="mp-k-actions">
+      <a href="/" class="mp-k-btn mp-k-btn-home">🏠 Trang chủ</a>
+      <a href="/profile.html" class="mp-k-btn">👤 Hồ sơ</a>
+      <a href="/subscribe.html" class="mp-k-btn mp-k-btn-vip">👑 Nâng cấp VIP</a>
+    </nav>
+  </header>
 
+  <div class="container">
     <section id="view-list">
       <div class="course-banner">
         <span class="course-badge">Mầm non (Kindergarten)</span>
