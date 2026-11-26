@@ -43,9 +43,20 @@ function renderCourses(courses) {
   if (!grid) return;
 
   grid.innerHTML = courses.map(c => {
-    const isKindergarten = (c.grade || '').toLowerCase().includes('mầm non');
-    const href = isKindergarten ? '/kindergarten.html' : `/course.html?id=${c.id}`;
-    const lessonCount = isKindergarten ? 42 : (c.lesson_count || 0);
+    const gradeLower = (c.grade || '').toLowerCase();
+    const isKindergarten = gradeLower.includes('mầm non');
+    const isGrade1 = gradeLower.includes('lớp 1') || gradeLower.includes('grade 1');
+
+    let href = `/course.html?id=${c.id}`;
+    let lessonCount = c.lesson_count || 0;
+
+    if (isKindergarten) {
+      href = '/kindergarten.html';
+      lessonCount = 42;
+    } else if (isGrade1) {
+      href = '/grade1.html';
+      lessonCount = 44; // 44 dạng bài tương tác từ A-V
+    }
 
     return `
       <div class="card">

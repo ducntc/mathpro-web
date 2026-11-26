@@ -124,6 +124,7 @@ async function initDatabase() {
   try { await db.execute('ALTER TABLE subscriptions ADD COLUMN temp_pass TEXT'); } catch (e) {}
   // Thêm cột lưu ngày hết hạn gói học cho tài khoản
   try { await db.execute('ALTER TABLE users ADD COLUMN vip_expires_at DATETIME'); } catch (e) {}
+  try { await db.execute('ALTER TABLE skill_progress ADD COLUMN grade INTEGER DEFAULT 0'); } catch (e) {}
 
   // 1. Tài khoản Admin mặc định
   const adminRes = await db.execute("SELECT id FROM users WHERE role = 'admin'");
@@ -612,6 +613,65 @@ app.post('/api/skill-progress', async (req, res) => {
   }
 });
 
+// Lưu hoặc cập nhật SmartScore vào bảng skill_progress
+app.post('/api/progress', async (req, res) => {
+  try {
+    const userId = req.session?.userId || req.session?.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Chưa đăng nhập' });
+    }
+
+    const { skill_id, smart_score, grade } = req.body;
+    if (!skill_id || typeof smart_score !== 'number') {
+      return res.status(400).json({ error: 'Thiếu skill_id hoặc smart_score' });
+    }
+
+    const score = Math.max(0, Math.min(100, Math.round(smart_score)));
+
+    // Kiểm tra xem user đã có tiến độ của skill này chưa
+    const existing = await db.execute({
+      sql: 'SELECT id, smart_score FROM skill_progress WHERE user_id = ? AND skill_id = ?',
+      args: [userId, skill_id]
+    });
+
+    await db.execute({
+      sql: `
+        INSERT INTO skill_progress (user_id, skill_id, smart_score, best_score, grade, updated_at)
+        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(user_id, skill_id) DO UPDATE SET
+          smart_score = excluded.smart_score,
+          best_score = MAX(skill_progress.best_score, excluded.smart_score),
+          grade = excluded.grade,
+        updated_at = CURRENT_TIMESTAMP
+      `,
+      args: [userId, skill_id, score, score, grade || 1]
+    });
+
+    res.json({ ok: true, skill_id, smart_score: score });
+  } catch (err) {
+    console.error('Lỗi lưu /api/progress:', err);
+    res.status(500).json({ error: 'Lỗi server khi lưu tiến độ' });
+  }
+});
+
+// Lấy toàn bộ tiến độ của user hiện tại (dùng cho grade1.html và profile.html)
+app.get('/api/progress', async (req, res) => {
+  try {
+    const userId = req.session?.userId || req.session?.user?.id;
+    if (!userId) return res.json({ progress: [] });
+
+    const result = await db.execute({
+      sql: 'SELECT skill_id, smart_score, grade, updated_at FROM skill_progress WHERE user_id = ?',
+      args: [userId]
+    });
+
+    res.json({ progress: result.rows });
+  } catch (err) {
+    console.error('Lỗi lấy /api/progress:', err);
+    res.status(500).json({ error: 'Lỗi server' });
+  }
+});
+
 // --- API ĐĂNG KÝ GÓI HỌC & XÁC NHẬN THANH TOÁN ---
 // 1. Khách tạo đơn đăng ký (lưu trạng thái pending)
 app.post('/api/subscribe', async (req, res) => {
@@ -834,9 +894,20 @@ app.post('/api/change-password', async (req, res) => {
   }
 });
 
-
-app.get('/api/me', (req, res) => {
-  res.json({ user: req.session.user || null });
+app.get('/api/me', async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ user: null, vip_expires_at: null });
+  }
+  try {
+    const uRes = await db.execute({
+      sql: 'SELECT vip_expires_at FROM users WHERE id = ?',
+      args: [req.session.user.id]
+    });
+    const vip_expires_at = uRes.rows[0]?.vip_expires_at || null;
+    res.json({ user: req.session.user, vip_expires_at });
+  } catch (err) {
+    res.json({ user: req.session.user, vip_expires_at: null });
+  }
 });
 
 app.get('/api/profile', async (req, res) => {

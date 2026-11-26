@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathPro - Toán Lớp 1 (Grade 1)</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --secondary: #3b82f6;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f0fdf4;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 800; }
+    .brand a { color: #fff; text-decoration: none; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .nav-btn {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 7px 14px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.3); }
+
+    .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+    /* 4 Tabs chuẩn IXL Grade 1 */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+    .tab-btn {
+      padding: 12px 22px;
+      border: 2px solid var(--primary);
+      background: #fff;
+      color: var(--primary-dark);
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover { background: #ecfdf5; transform: translateY(-2px); }
+    .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Skills Grid */
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 18px;
+    }
+    .topic-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .topic-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    .topic-code {
+      width: 34px; height: 34px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+    .topic-title { font-size: 16px; font-weight: 700; }
+    .skill-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .skill-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .skill-item:hover { border-color: var(--primary); background: #ecfdf5; }
+    .skill-name { font-size: 14px; font-weight: 600; }
+    .skill-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+    .badge-free { background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 10px; }
+    .badge-vip { background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 10px; }
+    .score-pill { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 10px; }
+
+    /* Practice Arena */
+    #practice-arena {
+      display: none;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 28px;
+      border: 2px solid var(--primary);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .arena-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .smartscore-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #f0fdf4;
+      padding: 8px 16px;
+      border-radius: 14px;
+      border: 1px solid #bbf7d0;
+    }
+    .ss-val { font-size: 24px; font-weight: 800; color: var(--primary-dark); }
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #3b82f6);
+      transition: width 0.35s ease;
+    }
+    .question-box {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin: 20px 0 28px;
+      min-height: 60px;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+    }
+    .opt-btn {
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .opt-btn:hover { border-color: var(--primary); background: #f0fdf4; transform: translateY(-2px); }
+    .feedback-msg {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      min-height: 28px;
+    }
+    .fb-ok { color: var(--primary-dark); }
+    .fb-err { color: var(--danger); }
+
+    /* VIP Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      place-items: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: grid; }
+    .modal-card {
+      background: #fff;
+      max-width: 440px;
+      width: 100%;
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 14px;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    /* Videos, Games, Fluency */
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+    .media-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+    }
+    .fluency-panel {
+      background: #fffbeb;
+      border: 2px dashed var(--accent);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .fluency-stats { font-size: 20px; font-weight: 800; color: #b45309; margin-bottom: 18px; }
+    .fluency-input {
+      font-size: 28px;
+      width: 130px;
+      text-align: center;
+      padding: 10px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    /* Fireworks Canvas */
+    #fireworks-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="fireworks-canvas"></canvas>
+
+<header>
+  <div class="brand">
+    <a href="/">🧮 MathPro</a>
+    <span>| Lớp 1 (Grade 1)</span>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="toggleLang()" id="lang-btn">🌐 VN / EN</button>
+    <a href="/profile.html" class="nav-btn">👤 Hồ sơ</a>
+    <a href="/subscribe.html" class="nav-btn" style="background:#f59e0b; border-color:#f59e0b;">👑 Nâng cấp VIP</a>
+  </div>
+</header>
+
+<div class="container">
+  <!-- 4 Phân hệ Lớp 1 -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('skills', this)">💎 Skills</button>
+    <button class="tab-btn" onclick="switchTab('videos', this)">🎬 Videos</button>
+    <button class="tab-btn" onclick="switchTab('games', this)">🛸 Games</button>
+    <button class="tab-btn" onclick="switchTab('fluency', this)">🔥 Fluency Zone</button>
+  </div>
+
+  <!-- TAB 1: SKILLS -->
+  <div id="tab-skills" class="section active">
+    <div id="topics-container" class="topics-grid"></div>
+
+    <div id="practice-arena">
+      <div class="arena-top">
+        <button class="opt-btn" style="padding:8px 14px; font-size:14px;" onclick="exitPractice()">⬅ Quay lại danh sách</button>
+        <div id="active-skill-title" style="font-weight:800; font-size:17px;"></div>
+        <div class="smartscore-box">
+          <span>SmartScore:</span>
+          <span class="ss-val" id="smart-score">0</span>
+        </div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="ss-bar"></div>
+      </div>
+      <div class="question-box" id="q-text">Đang tải câu hỏi...</div>
+      <div class="options-grid" id="q-options"></div>
+      <div class="feedback-msg" id="q-feedback"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: VIDEOS -->
+  <div id="tab-videos" class="section">
+    <div class="media-grid">
+      <div class="media-card">
+        <div>
+          <span class="badge-free">Video 1</span>
+          <h3 style="margin:10px 0 6px;">Phép cộng qua 10 trong phạm vi 20</h3>
+          <p style="color:var(--muted); font-size:14px;">Hướng dẫn tách số tròn chục giúp bé tính nhẩm cực nhanh.</p>
+        </div>
+        <button class="btn-primary" onclick="openVideo('Phép cộng qua 10 trong phạm vi 20')">▶ Xem bài giảng</button>
+      </div>
+      <div class="media-card">
+        <div>
+          <span class="badge-free">Video 2</span>
+          <h3 style="margin:10px 0 6px;">Hàng chục và Hàng đơn vị</h3>
+          <p style="color:var(--muted); font-size:14px;">Minh họa bằng khối lập phương giúp hiểu cấu tạo số có 2 chữ số.</p>
+        </div>
+        <button class="btn-primary" onclick="openVideo('Hàng chục và Hàng đơn vị')">▶ Xem bài giảng</button>
+      </div>
+      <div class="media-card">
+        <div>
+          <span class="badge-free">Video 3</span>
+          <h3 style="margin:10px 0 6px;">Cách xem đồng hồ giờ đúng</h3>
+          <p style="color:var(--muted); font-size:14px;">Phân biệt kim ngắn, kim dài và đọc giờ chuẩn xác.</p>
+        </div>
+        <button class="btn-primary" onclick="openVideo('Cách xem đồng hồ giờ đúng')">▶ Xem bài giảng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: GAMES -->
+  <div id="tab-games" class="section">
+    <div class="media-card" style="max-width:600px; margin:0 auto; text-align:center; padding:32px;">
+      <span class="badge-free" style="align-self:center;">Mini Game Lớp 1</span>
+      <h2 style="margin:12px 0;">🎈 Bắn Bóng Phép Tính</h2>
+      <p id="game-prompt" style="font-size:20px; font-weight:700; margin-bottom:18px;">Chọn bóng có kết quả bằng 15:</p>
+      <div class="options-grid" id="game-options"></div>
+      <div id="game-fb" class="feedback-msg"></div>
+      <button class="btn-primary" style="align-self:center;" onclick="initGame()">🔄 Ván mới</button>
+    </div>
+  </div>
+
+  <!-- TAB 4: FLUENCY ZONE -->
+  <div id="tab-fluency" class="section">
+    <div class="fluency-panel">
+      <h2>⚡ Fluency Zone - Phản xạ tính nhanh</h2>
+      <p style="color:var(--muted); margin:8px 0 18px;">Trả lời đúng càng nhiều càng tốt trong 30 giây!</p>
+      <div class="fluency-stats">
+        ⏱ <span id="fz-time">30</span>s &nbsp;|&nbsp; 🔥 Điểm: <span id="fz-score">0</span>
+      </div>
+      <div id="fz-question" style="font-size:32px; font-weight:800; margin:18px 0;">Nhấn Bắt đầu</div>
+      <input type="number" id="fz-input" class="fluency-input" disabled placeholder="?" />
+      <br />
+      <button class="btn-primary" id="fz-start-btn" onclick="startFluency()">🚀 Bắt đầu</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIP Lock Modal -->
+<div class="modal-overlay" id="vip-modal">
+  <div class="modal-card">
+    <div style="font-size:46px;">👑</div>
+    <h2 style="margin:10px 0;">Mở khóa VIP để tiếp tục!</h2>
+    <p style="color:var(--muted); font-size:15px;">
+      Bạn đã đạt <strong>90% SmartScore</strong> ở bài học thử hoặc đang chọn bài dành riêng cho thành viên VIP. Hãy nâng cấp để luyện tập không giới hạn và nhận huy hiệu 100%!
+    </p>
+    <a href="/subscribe.html" class="btn-primary">Nâng cấp VIP ngay</a>
+    <br />
+    <button class="opt-btn" style="margin-top:10px; padding:8px 18px; font-size:14px;" onclick="closeVipModal()">Đóng</button>
+  </div>
+</div>
+
+<script src="/js/grade1Generators.js"></script>
+<script>
+  let isVipUser = false;
+  let currentSkill = null;
+  let currentQuestion = null;
+  let smartScore = 0;
+  let progressMap = JSON.parse(localStorage.getItem('mathpro_g1_progress') || '{}');
+
+  // Kiểm tra trạng thái VIP hoặc quyền Admin từ server
+  async function checkUserStatus() {
+    try {
+      const res = await fetch('/api/me');
+      if (res.ok) {
+        const data = await res.json();
+        const isAdmin = data.user && (data.user.role === 'admin' || data.user.email === 'admin@mathpro.vn');
+        const hasValidVip = data.vip_expires_at && new Date(data.vip_expires_at) > new Date();
+
+        if (isAdmin || hasValidVip) {
+          isVipUser = true;
+        }
+      }
+    } catch (e) { /* Bỏ qua nếu chạy offline */ }
+  }
+
+
+  // Chuyển 4 Tabs
+  function switchTab(tabName, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    btn.classList.add('active');
+    if (tabName === 'games') initGame();
+  }
+
+  // Render danh sách chủ đề Lớp 1
+  function renderTopics() {
+    const container = document.getElementById('topics-container');
+    container.innerHTML = '';
+    (window.GRADE1_TOPICS || []).forEach(topic => {
+      const card = document.createElement('div');
+      card.className = 'topic-card';
+      card.innerHTML = `
+        <div class="topic-header">
+          <div class="topic-code">${topic.code}</div>
+          <div class="topic-title">${topic.title}</div>
+        </div>
+        <ul class="skill-list">
+          ${topic.skills.map(sk => {
+            const savedScore = progressMap[sk.id] || 0;
+            return `
+              <li class="skill-item" onclick="startSkill('${sk.id}')">
+                <span class="skill-name">${sk.title}</span>
+                <span class="skill-meta">
+                  ${savedScore > 0 ? `<span class="score-pill">${savedScore}%</span>` : ''}
+                  ${sk.free ? `<span class="badge-free">Free</span>` : `<span class="badge-vip">VIP</span>`}
+                </span>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function findSkillById(id) {
+    for (const t of (window.GRADE1_TOPICS || [])) {
+      const found = t.skills.find(s => s.id === id);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  function startSkill(skillId) {
+    const skill = findSkillById(skillId);
+    if (!skill) return;
+
+    // Khóa VIP nếu bài không miễn phí và user chưa có VIP
+    if (!skill.free && !isVipUser) {
+      document.getElementById('vip-modal').classList.add('open');
+      return;
+    }
+
+    currentSkill = skill;
+    smartScore = progressMap[skill.id] || 0;
+    document.getElementById('topics-container').style.display = 'none';
+    document.getElementById('practice-arena').style.display = 'block';
+    document.getElementById('active-skill-title').innerText = skill.title;
+    updateScoreUI();
+    nextQuestion();
+  }
+
+  function exitPractice() {
+    document.getElementById('practice-arena').style.display = 'none';
+    document.getElementById('topics-container').style.display = 'grid';
+    renderTopics();
+  }
+
+  function nextQuestion() {
+    if (!currentSkill) return;
+    currentQuestion = window.generateGrade1Question(currentSkill.type, currentSkill.max);
+    document.getElementById('q-text').innerText = currentQuestion.q;
+    document.getElementById('q-feedback').innerText = '';
+    const optBox = document.getElementById('q-options');
+    optBox.innerHTML = '';
+    currentQuestion.opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(opt);
+      optBox.appendChild(btn);
+    });
+  }
+
+  async function checkAnswer(chosen) {
+    const fb = document.getElementById('q-feedback');
+    if (chosen === currentQuestion.ans) {
+      smartScore = Math.min(100, smartScore + 10);
+      fb.innerText = '🎉 Chính xác! Tuyệt vời quá!';
+      fb.className = 'feedback-msg fb-ok';
+
+      // Khóa 90% VIP đối với tài khoản thường
+      if (!isVipUser && smartScore >= 90) {
+        smartScore = 90;
+        saveProgress(currentSkill.id, smartScore);
+        updateScoreUI();
+        document.getElementById('vip-modal').classList.add('open');
+        return;
+      }
+
+      if (smartScore === 100) {
+        fb.innerText = '🏆 Xuất sắc! Bạn đã đạt 100% SmartScore!';
+        launchFireworks();
+      }
+    } else {
+      smartScore = Math.max(0, smartScore - 5);
+      fb.innerText = `❌ Chưa đúng rồi! Đáp án đúng là: ${currentQuestion.ans}`;
+      fb.className = 'feedback-msg fb-err';
+    }
+
+    saveProgress(currentSkill.id, smartScore);
+    updateScoreUI();
+    setTimeout(nextQuestion, 1100);
+  }
+
+  function updateScoreUI() {
+    document.getElementById('smart-score').innerText = smartScore;
+    document.getElementById('ss-bar').style.width = smartScore + '%';
+  }
+
+  async function saveProgress(skillId, score) {
+    progressMap[skillId] = Math.max(progressMap[skillId] || 0, score);
+    localStorage.setItem('mathpro_g1_progress', JSON.stringify(progressMap));
+    try {
+      await fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skill_id: skillId, smart_score: score, grade: 1 })
+      });
+    } catch (e) { /* Đã lưu fallback vào localStorage */ }
+  }
+
+  function closeVipModal() {
+    document.getElementById('vip-modal').classList.remove('open');
+  }
+
+  function openVideo(title) {
+    alert(`Đang mở video bài giảng: "${title}"`);
+  }
+
+  // Mini Game Logic
+  function initGame() {
+    const target = Math.floor(Math.random() * 11) + 8; // 8 - 18
+    document.getElementById('game-prompt').innerText = `Chọn bóng có kết quả bằng ${target}:`;
+    document.getElementById('game-fb').innerText = '';
+    const a = Math.floor(Math.random() * (target - 1)) + 1;
+    const b = target - a;
+    const opts = [
+      { label: `🎈 ${a} + ${b}`, ok: true },
+      { label: `🎈 ${a + 1} + ${b}`, ok: false },
+      { label: `🎈 ${a} + ${Math.max(1, b - 1)}`, ok: false }
+    ].sort(() => Math.random() - 0.5);
+
+    const box = document.getElementById('game-options');
+    box.innerHTML = '';
+    opts.forEach(o => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.innerText = o.label;
+      btn.onclick = () => {
+        const fb = document.getElementById('game-fb');
+        fb.innerText = o.ok ? '💥 Chính xác! Bóng đã nổ!' : '😅 Trượt rồi, thử lại nhé!';
+        fb.className = 'feedback-msg ' + (o.ok ? 'fb-ok' : 'fb-err');
+        if (o.ok) setTimeout(initGame, 900);
+      };
+      box.appendChild(btn);
+    });
+  }
+
+  // Fluency Zone Logic
+  let fzTimer = null, fzScore = 0, fzAns = 0;
+  function startFluency() {
+    fzScore = 0;
+    let timeLeft = 30;
+    document.getElementById('fz-score').innerText = fzScore;
+    document.getElementById('fz-time').innerText = timeLeft;
+    const input = document.getElementById('fz-input');
+    input.disabled = false;
+    input.value = '';
+    input.focus();
+    nextFluency();
+
+    clearInterval(fzTimer);
+    fzTimer = setInterval(() => {
+      timeLeft--;
+      document.getElementById('fz-time').innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(fzTimer);
+        input.disabled = true;
+        document.getElementById('fz-question').innerText = `Hết giờ! Tổng điểm: ${fzScore} 🎉`;
+        if (fzScore >= 50) launchFireworks();
+      }
+    }, 1000);
+  }
+
+  function nextFluency() {
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    fzAns = a + b;
+    document.getElementById('fz-question').innerText = `${a} + ${b} = ?`;
+  }
+
+  document.getElementById('fz-input').addEventListener('input', function () {
+    if (parseInt(this.value, 10) === fzAns) {
+      fzScore += 10;
+      document.getElementById('fz-score').innerText = fzScore;
+      this.value = '';
+      nextFluency();
+    }
+  });
+
+  // Ngôn ngữ VN/EN
+  function toggleLang() {
+    const curr = localStorage.getItem('mathpro_lang') || 'vi';
+    const next = curr === 'vi' ? 'en' : 'vi';
+    localStorage.setItem('mathpro_lang', next);
+    alert(next === 'en' ? 'Switched language preference to English!' : 'Đã chuyển sang Tiếng Việt!');
+  }
+
+  // Pháo hoa 100% SmartScore
+  function launchFireworks() {
+    const canvas = document.getElementById('fireworks-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const particles = Array.from({ length: 80 }, () => ({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 12,
+      vy: (Math.random() - 0.5) * 12,
+      color: `hsl(${Math.random() * 360}, 90%, 60%)`,
+      life: 60
+    }));
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      particles.forEach(p => {
+        if (p.life > 0) {
+          alive = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.15;
+          p.life--;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      if (alive) requestAnimationFrame(animate);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    animate();
+  }
+
+  // Khởi chạy
+  checkUserStatus().then(renderTopics);
+</script>
+</body>
+</html>
