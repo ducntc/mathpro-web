@@ -91,7 +91,11 @@
 </head>
 <body>
   <header class="navbar">
-    <div class="logo">MATH<span>PRO</span></div>
+    <div class="logo">
+      <a href="/" style="display:flex; align-items:center; gap:8px; text-decoration:none; color:inherit;">
+        <img src="/images/logo-mathpro.svg" alt="MathPro Logo" style="height:54px; width:auto;" />
+      </a>
+    </div>
     <nav>
       <!-- Ví dụ cụm menu sau khi sửa -->
       <a href="/subscribe.html">Đăng ký học</a>
@@ -105,11 +109,70 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <h1>Hiểu Sâu – Tư Duy Rõ – Tiến Bộ Vững Chắc</h1>
-    <p>Hệ thống bài giảng Toán trực tuyến tương tác từ Mầm non đến Tiểu học.</p>
-    <a href="#courses" class="btn-primary">Khám phá khóa học</a>
-  </section>
+<style>
+  .bbc-hero {
+    position: relative;
+    background: #f8fafc;
+    overflow: hidden;
+    padding: 46px 20px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .bbc-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0d9488, #10b981);
+    clip-path: polygon(0 0, 24% 0, 12% 100%, 0% 100%);
+    opacity: 0.9;
+  }
+  .bbc-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    clip-path: polygon(88% 0, 100% 0, 100% 100%, 76% 100%);
+    opacity: 0.85;
+  }
+  .bbc-hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .bbc-hero h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+  .bbc-hero-tagline {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #059669;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .bbc-hero p {
+    color: #475569;
+    font-size: 15.5px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) {
+    .bbc-hero::before, .bbc-hero::after { opacity: 0.25; }
+  }
+</style>
+
+<section class="bbc-hero">
+  <div class="bbc-hero-inner">
+    <h1>MATHPRO • HỌC TOÁN TƯ DUY</h1>
+    <div class="bbc-hero-tagline">Inspiring Mathematical Thinking • Grade K–9</div>
+    <p>Hiểu sâu bản chất – Tư duy rõ ràng – Luyện phản xạ tính toán mỗi ngày.</p>
+    <a href="#courses" class="btn-primary">Khám phá khóa học →</a>
+  </div>
+</section>
 
   <section id="courses" class="container">
     <h2>Các Khóa Học Theo Khối Lớp</h2>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 125" width="280" height="125">
+  <defs>
+    <!-- Gradient Cam - Đỏ nổi bật -->
+    <linearGradient id="infOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff5e1a" />
+      <stop offset="100%" stop-color="#f43f5e" />
+    </linearGradient>
+    <!-- Gradient Xám Bạc 3D -->
+    <linearGradient id="infSilver" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1" />
+      <stop offset="50%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#64748b" />
+    </linearGradient>
+  </defs>
+
+  <!-- Vòng vô cực to và dày hơn -->
+  <path d="M 140 46 C 116 12, 54 12, 54 46 C 54 80, 116 80, 140 46 C 164 12, 226 12, 226 46 C 226 80, 164 80, 140 46 Z"
+        fill="none" stroke="url(#infSilver)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Dải Cam - Đỏ vắt chéo tạo chiều sâu 3D -->
+  <path d="M 58 32 C 84 8, 120 20, 140 46 C 160 72, 196 84, 222 60"
+        fill="none" stroke="url(#infOrange)" stroke-width="12" stroke-linecap="round" />
+
+  <!-- Chữ M A T H P R O to và đậm hơn -->
+  <text x="140" y="112" text-anchor="middle"
+        font-family="'Segoe UI', system-ui, -apple-system, sans-serif"
+        font-size="22" font-weight="800" letter-spacing="5" fill="#0f172a">
+    MATHPRO
+  </text>
+</svg>

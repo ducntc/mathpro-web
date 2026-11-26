@@ -3,144 +3,231 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quản trị nội dung - MathPro</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Quản trị hệ thống - MathPro</title>
   <style>
-    .tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
-    .tab-btn {
-      padding: 10px 20px; border: 1px solid #0b5ed7; background: #fff; color: #0b5ed7;
-      border-radius: 8px; font-weight: 600; cursor: pointer;
+    :root {
+      --primary: #059669;
+      --primary-light: #10b981;
+      --blue: #0284c7;
+      --purple: #7c3aed;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
     }
-    .tab-btn.active { background: #0b5ed7; color: #fff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+    .navbar {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff; padding: 14px 24px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      border-bottom: 3px solid var(--primary-light);
+    }
+    .logo { font-size: 20px; font-weight: 800; }
+    .logo a { color: #fff; text-decoration: none; }
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .nav-btn {
+      background: rgba(255,255,255,0.14); color: #fff;
+      border: 1px solid rgba(255,255,255,0.28); padding: 7px 14px;
+      border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.25); }
+    .nav-btn-home { background: var(--primary-light); border-color: var(--primary-light); font-weight: 800; }
+
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+    .tab-btn {
+      padding: 10px 18px; border: 1.5px solid var(--border); background: #fff; color: var(--text);
+      border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-    textarea { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-family: inherit; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
-    th { background: #0b5ed7; color: #fff; }
-    .btn-sm { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; color: #fff; }
-    .btn-edit { background: #0b5ed7; }
-    .btn-del { background: #dc3545; }
+
+    .panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 22px; margin-bottom: 22px; box-shadow: 0 2px 8px rgba(15,23,42,0.03);
+    }
+    .panel-title { font-size: 17px; font-weight: 800; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .form-input, select, textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; font-family: inherit;
+    }
+    .btn {
+      padding: 8px 16px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700;
+      cursor: pointer; text-decoration: none; display: inline-block; color: #fff;
+    }
+    .btn-primary { background: var(--primary); }
+    .btn-blue { background: var(--blue); }
+    .btn-purple { background: var(--purple); }
+    .btn-danger { background: var(--danger); }
+    .btn-amber { background: var(--accent); }
+    .btn-gray { background: #64748b; }
+
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .course-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid #f1f5f9; text-align: left; font-size: 13.5px; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 700; background: #f8fafc; }
+
+    .badge { padding: 3px 9px; border-radius: 99px; font-size: 12px; font-weight: 700; display: inline-block; }
+    .b-pending { background: #fef3c7; color: #b45309; }
+    .b-approved { background: #dcfce7; color: #15803d; }
   </style>
 </head>
 <body>
   <header class="navbar">
-    <div class="logo"><a href="/" style="margin:0; text-decoration:none; color:inherit;">MATH<span>PRO</span></a></div>
-    <nav>
-      <a href="/">Trang chủ</a>
-      <a href="/login.html" id="login-link">Đăng nhập</a>
+    <div class="logo"><a href="/">🧮 MathPro</a> <span style="font-size:14px; color:#34d399;">| Quản trị Admin</span></div>
+    <nav class="nav-actions">
+      <a href="/" class="nav-btn nav-btn-home">🏠 Trang chủ</a>
+      <a href="/profile.html" class="nav-btn">👤 Hồ sơ</a>
+      <span id="admin-name-badge" style="font-size:13px; color:#cbd5e1;"></span>
+      <button class="nav-btn" onclick="logout()">Đăng xuất</button>
     </nav>
   </header>
 
   <main class="container">
-    <h2>⚙️ Trang Quản Trị Nội Dung (Admin)</h2>
-
     <div class="tabs">
-      <button class="tab-btn active" data-tab="tab-course">1. Khóa học</button>
-      <button class="tab-btn" data-tab="tab-lesson">2. Bài học</button>
-      <button class="tab-btn" data-tab="tab-quiz">3. Thêm Trắc nghiệm</button>
-      <button class="tab-btn" data-tab="tab-reg">4. Đăng ký học thử</button>
+      <button class="tab-btn active" data-tab="tab-subs">💎 1. Duyệt đơn VIP</button>
+      <button class="tab-btn" data-tab="tab-course">📚 2. Khóa học (Mầm non – Lớp 9)</button>
+      <button class="tab-btn" data-tab="tab-lesson">📖 3. Bài học</button>
+      <button class="tab-btn" data-tab="tab-quiz">📝 4. Thêm Trắc nghiệm</button>
+      <button class="tab-btn" data-tab="tab-reg">📋 5. Học thử (CSV)</button>
     </div>
 
-    <!-- TAB 1: KHÓA HỌC (THÊM / SỬA / XÓA) -->
-    <div id="tab-course" class="tab-panel active">
-      <div class="register-box" style="margin: 0 auto 32px;">
-        <h3 id="course-form-title" style="margin-bottom:14px; color:#0b5ed7;">➕ Thêm Khóa Học Mới</h3>
+    <!-- TAB 1: DUYỆT ĐƠN VIP -->
+    <div id="tab-subs" class="tab-panel active">
+      <div class="panel">
+        <div class="panel-title">
+          <span>💳 Danh sách đăng ký gói VIP (VietQR)</span>
+          <button class="btn btn-blue" onclick="loadSubscriptions()">🔄 Làm mới</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Phụ huynh</th>
+                <th>Zalo / Email</th>
+                <th>Gói học</th>
+                <th>Số tiền</th>
+                <th>Trạng thái / Tài khoản</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="subTableBody"><tr><td colspan="7">Đang tải...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: KHÓA HỌC (THÊM / SỬA / XÓA) -->
+    <div id="tab-course" class="tab-panel">
+      <div class="panel">
+        <div class="panel-title"><span id="course-form-title">➕ Thêm Khóa Học Mới</span></div>
         <form id="add-course-form">
           <input type="hidden" id="edit-course-id" value="" />
-          <input type="text" id="grade" placeholder="Khối lớp (VD: Lớp 4)" required />
-          <input type="text" id="title" placeholder="Tên khóa học (VD: Phân số & Hình học)" required />
-          <textarea id="description" rows="3" placeholder="Mô tả ngắn về khóa học..." required></textarea>
+          <div class="form-grid">
+            <input type="text" id="grade" class="form-input" placeholder="Khối lớp (VD: Lớp 10)" required />
+            <input type="text" id="title" class="form-input" placeholder="Tên khóa học" required />
+            <input type="text" id="description" class="form-input" placeholder="Mô tả ngắn..." required />
+          </div>
           <div style="display:flex; gap:10px;">
-            <button type="submit" id="course-submit-btn" class="btn-primary" style="flex:1;">Lưu Khóa Học</button>
-            <button type="button" id="cancel-edit-btn" class="btn-primary" style="background:#6c757d; display:none;">Hủy</button>
+            <button type="submit" id="course-submit-btn" class="btn btn-primary">Lưu Khóa Học</button>
+            <button type="button" id="cancel-edit-btn" class="btn btn-gray" style="display:none;">Hủy</button>
           </div>
         </form>
-        <p id="course-msg" style="margin-top: 12px; text-align: center; font-weight: 600;"></p>
+        <p id="course-msg" style="margin-top:10px; font-weight:600;"></p>
       </div>
-      <div id="admin-course-list" class="grid"></div>
+      <div id="admin-course-list" class="course-grid"></div>
     </div>
 
-    <!-- TAB 2: BÀI HỌC (THÊM / XÓA) -->
+    <!-- TAB 3: BÀI HỌC (THÊM / XÓA) -->
     <div id="tab-lesson" class="tab-panel">
-      <div class="register-box" style="margin: 0 auto 32px; max-width: 650px;">
-        <h3 style="margin-bottom:14px; color:#0b5ed7;">📖 Thêm Bài Học Mới</h3>
+      <div class="panel">
+        <div class="panel-title"><span>📖 Thêm Bài Học Mới</span></div>
         <form id="add-lesson-form">
-          <select id="lesson-course-id" required></select>
-          <input type="number" id="lesson-order" placeholder="Số thứ tự bài (VD: 1, 2, 3...)" min="1" required />
-          <input type="text" id="lesson-title" placeholder="Tên bài học" required />
-          <input type="text" id="lesson-duration" placeholder="Thời lượng (VD: 20 phút)" required />
-          <input type="url" id="lesson-video" placeholder="🎥 Link video YouTube (không bắt buộc)" />
-          <textarea id="lesson-objectives" rows="2" placeholder="🎯 Mục tiêu bài học..." required></textarea>
-          <textarea id="lesson-content" rows="3" placeholder="📖 Lý thuyết trọng tâm..." required></textarea>
-          <textarea id="lesson-example" rows="3" placeholder="💡 Ví dụ minh họa..." required></textarea>
-          <textarea id="lesson-exercise" rows="2" placeholder="✍️ Bài tập tự luyện..." required></textarea>
-          <textarea id="lesson-answer" rows="2" placeholder="✅ Đáp án bài tập tự luyện..." required></textarea>
-          <button type="submit" class="btn-primary">Lưu Bài Học</button>
+          <div class="form-grid">
+            <select id="lesson-course-id" class="form-input" required></select>
+            <input type="number" id="lesson-order" class="form-input" placeholder="Thứ tự bài (VD: 1, 2...)" min="1" required />
+            <input type="text" id="lesson-title" class="form-input" placeholder="Tên bài học" required />
+            <input type="text" id="lesson-duration" class="form-input" placeholder="Thời lượng (VD: 15 phút)" required />
+            <input type="url" id="lesson-video" class="form-input" placeholder="🎥 Link video YouTube (tùy chọn)" />
+          </div>
+          <div class="form-grid">
+            <textarea id="lesson-objectives" rows="2" placeholder="🎯 Mục tiêu bài học..." required></textarea>
+            <textarea id="lesson-content" rows="2" placeholder="📖 Lý thuyết trọng tâm..." required></textarea>
+            <textarea id="lesson-example" rows="2" placeholder="💡 Ví dụ minh họa..." required></textarea>
+            <textarea id="lesson-exercise" rows="2" placeholder="✍️ Bài tập tự luyện..." required></textarea>
+            <textarea id="lesson-answer" rows="2" placeholder="✅ Đáp án..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Lưu Bài Học</button>
         </form>
-        <p id="lesson-msg" style="margin-top: 12px; text-align: center; font-weight: 600;"></p>
+        <p id="lesson-msg" style="margin-top:10px; font-weight:600;"></p>
       </div>
 
-      <h3 style="margin-bottom:12px; color:#333;">Danh Sách Bài Học Hiện Có</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Khối lớp</th>
-            <th>Bài học</th>
-            <th>Thao tác</th>
-          </tr>
-        </thead>
-        <tbody id="admin-lesson-table">
-          <tr><td colspan="3">Đang tải...</td></tr>
-        </tbody>
-      </table>
+      <div class="panel">
+        <div class="panel-title"><span>📚 Danh Sách Bài Học Hiện Có</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Khối lớp</th><th>Bài học</th><th>Thao tác</th></tr></thead>
+            <tbody id="admin-lesson-table"><tr><td colspan="3">Đang tải...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <!-- TAB 3: THÊM TRẮC NGHIỆM -->
+    <!-- TAB 4: THÊM TRẮC NGHIỆM -->
     <div id="tab-quiz" class="tab-panel">
-      <div class="register-box" style="margin: 0 auto; max-width: 650px;">
-        <h3 style="margin-bottom:14px; color:#6f42c1;">📝 Thêm Câu Hỏi Trắc Nghiệm</h3>
+      <div class="panel">
+        <div class="panel-title"><span>📝 Thêm Câu Hỏi Trắc Nghiệm</span></div>
         <form id="add-quiz-form">
-          <select id="quiz-lesson-id" required></select>
-          <textarea id="quiz-question" rows="2" placeholder="Nội dung câu hỏi..." required></textarea>
-          <input type="text" id="opt-a" placeholder="Đáp án A" required />
-          <input type="text" id="opt-b" placeholder="Đáp án B" required />
-          <input type="text" id="opt-c" placeholder="Đáp án C" required />
-          <input type="text" id="opt-d" placeholder="Đáp án D" required />
-          <select id="correct-opt" required>
-            <option value="">-- Chọn đáp án đúng --</option>
-            <option value="A">Đáp án đúng: A</option>
-            <option value="B">Đáp án đúng: B</option>
-            <option value="C">Đáp án đúng: C</option>
-            <option value="D">Đáp án đúng: D</option>
-          </select>
-          <button type="submit" class="btn-primary" style="background:#6f42c1;">Lưu Câu Hỏi</button>
+          <div class="form-grid">
+            <select id="quiz-lesson-id" class="form-input" required></select>
+            <select id="correct-opt" class="form-input" required>
+              <option value="">-- Chọn đáp án đúng --</option>
+              <option value="A">Đáp án đúng: A</option>
+              <option value="B">Đáp án đúng: B</option>
+              <option value="C">Đáp án đúng: C</option>
+              <option value="D">Đáp án đúng: D</option>
+            </select>
+          </div>
+          <div class="form-grid">
+            <textarea id="quiz-question" rows="2" placeholder="Nội dung câu hỏi..." required></textarea>
+          </div>
+          <div class="form-grid">
+            <input type="text" id="opt-a" class="form-input" placeholder="Đáp án A" required />
+            <input type="text" id="opt-b" class="form-input" placeholder="Đáp án B" required />
+            <input type="text" id="opt-c" class="form-input" placeholder="Đáp án C" required />
+            <input type="text" id="opt-d" class="form-input" placeholder="Đáp án D" required />
+          </div>
+          <button type="submit" class="btn btn-purple">Lưu Câu Hỏi</button>
         </form>
-        <p id="quiz-msg" style="margin-top: 12px; text-align: center; font-weight: 600;"></p>
+        <p id="quiz-msg" style="margin-top:10px; font-weight:600;"></p>
       </div>
     </div>
 
-    <!-- TAB 4: DANH SÁCH ĐĂNG KÝ -->
+    <!-- TAB 5: ĐĂNG KÝ HỌC THỬ -->
     <div id="tab-reg" class="tab-panel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <h3 style="color:#333;">Danh Sách Học Sinh Đăng Ký Học Thử</h3>
-        <a href="/api/registrations/export" class="btn-primary" style="background:#2e7d32; padding: 8px 16px; font-size: 14px;">
-          📥 Xuất file Excel (.csv)
-        </a>
+      <div class="panel">
+        <div class="panel-title">
+          <span>📋 Danh Sách Đăng Ký Học Thử</span>
+          <a href="/api/registrations/export" class="btn btn-primary">📥 Xuất file Excel (.csv)</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Học sinh</th><th>Email</th><th>Khối lớp</th><th>Ngày đăng ký</th></tr></thead>
+            <tbody id="reg-table-body"><tr><td colspan="4">Đang tải...</td></tr></tbody>
+          </table>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Học sinh</th>
-            <th>Email</th>
-            <th>Khối lớp</th>
-            <th>Ngày đăng ký</th>
-          </tr>
-        </thead>
-        <tbody id="reg-table-body">
-          <tr><td colspan="4">Đang tải...</td></tr>
-        </tbody>
-      </table>
     </div>
   </main>
 
@@ -166,27 +253,35 @@
         alert('Chỉ tài khoản Admin mới được truy cập trang này!');
         window.location.href = '/';
       } else {
-        document.getElementById('login-link').textContent = `Admin: ${user.name}`;
+        document.getElementById('admin-name-badge').textContent = `Admin: ${user.name}`;
         loadInitialData();
+        loadSubscriptions();
       }
     }
 
     async function loadInitialData() {
-      // 1. Tải khóa học
+      // 1. Tải khóa học (tính đúng 42 bài Mầm non & 44 bài Lớp 1-9)
       const cRes = await fetch('/api/courses');
       cachedCourses = await cRes.json();
-      document.getElementById('admin-course-list').innerHTML = cachedCourses.map(c => `
-        <div class="card">
-          <h3>${c.grade}</h3>
-          <p><strong>${c.title}</strong></p>
-          <p style="font-size:14px; color:#555;">${c.description}</p>
-          <p style="font-size:13px; color:#0b5ed7; margin:8px 0 12px;">📚 ${c.lesson_count || 0} bài học</p>
-          <div style="display:flex; gap:8px;">
-            <button class="btn-sm btn-edit" onclick="startEditCourse(${c.id})">✏️ Sửa</button>
-            <button class="btn-sm btn-del" onclick="deleteCourse(${c.id}, '${c.title.replace(/'/g, "\\'")}')">🗑️ Xóa</button>
-          </div>
-        </div>
-      `).join('');
+      document.getElementById('admin-course-list').innerHTML = cachedCourses.map(c => {
+        const g = (c.grade || '').toLowerCase();
+        const count = g.includes('mầm non') ? 42 : (/lớp [1-9]|grade [1-9]/.test(g) ? 44 : (c.lesson_count || 0));
+        return `
+          <div class="course-card">
+            <div>
+              <h3 style="color:var(--primary); margin-bottom:4px;">${c.grade}</h3>
+              <p style="font-weight:700; font-size:14px; margin-bottom:6px;">${c.title}</p>
+              <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">${c.description}</p>
+            </div>
+            <div>
+              <p style="font-size:13px; color:var(--blue); font-weight:700; margin-bottom:10px;">📚 ${count} bài học</p>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-blue" onclick="startEditCourse(${c.id})">✏️ Sửa</button>
+                <button class="btn btn-danger" onclick="deleteCourse(${c.id}, '${c.title.replace(/'/g, "\\'")}')">🗑️ Xóa</button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
 
       document.getElementById('lesson-course-id').innerHTML =
         '<option value="">-- Chọn khóa học --</option>' +
@@ -205,15 +300,12 @@
               <tr>
                 <td><strong>${l.grade}</strong></td>
                 <td>Bài ${l.lesson_order}: ${l.title}</td>
-                <td>
-                  <button class="btn-sm btn-del" onclick="deleteLesson(${l.id}, '${l.title.replace(/'/g, "\\'")}')">🗑️ Xóa</button>
-                </td>
-              </tr>
-            `).join('')
+                <td><button class="btn btn-danger" onclick="deleteLesson(${l.id}, '${l.title.replace(/'/g, "\\'")}')">🗑️ Xóa</button></td>
+              </tr>`).join('')
           : '<tr><td colspan="3">Chưa có bài học nào.</td></tr>';
       }
 
-      // 3. Tải danh sách đăng ký
+      // 3. Tải danh sách đăng ký học thử
       const rRes = await fetch('/api/registrations');
       if (rRes.ok) {
         const regs = await rRes.json();
@@ -223,14 +315,57 @@
                 <td><strong>${r.name}</strong></td>
                 <td>${r.email}</td>
                 <td>${r.grade}</td>
-                <td>${r.created_at}</td>
-              </tr>
-            `).join('')
+                <td>${new Date(r.created_at).toLocaleString('vi-VN', { timeZone: 'Asia/Bangkok' })}</td>
+              </tr>`).join('')
           : '<tr><td colspan="4">Chưa có lượt đăng ký nào.</td></tr>';
       }
     }
 
-    // Chế độ Sửa khóa học
+    async function loadSubscriptions() {
+      const tbody = document.getElementById('subTableBody');
+      try {
+        const res = await fetch('/api/admin/subscriptions');
+        const rows = await res.json();
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Chưa có đơn đăng ký nào.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = rows.map(r => `
+          <tr>
+            <td><strong>${r.order_code}</strong></td>
+            <td>${r.parent_name}</td>
+            <td>${r.contact}</td>
+            <td>${r.plan_name} (${r.billing_cycle === 'yearly' ? '12 tháng' : '1 tháng'})</td>
+            <td>${Number(r.amount).toLocaleString('vi-VN')}đ</td>
+            <td>
+              ${r.status === 'approved'
+                ? `<span class="badge b-approved">✅ Đã duyệt</span><br>Mã: <b>${r.confirm_code}</b><br>TK: <b>${r.login_user}</b> / MK: <b>${r.temp_pass}</b>`
+                : '<span class="badge b-pending">⏳ Chờ chuyển khoản</span>'}
+            </td>
+            <td>
+              ${r.status === 'pending'
+                ? `<button class="btn btn-amber" onclick="approveOrder(${r.id})">✅ Duyệt & Cấp TK</button>`
+                : 'Đã xong'}
+            </td>
+          </tr>`).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:red;">Lỗi tải danh sách đơn.</td></tr>';
+      }
+    }
+
+    async function approveOrder(id) {
+      if (!confirm('Xác nhận đã nhận tiền chuyển khoản cho đơn này?')) return;
+      const res = await fetch(`/api/admin/subscriptions/${id}/approve`, { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        const exp = new Date(data.expiresAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Bangkok' });
+        alert(`✅ Đã duyệt VIP!\nMã xác nhận: ${data.confirmCode}\nTài khoản: ${data.loginUser}\nMật khẩu: ${data.tempPass}\nHạn VIP: ${exp}`);
+        loadSubscriptions();
+      } else {
+        alert(data.message || 'Có lỗi xảy ra khi duyệt!');
+      }
+    }
+
     function startEditCourse(id) {
       const course = cachedCourses.find(c => c.id === id);
       if (!course) return;
@@ -251,36 +386,29 @@
       document.getElementById('course-submit-btn').textContent = 'Lưu Khóa Học';
       document.getElementById('cancel-edit-btn').style.display = 'none';
     }
-
     document.getElementById('cancel-edit-btn').addEventListener('click', resetCourseForm);
 
-    // Xóa khóa học
     async function deleteCourse(id, title) {
-      if (!confirm(`Bạn chắc chắn muốn xóa khóa học "${title}" và toàn bộ bài học bên trong?`)) return;
+      if (!confirm(`Xóa khóa học "${title}" và toàn bộ bài học bên trong?`)) return;
       const res = await fetch(`/api/courses/${id}`, { method: 'DELETE' });
       const data = await res.json();
       alert(data.message);
       if (res.ok) loadInitialData();
     }
 
-    // Xóa bài học
     async function deleteLesson(id, title) {
-      if (!confirm(`Bạn chắc chắn muốn xóa bài học "${title}"?`)) return;
+      if (!confirm(`Xóa bài học "${title}"?`)) return;
       const res = await fetch(`/api/lessons/${id}`, { method: 'DELETE' });
       const data = await res.json();
       alert(data.message);
       if (res.ok) loadInitialData();
     }
 
-    // Submit Thêm hoặc Sửa khóa học
     document.getElementById('add-course-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const editId = document.getElementById('edit-course-id').value;
-      const url = editId ? `/api/courses/${editId}` : '/api/courses';
-      const method = editId ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
+      const res = await fetch(editId ? `/api/courses/${editId}` : '/api/courses', {
+        method: editId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           grade: document.getElementById('grade').value.trim(),
@@ -295,7 +423,6 @@
       if (res.ok) { resetCourseForm(); loadInitialData(); }
     });
 
-    // Submit Thêm bài học
     document.getElementById('add-lesson-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const res = await fetch('/api/lessons', {
@@ -321,7 +448,6 @@
       if (res.ok) { e.target.reset(); loadInitialData(); }
     });
 
-    // Submit Thêm trắc nghiệm
     document.getElementById('add-quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const res = await fetch('/api/quizzes', {
@@ -344,83 +470,12 @@
       if (res.ok) e.target.reset();
     });
 
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
+
     checkAdminAuth();
   </script>
-
-<section style="margin-top: 32px; background: #fff; padding: 20px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-  <h3 style="margin-top: 0; color: #0b5ed7;">💳 Danh sách đơn đăng ký gói học</h3>
-  <div style="overflow-x: auto;">
-    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; border-color: #e2e8f0;">
-      <thead style="background: #f1f5f9;">
-        <tr>
-          <th>Mã đơn</th>
-          <th>Phụ huynh</th>
-          <th>Zalo / Email</th>
-          <th>Gói học</th>
-          <th>Số tiền</th>
-          <th>Trạng thái / Tài khoản</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="subTableBody">
-        <tr><td colspan="7" style="text-align:center;">Đang tải...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<script>
-  async function loadSubscriptions() {
-    const tbody = document.getElementById('subTableBody');
-    try {
-      const res = await fetch('/api/admin/subscriptions');
-      if (!res.ok) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">Bạn cần đăng nhập tài khoản Admin để xem mục này.</td></tr>';
-        return;
-      }
-      const rows = await res.json();
-      if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Chưa có đơn đăng ký nào.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = rows.map(r => `
-        <tr>
-          <td><strong>${r.order_code}</strong></td>
-          <td>${r.parent_name}</td>
-          <td>${r.contact}</td>
-          <td>${r.plan_name} (${r.billing_cycle})</td>
-          <td>${Number(r.amount).toLocaleString('vi-VN')}đ</td>
-          <td>
-            ${r.status === 'approved'
-              ? `<span style="color:#16a34a;font-weight:700;">✅ Đã duyệt</span><br>Mã: <b>${r.confirm_code}</b><br>TK: ${r.login_user} / MK: ${r.temp_pass}`
-              : '<span style="color:#ea580c;font-weight:600;">⏳ Chờ chuyển khoản</span>'}
-          </td>
-          <td style="text-align:center;">
-            ${r.status === 'pending'
-              ? `<button onclick="approveOrder(${r.id})" style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;">Duyệt & Cấp TK</button>`
-              : 'Đã xong'}
-          </td>
-        </tr>
-      `).join('');
-    } catch (err) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">Lỗi tải danh sách đơn.</td></tr>';
-    }
-  }
-
-  async function approveOrder(id) {
-    if (!confirm('Xác nhận đã nhận được tiền chuyển khoản cho đơn này?')) return;
-    const res = await fetch(`/api/admin/subscriptions/${id}/approve`, { method: 'POST' });
-    const data = await res.json();
-    if (res.ok) {
-      alert(`✅ Đã duyệt thành công!\n\nMã xác nhận: ${data.confirmCode}\nTên đăng nhập: ${data.loginUser}\nMật khẩu: ${data.tempPass}`);
-      loadSubscriptions();
-    } else {
-      alert(data.message || 'Có lỗi xảy ra khi duyệt!');
-    }
-  }
-
-  loadSubscriptions();
-</script>
 </body>
 </html>
