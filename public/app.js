@@ -42,35 +42,68 @@ function renderCourses(courses) {
   const grid = document.getElementById('course-grid');
   if (!grid) return;
 
+  // Bảng màu & huy hiệu chuẩn theo phong cách IXL
+  const gradeStyles = {
+    'mầm non': { badge: 'K', color: '#f59e0b' },
+    'lớp 1':   { badge: '1', color: '#65a30d' },
+    'lớp 2':   { badge: '2', color: '#dc2626' },
+    'lớp 3':   { badge: '3', color: '#0284c7' },
+    'lớp 4':   { badge: '4', color: '#7c3aed' },
+    'lớp 5':   { badge: '5', color: '#059669' },
+    'lớp 6':   { badge: '6', color: '#ea580c' },
+    'lớp 7':   { badge: '7', color: '#15803d' },
+    'lớp 8':   { badge: '8', color: '#ca8a04' },
+    'lớp 9':   { badge: '9', color: '#6d28d9' }
+  };
+
   grid.innerHTML = courses.map(c => {
     const g = (c.grade || '').toLowerCase();
     let href = `/course.html?id=${c.id}`;
     let lessonCount = c.lesson_count || 0;
+    let style = { badge: 'M', color: '#0b5ed7' };
 
     if (g.includes('mầm non')) {
       href = '/kindergarten.html';
       lessonCount = 42;
+      style = gradeStyles['mầm non'];
     } else {
       for (let i = 1; i <= 9; i++) {
         if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) {
           href = `/grade${i}.html`;
           lessonCount = 44;
+          style = gradeStyles[`lớp ${i}`] || style;
           break;
         }
       }
     }
 
     return `
-      <div class="card">
-        <h3>${c.grade}</h3>
-        <p><strong>${c.title}</strong></p>
-        <p style="margin: 8px 0; font-size: 14px; color: #555;">${c.description}</p>
-        <p style="font-size: 13px; color: #0b5ed7; font-weight: 600; margin-bottom: 12px;">
-          📚 ${lessonCount} bài học
-        </p>
-        <a href="${href}" class="btn-primary" style="padding:8px 16px; font-size:14px;">
-          Vào học ngay →
-        </a>
+      <div class="ixl-card" style="--grade-color: ${style.color};">
+        <div>
+          <div class="ixl-card-head">
+            <div class="ixl-badge">${style.badge}</div>
+            <a href="${href}" class="ixl-title">${c.grade}</a>
+          </div>
+          <p class="ixl-desc">${c.description}</p>
+        </div>
+        <div class="ixl-links">
+          <div class="ixl-row">
+            <span class="ixl-row-label">Toán tư duy</span>
+            <div class="ixl-row-actions">
+              <a href="${href}?tab=skills" class="ixl-link">${lessonCount} skills &rsaquo;</a>
+              <span class="ixl-sep">|</span>
+              <a href="${href}?tab=videos" class="ixl-link">Videos &rsaquo;</a>
+            </div>
+          </div>
+          <div class="ixl-row">
+            <span class="ixl-row-label">Luyện tập</span>
+            <div class="ixl-row-actions">
+              <a href="${href}?tab=games" class="ixl-link">Games &rsaquo;</a>
+              <span class="ixl-sep">|</span>
+              <a href="${href}?tab=fluency" class="ixl-link">Fluency &rsaquo;</a>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }).join('');

@@ -867,7 +867,6 @@
       renderLessonList();
     }
 
-
     function renderLessonList() {
       lessonListEl.innerHTML = "";
 
@@ -1303,6 +1302,14 @@
     }
 
     loadProgress();
+
+    // Tự động mở đúng tab Videos / Games khi bấm từ trang chủ (?tab=videos | games)
+    const urlTab = new URLSearchParams(window.location.search).get('tab');
+    if (urlTab && panels[urlTab]) {
+      const targetBtn = document.querySelector(`.mode-tab[data-tab="${urlTab}"]`);
+      if (targetBtn) targetBtn.click();
+    }
+
   </script>
 </body>
 

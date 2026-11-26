@@ -269,4 +269,11 @@ window.initGradePage = function (config) {
 
   renderVideos();
   checkUserStatus().then(renderTopics);
+
+  // Tự động mở đúng tab theo ?tab=videos | games | fluency | skills
+  const urlTab = new URLSearchParams(window.location.search).get('tab');
+  if (urlTab && ['skills', 'videos', 'games', 'fluency'].includes(urlTab)) {
+    const targetBtn = document.querySelector(`.tab-btn[onclick*="'${urlTab}'"]`);
+    if (targetBtn) switchTab(urlTab, targetBtn);
+  }
 };
