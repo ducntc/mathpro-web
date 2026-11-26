@@ -4,110 +4,315 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hồ sơ học tập - MathPro</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
-    .stat-card { background: #fff; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 4px solid #0b5ed7; }
-    .stat-num { font-size: 28px; font-weight: 800; color: #ff7a00; margin-bottom: 4px; }
-    .progress-bar-bg { background: #dbeafe; height: 10px; border-radius: 6px; overflow: hidden; margin: 10px 0; }
-    .progress-bar-fill { background: #0b5ed7; height: 100%; transition: width 0.3s; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    th, td { padding: 12px 14px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
-    th { background: #0b5ed7; color: #fff; }
+    :root {
+      --primary: #059669;
+      --primary-light: #10b981;
+      --blue: #0284c7;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Header đồng bộ toàn hệ thống */
+    .navbar {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+    .logo { font-size: 20px; font-weight: 800; letter-spacing: 0.3px; }
+    .logo a { color: #fff; text-decoration: none; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 7px 14px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .nav-btn:hover { background: rgba(255, 255, 255, 0.3); }
+    .nav-btn-home {
+      background: #fff;
+      color: var(--primary);
+      border-color: #fff;
+      font-weight: 800;
+    }
+    .nav-btn-home:hover { background: #ecfdf5; }
+
+    /* Container */
+    .container { max-width: 1160px; margin: 28px auto; padding: 0 16px; }
+
+    /* Hero User Header */
+    .profile-banner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+    }
+    .profile-banner h1 { font-size: 22px; color: var(--text); margin-bottom: 4px; }
+    .profile-banner p { color: var(--muted); font-size: 14px; }
+
+    /* 3 Thẻ thống kê nhanh */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .stat-num { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1.2; }
+    .stat-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    /* Bố cục 2 cột hiện đại */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .main-layout { grid-template-columns: 1fr; }
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+    /* Lưới khóa học */
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .course-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: 0.2s;
+    }
+    .course-card:hover { border-color: var(--primary-light); background: #fff; box-shadow: 0 6px 16px rgba(16,185,129,0.08); }
+    .course-grade { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+    .course-name { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+    .progress-bar-bg { background: #e2e8f0; height: 8px; border-radius: 99px; overflow: hidden; margin: 8px 0; }
+    .progress-bar-fill { background: linear-gradient(90deg, #059669, #10b981); height: 100%; border-radius: 99px; transition: width 0.35s; }
+    .btn-sm {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      transition: 0.2s;
+    }
+    .btn-sm:hover { background: #047857; }
+
+    /* Bảng lịch sử */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; text-align: left; font-size: 14px; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+    tr:last-child td { border-bottom: none; }
+
+    /* Form đổi mật khẩu */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 5px; }
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12); }
+    .btn-full {
+      width: 100%;
+      padding: 11px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-full:hover { background: #0369a1; }
   </style>
 </head>
 <body>
   <header class="navbar">
-    <div class="logo"><a href="/" style="margin:0; text-decoration:none; color:inherit;">MATH<span>PRO</span></a></div>
-    <nav>
-      <a href="/">Trang chủ</a>
-      <a href="/#courses">Khóa học</a>
-      <a href="#" id="logout-btn">Đăng xuất</a>
+    <div class="logo"><a href="/">🧮 MathPro</a></div>
+    <nav class="nav-actions">
+      <a href="/" class="nav-btn nav-btn-home">🏠 Trang chủ</a>
+      <a href="/#courses" class="nav-btn">📚 Khóa học</a>
+      <a href="#" id="logout-btn" class="nav-btn">Đăng xuất</a>
     </nav>
   </header>
 
   <main class="container">
-    <div id="profile-header" style="margin-bottom: 24px;">
-      <h1 style="color:#0b5ed7;">🎓 Hồ Sơ Học Tập</h1>
-      <p id="user-info" style="color:#555;"></p>
-    </div>
+    <!-- Banner thông tin học viên -->
+    <section class="profile-banner">
+      <div>
+        <h1>🎓 Hồ Sơ Học Tập</h1>
+        <p id="user-info">Đang tải thông tin học viên...</p>
+      </div>
+      <a href="/#courses" class="btn-sm" style="padding: 10px 18px; font-size: 14px;">Tiếp tục luyện tập →</a>
+    </section>
 
     <!-- Thống kê nhanh -->
-    <div class="stats-grid">
+    <section class="stats-grid">
       <div class="stat-card">
-        <div class="stat-num" id="stat-completed">0</div>
-        <div>Bài học đã xong</div>
+        <div class="stat-icon" style="background:#dcfce7; color:#059669;">✅</div>
+        <div>
+          <div class="stat-num" id="stat-completed">0</div>
+          <div class="stat-label">Bài học đã hoàn thành</div>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" id="stat-avg">0%</div>
-        <div>Điểm TB trắc nghiệm</div>
+        <div class="stat-icon" style="background:#e0f2fe; color:#0284c7;">📊</div>
+        <div>
+          <div class="stat-num" id="stat-avg">0%</div>
+          <div class="stat-label">Điểm TB trắc nghiệm</div>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" id="stat-stars">⭐ 0</div>
-        <div>Sao tích lũy</div>
+        <div class="stat-icon" style="background:#fef3c7; color:#d97706;">⭐</div>
+        <div>
+          <div class="stat-num" id="stat-stars">⭐ 0</div>
+          <div class="stat-label">Sao tích lũy</div>
+        </div>
       </div>
+    </section>
+
+    <!-- Bố cục 2 cột -->
+    <div class="main-layout">
+      <!-- Cột trái: Tiến độ & Lịch sử -->
+      <div>
+        <section class="panel">
+          <h2 class="section-title">📚 Tiến Độ Theo Khối Lớp</h2>
+          <div id="course-progress-grid" class="course-grid"></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="section-title">🕒 Lịch Sử Học Tập &amp; Điểm Số</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Khối lớp</th>
+                  <th>Bài học</th>
+                  <th>Điểm số</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="history-body">
+                <tr><td colspan="4" style="color:var(--muted);">Đang tải dữ liệu...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Cột phải: Trạng thái VIP & Đổi mật khẩu -->
+      <aside>
+        <section class="panel">
+          <h2 class="section-title">💎 Trạng thái gói học (VIP)</h2>
+          <div id="vipStatusBox" style="padding:14px; border-radius:12px; background:#f8fafc; line-height:1.7; font-size:14px;">
+            Đang kiểm tra thông tin gói học...
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="section-title">🔑 Đổi mật khẩu</h2>
+          <form id="changePassForm">
+            <div class="form-group">
+              <label for="currentPass">Mật khẩu hiện tại</label>
+              <input type="password" id="currentPass" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label for="newPass">Mật khẩu mới (tối thiểu 6 ký tự)</label>
+              <input type="password" id="newPass" class="form-input" minlength="6" required />
+            </div>
+            <div class="form-group">
+              <label for="confirmPass">Nhập lại mật khẩu mới</label>
+              <input type="password" id="confirmPass" class="form-input" minlength="6" required />
+            </div>
+            <button type="submit" class="btn-full">Cập nhật mật khẩu</button>
+            <p id="passMsg" style="margin-top:12px; font-size:13px; font-weight:600; text-align:center;"></p>
+          </form>
+        </section>
+      </aside>
     </div>
-
-    <!-- Tiến độ từng khóa học -->
-    <h2 style="text-align:left; margin-bottom:16px;">📚 Tiến Độ Theo Khóa Học</h2>
-    <div id="course-progress-grid" class="grid" style="margin-bottom: 36px;"></div>
-
-    <!-- Chi tiết tiến độ Toán Lớp 1 (44 bài) -->
-    <div class="card" style="margin-bottom: 36px; padding: 20px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0;">
-      <h3 style="margin-bottom: 10px; color: #059669;">📘 Chi tiết Toán Lớp 1 (44 bài)</h3>
-      <p id="g1-summary" style="color: #475569; font-size: 14px; margin-bottom: 12px;">
-        Đang tải tiến độ Lớp 1...
-      </p>
-      <div id="g1-progress-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px;"></div>
-    </div>
-
-    <!-- Lịch sử bài học -->
-    <h2 style="text-align:left; margin-bottom:16px;">🕒 Lịch Sử Học Tập &amp; Điểm Số</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Khối lớp</th>
-          <th>Bài học</th>
-          <th>Điểm trắc nghiệm</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="history-body">
-        <tr><td colspan="4">Đang tải dữ liệu...</td></tr>
-      </tbody>
-    </table>
   </main>
 
-  <section style="max-width:460px;margin:24px auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06);">
-    <h3 style="margin-top:0;color:#0b5ed7;">💎 Trạng thái gói học (VIP)</h3>
-    <div id="vipStatusBox" style="padding:14px;border-radius:12px;background:#f8fafc;line-height:1.7;">
-      Đang kiểm tra thông tin gói học...
-    </div>
-  </section>
-
-  <section style="max-width:460px;margin:24px auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06);">
-    <h3 style="margin-top:0;color:#0b5ed7;">🔑 Đổi mật khẩu</h3>
-    <form id="changePassForm">
-      <div style="margin-bottom:12px;">
-        <label style="display:block;font-weight:600;margin-bottom:4px;">Mật khẩu hiện tại</label>
-        <input type="password" id="currentPass" required style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;" />
-      </div>
-      <div style="margin-bottom:12px;">
-        <label style="display:block;font-weight:600;margin-bottom:4px;">Mật khẩu mới (tối thiểu 6 ký tự)</label>
-        <input type="password" id="newPass" minlength="6" required style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;" />
-      </div>
-      <div style="margin-bottom:16px;">
-        <label style="display:block;font-weight:600;margin-bottom:4px;">Nhập lại mật khẩu mới</label>
-        <input type="password" id="confirmPass" minlength="6" required style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;" />
-      </div>
-      <button type="submit" style="width:100%;padding:12px;background:#0b5ed7;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;">
-        Cập nhật mật khẩu
-      </button>
-      <p id="passMsg" style="margin-top:12px;font-weight:600;text-align:center;"></p>
-    </form>
-  </section>
-
-  <script src="/js/grade1Generators.js"></script>
   <script>
     async function loadProfile() {
       const [res, skillRes] = await Promise.all([
@@ -153,12 +358,19 @@
         }
         const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
         return `
-          <div class="card">
-            <h3>${c.grade}</h3>
-            <p><strong>${c.title}</strong></p>
-            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
-            <p style="font-size:13px;color:#555;margin-bottom:12px;">Đã học: <strong>${completed}/${total}</strong> bài (${pct}%)</p>
-            <a href="${href}" class="btn-primary" style="padding:6px 14px;font-size:13px;">${pct > 0 && pct < 100 ? 'Học tiếp →' : 'Xem khóa học'}</a>
+          <div class="course-card">
+            <div>
+              <div class="course-grade">${c.grade}</div>
+              <div class="course-name">${c.title}</div>
+            </div>
+            <div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted); margin-bottom:10px;">
+                <span>Đã học: <strong>${completed}/${total}</strong></span>
+                <strong>${pct}%</strong>
+              </div>
+              <a href="${href}" class="btn-sm" style="width:100%;">${pct > 0 && pct < 100 ? 'Học tiếp →' : 'Vào học ngay →'}</a>
+            </div>
           </div>
         `;
       }).join('');
@@ -167,55 +379,16 @@
         ? data.history.map(h => {
             const scoreText = h.quiz_total
               ? `<strong>${h.quiz_score}/${h.quiz_total}</strong> (${Math.round((h.quiz_score / h.quiz_total) * 100)}%)`
-              : '<span style="color:#888;">Đã đọc xong</span>';
-            return `<tr><td><strong>${h.grade}</strong></td><td>Bài ${h.lesson_order}: ${h.lesson_title}</td><td>${scoreText}</td><td><a href="/lesson.html?id=${h.lesson_id}" style="color:#0b5ed7;font-weight:600;">Ôn lại →</a></td></tr>`;
-          }).join('')
-        : '<tr><td colspan="4">Bạn chưa hoàn thành bài học nào. Hãy bắt đầu ngay nhé!</td></tr>';
-    }
-
-    async function loadGrade1ProfileProgress() {
-      const summaryEl = document.getElementById('g1-summary');
-      const listEl = document.getElementById('g1-progress-list');
-      if (!summaryEl || !listEl) return;
-
-      try {
-        const res = await fetch('/api/progress');
-        const data = await res.json();
-        const rows = (data.progress || []).filter(
-          r => r.grade === 1 || (r.skill_id && r.skill_id.startsWith('g1-'))
-        );
-
-        const scoreMap = {};
-        rows.forEach(r => {
-          scoreMap[r.skill_id] = Math.max(Number(r.best_score || 0), Number(r.smart_score || 0));
-        });
-
-        const allSkills = (window.GRADE1_TOPICS || []).flatMap(t => t.skills);
-        const completed = allSkills.filter(s => (scoreMap[s.id] || 0) >= 80).length;
-        const mastered = allSkills.filter(s => (scoreMap[s.id] || 0) === 100).length;
-
-        summaryEl.innerHTML = `Đã luyện: <strong>${rows.length}/${allSkills.length}</strong> bài &nbsp;|&nbsp; Đạt ≥80%: <strong>${completed}</strong> &nbsp;|&nbsp; Huy hiệu 100%: <strong>${mastered}</strong> 🏆`;
-
-        if (rows.length === 0) {
-          listEl.innerHTML = '<p style="color:#64748b; font-size:14px;">Bé chưa làm bài Lớp 1 nào. <a href="/grade1.html" style="color:#059669; font-weight:700;">Vào học ngay →</a></p>';
-          return;
-        }
-
-        listEl.innerHTML = allSkills
-          .filter(s => scoreMap[s.id] !== undefined)
-          .map(s => {
-            const sc = scoreMap[s.id];
+              : '<span style="color:#64748b;">Đã đọc xong</span>';
             return `
-              <div style="padding: 10px 12px; border-radius: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:13px; font-weight:600; color:#1e293b;">${s.title}</span>
-                <span style="font-size:13px; font-weight:800; color:#059669;">${sc}%</span>
-              </div>
-            `;
-          })
-          .join('');
-      } catch (err) {
-        summaryEl.innerText = 'Không thể tải tiến độ Lớp 1.';
-      }
+              <tr>
+                <td><strong>${h.grade}</strong></td>
+                <td>Bài ${h.lesson_order}: ${h.lesson_title}</td>
+                <td>${scoreText}</td>
+                <td><a href="/lesson.html?id=${h.lesson_id}" style="color:var(--blue); font-weight:700; text-decoration:none;">Ôn lại →</a></td>
+              </tr>`;
+          }).join('')
+        : '<tr><td colspan="4" style="color:var(--muted);">Bạn chưa hoàn thành bài học nào. Hãy bắt đầu ngay nhé!</td></tr>';
     }
 
     async function loadVipStatus() {
@@ -229,46 +402,32 @@
         const prog = await progRes.json();
 
         if (!user) {
-          box.innerHTML = 'Bạn chưa đăng nhập. <a href="/login.html" style="color:#0b5ed7;font-weight:700;">Đăng nhập ngay →</a>';
+          box.innerHTML = 'Bạn chưa đăng nhập. <a href="/login.html" style="color:var(--blue);font-weight:700;">Đăng nhập ngay →</a>';
           return;
         }
-
         if (user.role === 'admin') {
           box.style.background = '#eef2ff';
           box.style.color = '#3730a3';
           box.innerHTML = '👑 <strong>Tài khoản Quản trị viên</strong><br>Toàn quyền truy cập không giới hạn.';
           return;
         }
-
         if (prog.hasAccess && prog.vipExpiresAt) {
           const expDate = new Date(prog.vipExpiresAt);
           const daysLeft = Math.max(1, Math.ceil((expDate - new Date()) / (1000 * 60 * 60 * 24)));
-          const dateStr = expDate.toLocaleDateString('vi-VN', {
-            timeZone: 'Asia/Bangkok',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-          });
-
+          const dateStr = expDate.toLocaleDateString('vi-VN', { timeZone: 'Asia/Bangkok', day: '2-digit', month: '2-digit', year: 'numeric' });
           box.style.background = '#dcfce7';
           box.style.color = '#166534';
           box.innerHTML = `
             <div>✅ <strong>Gói học đang hoạt động</strong></div>
-            <div>📅 Ngày hết hạn: <strong>${dateStr}</strong> (còn <strong>${daysLeft}</strong> ngày)</div>
-            <a href="/subscribe.html" style="display:inline-block;margin-top:10px;background:#16a34a;color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.9rem;">
-              Gia hạn thêm →
-            </a>
-          `;
+            <div>📅 Hết hạn: <strong>${dateStr}</strong> (còn <strong>${daysLeft}</strong> ngày)</div>
+            <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#16a34a;">Gia hạn thêm →</a>`;
         } else {
           box.style.background = '#fff7ed';
           box.style.color = '#c2410c';
           box.innerHTML = `
-            <div>🔒 <strong>Chưa kích hoạt gói học (hoặc đã hết hạn)</strong></div>
-            <div style="font-size:0.9rem;">Bạn hiện chỉ xem được các bài học thử miễn phí.</div>
-            <a href="/subscribe.html" style="display:inline-block;margin-top:10px;background:#f97316;color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.9rem;">
-              Đăng ký / Gia hạn ngay →
-            </a>
-          `;
+            <div>🔒 <strong>Chưa kích hoạt VIP</strong></div>
+            <div style="font-size:13px;">Bạn hiện chỉ xem được các bài học thử miễn phí.</div>
+            <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#f97316;">Đăng ký / Gia hạn ngay →</a>`;
         }
       } catch (err) {
         box.textContent = 'Không thể tải trạng thái gói học.';
@@ -300,14 +459,12 @@
         body: JSON.stringify({ currentPassword, newPassword })
       });
       const data = await res.json();
-
       msg.style.color = res.ok ? '#16a34a' : '#dc2626';
       msg.textContent = data.message;
       if (res.ok) e.target.reset();
     });
 
     loadProfile();
-    loadGrade1ProfileProgress();
     loadVipStatus();
   </script>
 </body>

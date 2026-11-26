@@ -87,7 +87,6 @@
     }
     .ixl-link:hover { text-decoration: underline; }
     .ixl-sep { color: #cbd5e1; }
-
   </style>
 </head>
 <body>
@@ -129,5 +128,38 @@
   </section>
 
   <script src="app.js"></script>
+
+<!-- Footer Bản quyền MathPro (Hỗ trợ VN / EN) -->
+<footer style="background:#0f172a; color:#cbd5e1; margin-top:48px; padding:36px 20px 24px; border-top:4px solid #10b981; font-family:'Segoe UI',system-ui,sans-serif;">
+  <div style="max-width:1160px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:24px; align-items:start;">
+    <div>
+      <div style="font-size:20px; font-weight:800; color:#ffffff; margin-bottom:8px;">
+        🧮 Math<span style="color:#10b981;">Pro</span>
+      </div>
+      <p id="footer-desc" style="font-size:14px; color:#94a3b8; line-height:1.6; max-width:420px;">
+        Nền tảng học Toán tư duy trực tuyến tương tác từ Mầm non đến Lớp 9, giúp học sinh hiểu sâu bản chất và rèn luyện phản xạ tính toán.
+      </p>
+    </div>
+
+    <div style="font-size:14px; line-height:1.8;">
+      <div id="footer-contact-title" style="color:#ffffff; font-weight:700; margin-bottom:6px;">Thông tin liên hệ &amp; Phát triển</div>
+      <div>👨‍💻 <strong style="color:#f8fafc;">Nguyen Tri Duc</strong> — <span style="color:#34d399; font-weight:600;">Senior Software Engineer</span></div>
+      <div>📧 Email: <a href="mailto:ntduc.dhbk@gmail.com" style="color:#38bdf8; text-decoration:none;">ntduc.dhbk@gmail.com</a></div>
+      <div>📞 Hotline: <a href="tel:+84375703459" style="color:#38bdf8; text-decoration:none;">+84 37 570 3459</a></div>
+      <div>📍 <span id="footer-address-label">Địa chỉ</span>: No. 4, Quang Trung Street, Ha Dong District, Hanoi, Vietnam</div>
+    </div>
+  </div>
+
+  <div style="max-width:1160px; margin:24px auto 0; padding-top:16px; border-top:1px solid #1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:13px; color:#64748b;">
+    <span>© 2026 MathPro. All rights reserved.</span>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span>Engineered with ❤️ by Nguyen Tri Duc</span>
+      <button type="button" onclick="toggleFooterLang()" id="footer-lang-btn" style="background:#1e293b; color:#e2e8f0; border:1px solid #334155; padding:4px 10px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:700;">
+        🌐 EN
+      </button>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>

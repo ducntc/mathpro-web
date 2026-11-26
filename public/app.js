@@ -249,6 +249,28 @@ function switchLang(lang) {
     ? 'Interactive online math learning system from Kindergarten to Primary School.'
     : 'Hệ thống bài giảng Toán trực tuyến tương tác từ Mầm non đến Tiểu học.';
   if (heroBtn) heroBtn.textContent = lang === 'en' ? 'Explore Courses' : 'Khám phá khóa học';
+
+  // Cập nhật ngôn ngữ cho Footer
+  const fDesc = document.getElementById('footer-desc');
+  const fTitle = document.getElementById('footer-contact-title');
+  const fAddr = document.getElementById('footer-address-label');
+  const fBtn = document.getElementById('footer-lang-btn');
+
+  if (fDesc) {
+    fDesc.textContent = lang === 'en'
+      ? 'Interactive online math learning platform from Kindergarten to Grade 9, building deep understanding and mental fluency.'
+      : 'Nền tảng học Toán tư duy trực tuyến tương tác từ Mầm non đến Lớp 9, giúp học sinh hiểu sâu bản chất và rèn luyện phản xạ tính toán.';
+  }
+  if (fTitle) fTitle.textContent = lang === 'en' ? 'Contact & Engineering' : 'Thông tin liên hệ & Phát triển';
+  if (fAddr) fAddr.textContent = lang === 'en' ? 'Address' : 'Địa chỉ';
+  if (fBtn) fBtn.textContent = lang === 'en' ? '🌐 VI' : '🌐 EN';
+}
+
+function toggleFooterLang() {
+  const next = (localStorage.getItem('mathpro_lang') || 'vi') === 'vi' ? 'en' : 'vi';
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) langSelect.value = next;
+  switchLang(next);
 }
 
 const savedLang = localStorage.getItem('mathpro_lang') || 'vi';
