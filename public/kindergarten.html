@@ -893,9 +893,173 @@
   <!-- 1. Nhúng bộ sinh đề từ file riêng -->
   <script src="/js/kindergartenGenerators.js"></script>
 
-  <!-- 2. Điều khiển giao diện -->
+  <!-- 2. Điều khiển giao diện + Đa ngôn ngữ VN/EN đồng bộ -->
   <script>
     const { LESSONS, GENERATORS } = window.MathProKindergarten;
+    const isEn = (localStorage.getItem("mathpro_lang") || "vi") === "en";
+
+    // --- BỘ DỊCH TỰ ĐỘNG 2 CHIỀU CHO MẦM NON ---
+    function trK(str) {
+      if (str === null || str === undefined || typeof str === "number") return str;
+      let s = String(str);
+      if (!isEn) {
+        return s.replace(/\s*\((Skip-counting|Five-frame|Ten-frame|Patterns|Kindergarten)\)/gi, "").trim();
+      }
+      const rules = [
+        ["Đếm số trong phạm vi", "Count up to"],
+        ["Đếm số đến 50 & 100", "Count to 50 & 100"],
+        ["Đếm cách đều (Skip-counting)", "Skip-counting"],
+        ["So sánh số & lượng", "Compare Numbers & Amounts"],
+        ["Vị trí trong không gian", "Positions"],
+        ["Phân loại & Sắp xếp", "Classify & Sort"],
+        ["Quy luật (Patterns)", "Patterns"],
+        ["Phép cộng phạm vi", "Addition up to"],
+        ["Phép trừ phạm vi", "Subtraction up to"],
+        ["Cộng trừ hỗn hợp", "Mixed Operations"],
+        ["Chia đều & Một nửa", "Equal Parts & Halves"],
+        ["Đo lường trực quan", "Measurement"],
+        ["Xem đồng hồ giờ đúng", "Read exact hours"],
+        ["Xem đồng hồ", "Read Clocks"],
+        ["Tiền Việt Nam", "Money (VND)"],
+        ["Hình học phẳng (2D)", "Flat Shapes (2D)"],
+        ["Hình khối không gian (3D)", "Solid Shapes (3D)"],
+        ["Biểu đồ & Dữ liệu", "Charts & Data"],
+        ["Đếm trên khung ô", "Count on frames"],
+        ["Chọn nhóm đúng số lượng", "Pick the matching group"],
+        ["Khung 5 ô (Five-frame)", "Five-frame"],
+        ["Khung 5 ô", "Five-frame"],
+        ["Khung 10 ô (Ten-frame)", "Ten-frame"],
+        ["Khung 10 ô", "Ten-frame"],
+        ["Khung ô", "Frame"],
+        ["Số liền sau", "Next number"],
+        ["Đếm lùi (10 về 1)", "Count backward (10 to 1)"],
+        ["Điền số dãy", "Complete sequence"],
+        ["Đếm tiếp đến", "Count forward to"],
+        ["Đếm cách", "Skip-count by"],
+        ["Đếm hình", "Count objects"],
+        ["Nhiều hơn – Ít hơn", "More – Fewer"],
+        ["So sánh số (phạm vi", "Compare numbers (up to"],
+        ["So sánh số", "Compare numbers"],
+        ["Vị trí Trên – Dưới", "Top – Bottom"],
+        ["Trên – Dưới", "Top – Bottom"],
+        ["Vị trí Trái – Giữa – Phải", "Left – Middle – Right"],
+        ["Trái – Giữa – Phải", "Left – Middle – Right"],
+        ["Tìm hình khác loại", "Find the odd one out"],
+        ["Tìm số bé nhất / lớn nhất", "Smallest & greatest number"],
+        ["Quy luật nâng cao ABC", "ABC Patterns"],
+        ["Quy luật", "Patterns"],
+        ["Cộng bằng hình ảnh", "Add with pictures"],
+        ["Cộng nhẩm phạm vi", "Mental addition up to"],
+        ["Tìm số cộng còn thiếu", "Missing addend"],
+        ["Trừ bằng hình ảnh", "Subtract with pictures"],
+        ["Trừ nhẩm phạm vi", "Mental subtraction up to"],
+        ["Chọn dấu + hay -", "Choose + or -"],
+        ["Nhận biết chia đều 2 phần", "Identify 2 equal parts"],
+        ["Chia đều 2 phần bằng nhau", "2 equal parts"],
+        ["Dài hơn – Ngắn hơn", "Longer – Shorter"],
+        ["Cao hơn – Thấp hơn", "Taller – Shorter"],
+        ["Xem giờ đúng", "Read exact hours"],
+        ["Nhận biết mệnh giá tiền", "Identify banknotes"],
+        ["Nhận biết hình cơ bản", "Identify basic 2D shapes"],
+        ["Nhận biết hình 2D", "Identify 2D shapes"],
+        ["Đếm số cạnh của hình", "Count sides of shapes"],
+        ["Hình cầu, lập phương, trụ, nón", "Sphere, cube, cylinder, cone"],
+        ["Đọc biểu đồ tranh", "Read pictographs"],
+        ["Có bao nhiêu", "How many"],
+        ["trong hình dưới đây?", "are shown below?"],
+        ["đang nằm trong khung?", "are in the frame?"],
+        ["Hình nào có đúng", "Which group has"],
+        ["Bé hãy đếm lùi và tìm số còn thiếu:", "Count backward and find the missing number:"],
+        ["Số nào thích hợp để điền vào dấu chấm hỏi?", "Which number belongs in the question mark?"],
+        ["Nhóm nào có NHIỀU hình hơn?", "Which group has MORE items?"],
+        ["Nhóm nào có ÍT hình hơn?", "Which group has FEWER items?"],
+        ["Số nào LỚN HƠN?", "Which number is GREATER?"],
+        ["Số nào BÉ HƠN?", "Which number is SMALLER?"],
+        ["Vật nào đang ở PHÍA TRÊN?", "Which item is on TOP?"],
+        ["Vật nào đang ở PHÍA DƯỚI?", "Which item is at the BOTTOM?"],
+        ["Vật nào đang nằm BÊN TRÁI?", "Which item is on the LEFT?"],
+        ["Vật nào đang nằm Ở GIỮA?", "Which item is in the MIDDLE?"],
+        ["Vật nào đang nằm BÊN PHẢI?", "Which item is on the RIGHT?"],
+        ["Hình nào KHÁC LOẠI với các hình còn lại?", "Which picture is DIFFERENT from the others?"],
+        ["Trong các số sau, số nào BÉ NHẤT?", "Which number is the SMALLEST?"],
+        ["Trong các số sau, số nào LỚN NHẤT?", "Which number is the GREATEST?"],
+        ["Hình nào tiếp theo trong dãy quy luật?", "What comes next in the pattern?"],
+        ["Tìm hình còn thiếu ở dấu chấm hỏi:", "Find the missing picture:"],
+        ["Tính tổng số", "Add the"],
+        ["dưới đây:", "below:"],
+        ["Tính nhanh phép cộng:", "Add:"],
+        ["Điền số còn thiếu vào phép cộng:", "Find the missing number:"],
+        ["Tính kết quả phép trừ dưới đây:", "Subtract using the pictures:"],
+        ["Tính nhanh phép trừ:", "Subtract:"],
+        ["Chọn dấu thích hợp điền vào ô trống:", "Choose the correct sign:"],
+        ["Hình nào được chia thành 2 phần BẰNG NHAU?", "Which shape is divided into 2 EQUAL parts?"],
+        ["Băng nào DÀI HƠN?", "Which strip is LONGER?"],
+        ["Băng nào NGẮN HƠN?", "Which strip is SHORTER?"],
+        ["Cột nào CAO HƠN?", "Which bar is TALLER?"],
+        ["Cột nào THẤP HƠN?", "Which bar is SHORTER?"],
+        ["Đồng hồ đang chỉ mấy giờ?", "What time does the clock show?"],
+        ["Đây là tờ tiền mệnh giá bao nhiêu?", "What is the value of this banknote?"],
+        ["Đây là hình gì?", "What 2D shape is this?"],
+        ["Hình dưới đây có bao nhiêu cạnh?", "How many sides does this shape have?"],
+        ["Đây là khối hình gì?", "What 3D solid shape is this?"],
+        ["Theo biểu đồ, có bao nhiêu quả táo (🍎)?", "According to the chart, how many apples (🍎) are there?"],
+        ["Theo biểu đồ, có bao nhiêu ngôi sao (⭐)?", "According to the chart, how many stars (⭐) are there?"],
+        ["quả bóng bay", "balloons"], ["quả chuối", "bananas"], ["quả dâu", "strawberries"],
+        ["quả táo", "apples"], ["chú chó", "dogs"], ["chú mèo", "cats"],
+        ["ngôi sao", "stars"], ["chiếc xe", "cars"],
+        ["Hình tam giác", "Triangle"], ["Hình chữ nhật", "Rectangle"],
+        ["Hình vuông", "Square"], ["Hình tròn", "Circle"],
+        ["Hình lập phương", "Cube"], ["Hình cầu", "Sphere"], ["Hình trụ", "Cylinder"], ["Hình nón", "Cone"],
+        ["Nhóm A", "Group A"], ["Nhóm B", "Group B"],
+        ["Hình A", "Shape A"], ["Hình B", "Shape B"],
+        ["Băng A", "Strip A"], ["Băng B", "Strip B"],
+        ["Cột A", "Bar A"], ["Cột B", "Bar B"],
+        [" giờ", " o'clock"]
+      ];
+      rules.forEach(([vi, en]) => { s = s.split(vi).join(en); });
+      return s;
+    }
+
+    // Đồng bộ giao diện tĩnh trên trang
+    document.title = isEn ? "MathPro - Kindergarten Math" : "MathPro - Toán Mầm Non";
+    document.querySelector(".mp-k-badge").textContent = isEn ? "• Kindergarten" : "• Mầm Non";
+    document.querySelector(".mp-k-btn-home").innerHTML = isEn ? "🏠 Home" : "🏠 Trang chủ";
+    document.querySelector('a[href="/profile.html"]').innerHTML = isEn ? "👤 Profile" : "👤 Hồ sơ";
+    document.querySelector(".mp-k-btn-vip").innerHTML = isEn ? "👑 Upgrade VIP" : "👑 Nâng cấp VIP";
+    document.querySelector(".course-badge").textContent = isEn ? "Kindergarten" : "Mầm non";
+    document.querySelector(".course-banner h1").textContent = isEn ? "Early Math Thinking" : "Làm quen Toán tư duy";
+    document.querySelector(".course-banner p").textContent = isEn
+      ? "Visual counting, ten-frames, patterns, shapes, and early addition."
+      : "Đếm số trực quan, khung 10 ô, quy luật, hình học và phép cộng tư duy.";
+    document.querySelector('.mode-tab[data-tab="skills"]').innerHTML = isEn ? "📚 Skills (42)" : "📚 Kỹ năng (42)";
+    document.querySelector('.mode-tab[data-tab="videos"]').innerHTML = isEn ? "🎬 Videos" : "🎬 Video hướng dẫn";
+    document.querySelector('.mode-tab[data-tab="games"]').innerHTML = isEn ? "🎮 Math Games" : "🎮 Trò chơi toán học";
+    document.querySelector("#panel-skills .section-heading").textContent = isEn ? "📚 Course Curriculum (42 skills)" : "📚 Nội dung khóa học (42 bài học)";
+    document.querySelector("#panel-videos .section-heading").textContent = isEn ? "🎬 Short Video Lessons" : "🎬 Video bài giảng ngắn cho bé";
+    document.querySelector("#panel-games h2").textContent = isEn ? "🎈 Game: Pop the Right Number" : "🎈 Trò chơi: Bắt bóng số đúng";
+    document.getElementById("backToListBtn").textContent = isEn ? "← Back to Lessons" : "← Danh sách bài học";
+    document.querySelector(".score-box span").textContent = isEn ? "SmartScore:" : "Điểm mục tiêu:";
+    document.getElementById("nextBtn").textContent = isEn ? "Next Question ➜" : "Câu tiếp theo ➜";
+
+    const gsWrap = document.getElementById("gameScore")?.parentElement;
+    if (isEn && gsWrap) {
+      gsWrap.childNodes.forEach(n => {
+        if (n.id !== "gameScore" && n.textContent.includes("Điểm trò chơi")) {
+          n.textContent = n.textContent.replace(/Điểm trò chơi/g, "Game Score");
+        }
+      });
+    }
+
+    // Đồng bộ Modal khóa VIP
+    const lockModal = document.getElementById("lockModal");
+    lockModal.querySelector("h2").textContent = isEn ? "VIP Members Only" : "Nội dung dành cho Thành viên VIP";
+    lockModal.querySelector("p").innerHTML = isEn
+      ? "Free accounts can access 10% of content. Sign in or upgrade to VIP to unlock all <strong>42 Kindergarten skills & videos</strong>!"
+      : "Tài khoản thường được học thử miễn phí 10%. Hãy đăng nhập VIP hoặc đăng ký gói học để mở khóa toàn bộ <strong>42 bài Toán Mầm non</strong>!";
+    const lockBtns = lockModal.querySelectorAll(".lock-btn");
+    if (lockBtns[0]) lockBtns[0].textContent = isEn ? "Upgrade VIP Now" : "Đăng ký VIP ngay";
+    if (lockBtns[1]) lockBtns[1].textContent = isEn ? "Sign In" : "Đăng nhập";
+    lockModal.querySelector("button").textContent = isEn ? "Maybe later" : "Để sau, quay lại học thử";
 
     const viewList = document.getElementById("view-list");
     const viewPractice = document.getElementById("view-practice");
@@ -908,34 +1072,32 @@
     const feedbackMsg = document.getElementById("feedbackMsg");
     const scoreVal = document.getElementById("scoreVal");
 
-    let currentLesson = "k-1";
+    let currentLesson = "a-1";
     let currentQuestion = null;
     let score = 0;
     let answered = false;
-
     let savedProgress = {};
-
     let isLoggedIn = false;
-    // 4 bài học thử miễn phí trải đều các chủ đề (~10% của 42 bài)
     const FREE_LESSONS = new Set(["a-1", "b-1", "g-1", "t-1"]);
 
     async function loadProgress() {
       try {
-        const res = await fetch('/api/skill-progress');
-        const data = await res.json();
-        // Chỉ mở khóa 100% bài khi đã đăng nhập VÀ gói học còn hạn
-        isLoggedIn = Boolean(data.loggedIn && data.hasAccess);
-        if (data.loggedIn) savedProgress = data.progress;
+        const [progRes, meRes] = await Promise.all([fetch("/api/skill-progress"), fetch("/api/me")]);
+        const data = await progRes.json();
+        const me = meRes.ok ? await meRes.json() : {};
+        const isAdmin = me.user && (me.user.role === "admin" || me.user.email === "admin@mathpro.vn");
+        const hasVip = (me.vip_expires_at && new Date(me.vip_expires_at) > new Date()) || (data.loggedIn && data.hasAccess);
+        isLoggedIn = Boolean(isAdmin || hasVip);
+        if (data.loggedIn) savedProgress = data.progress || {};
       } catch (e) {
         isLoggedIn = false;
       }
       renderLessonList();
+      renderVideos();
     }
 
     function renderLessonList() {
       lessonListEl.innerHTML = "";
-
-      // Gom nhóm bài học theo chủ đề
       const grouped = {};
       LESSONS.forEach(ls => {
         if (!grouped[ls.topic]) grouped[ls.topic] = [];
@@ -945,64 +1107,39 @@
       Object.entries(grouped).forEach(([topicName, items]) => {
         const card = document.createElement("div");
         card.className = "topic-card";
-
-        const title = document.createElement("h3");
-        title.className = "topic-title";
-        title.textContent = topicName;
-        card.appendChild(title);
-
+        card.innerHTML = `<h3 class="topic-title">${trK(topicName)}</h3>`;
         const list = document.createElement("div");
         list.className = "topic-links";
 
         items.forEach(ls => {
           const isLocked = !isLoggedIn && !FREE_LESSONS.has(ls.id);
-          const prog = savedProgress[ls.id];
-          const best = prog ? prog.best : 0;
-
+          const best = savedProgress[ls.id]?.best || 0;
           let badgeHtml = "";
-          if (isLocked) {
-            badgeHtml = `<span class="skill-badge locked-badge">🔒 Thành viên</span>`;
-          } else if (best >= 100) {
-            badgeHtml = `<span class="skill-badge mastered">🏆 100</span>`;
-          } else if (best >= 80) {
-            badgeHtml = `<span class="skill-badge mastered">🥇 ${best}</span>`;
-          } else if (best > 0) {
-            badgeHtml = `<span class="skill-badge progress">⭐ ${best}</span>`;
-          } else if (!isLoggedIn) {
-            badgeHtml = `<span class="skill-badge progress">🆓 Học thử</span>`;
-          }
+          if (isLocked) badgeHtml = `<span class="skill-badge locked-badge">🔒 VIP</span>`;
+          else if (best >= 100) badgeHtml = `<span class="skill-badge mastered">🏆 100</span>`;
+          else if (best >= 80) badgeHtml = `<span class="skill-badge mastered">🥇 ${best}</span>`;
+          else if (best > 0) badgeHtml = `<span class="skill-badge progress">⭐ ${best}</span>`;
+          else if (!isLoggedIn) badgeHtml = `<span class="skill-badge progress">${isEn ? "🆓 Free" : "🆓 Miễn phí"}</span>`;
 
           const row = document.createElement("div");
           row.className = "topic-link-item" + (isLocked ? " locked" : "");
-          row.title = isLocked ? "Đăng nhập thành viên để mở khóa" : ls.desc;
           row.innerHTML = `
             <div class="topic-left">
               <span class="topic-code">${ls.code}</span>
-              <span class="topic-label">${ls.label}</span>
+              <span class="topic-label">${trK(ls.label)}</span>
             </div>
             ${badgeHtml}
           `;
-          row.onclick = () => {
-            if (isLocked) {
-              document.getElementById("lockModal").classList.add("open");
-            } else {
-              openLesson(ls.id);
-            }
-          };
+          row.onclick = () => isLocked ? lockModal.classList.add("open") : openLesson(ls.id);
           list.appendChild(row);
         });
-
         card.appendChild(list);
         lessonListEl.appendChild(card);
       });
     }
 
     function openLesson(lessonId) {
-      if (!isLoggedIn && !FREE_LESSONS.has(lessonId)) {
-        document.getElementById("lockModal").classList.add("open");
-        return;
-      }
-
+      if (!isLoggedIn && !FREE_LESSONS.has(lessonId)) return lockModal.classList.add("open");
       currentLesson = lessonId;
       score = savedProgress[lessonId]?.score || 0;
       scoreVal.textContent = score;
@@ -1015,14 +1152,14 @@
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       viewPractice.classList.add("hidden");
       viewList.classList.remove("hidden");
-      renderLessonList(); // Cập nhật lại huy hiệu mới đạt được
+      renderLessonList();
     };
 
     function speakPrompt(text) {
       if (!("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "vi-VN";
+      utter.lang = isEn ? "en-US" : "vi-VN";
       utter.rate = 0.95;
       window.speechSynthesis.speak(utter);
     }
@@ -1034,193 +1171,128 @@
     function loadQuestion() {
       answered = false;
       feedbackBox.className = "feedback";
-      currentQuestion = GENERATORS[currentLesson]();
+      const raw = GENERATORS[currentLesson]();
+      currentQuestion = {
+        ...raw,
+        title: trK(raw.title),
+        prompt: trK(raw.prompt),
+        correctAnswer: typeof raw.correctAnswer === "string" ? trK(raw.correctAnswer) : raw.correctAnswer,
+        options: raw.options.map(o => {
+          if (o && typeof o === "object" && o.label) return { ...o, label: trK(o.label) };
+          return typeof o === "string" ? trK(o) : o;
+        }),
+        hint: isEn ? "Count carefully step by step!" : raw.hint
+      };
 
       lessonTitle.textContent = currentQuestion.title;
       promptText.textContent = currentQuestion.prompt;
-
       renderVisuals(currentQuestion);
       renderOptions(currentQuestion);
     }
 
     function renderVisuals(q) {
       visualArea.innerHTML = "";
-
       if (q.template === "visual_count") {
-        const div = document.createElement("div");
-        div.className = "emoji-grid";
-        div.textContent = q.visualData.icons.join(" ");
-        visualArea.appendChild(div);
-      }
-      else if (q.template === "frame_count") {
-        const grid = document.createElement("div");
-        grid.className = "ten-frame";
-        q.visualData.cells.forEach(icon => {
-          const cell = document.createElement("div");
-          cell.className = "frame-cell";
-          cell.textContent = icon || "";
-          grid.appendChild(cell);
-        });
-        visualArea.appendChild(grid);
-      }
-      else if (q.template === "sequence_fill") {
-        const row = document.createElement("div");
-        row.className = "seq-row";
-        q.visualData.sequence.forEach(val => {
-          const box = document.createElement("div");
-          box.className = "seq-box" + (val === "?" ? " missing" : "");
-          box.textContent = val;
-          row.appendChild(box);
-        });
-        visualArea.appendChild(row);
-      }
-      else if (q.template === "compare_groups") {
-        const wrap = document.createElement("div");
-        wrap.className = "compare-wrap";
-        ["left", "right"].forEach(side => {
+        visualArea.innerHTML = `<div class="emoji-grid">${q.visualData.icons.join(" ")}</div>`;
+      } else if (q.template === "frame_count") {
+        visualArea.innerHTML = `<div class="ten-frame">${q.visualData.cells.map(ic => `<div class="frame-cell">${ic || ""}</div>`).join("")}</div>`;
+      } else if (q.template === "sequence_fill") {
+        visualArea.innerHTML = `<div class="seq-row">${q.visualData.sequence.map(v => `<div class="seq-box${v === "?" ? " missing" : ""}">${v}</div>`).join("")}</div>`;
+      } else if (q.template === "compare_groups") {
+        visualArea.innerHTML = `<div class="compare-wrap">${["left", "right"].map(side => {
           const grp = q.visualData[side];
-          const card = document.createElement("div");
-          card.className = "group-card";
-          card.innerHTML = `
-            <div class="group-label">${grp.label}</div>
-            <div class="group-icons">${grp.icons.join(" ")}</div>
-          `;
-          wrap.appendChild(card);
-        });
-        visualArea.appendChild(wrap);
-      }
-      else if (q.template === "pick_group") {
-        visualArea.innerHTML = `<div style="color:#64748b;font-weight:600;">👇 Bé hãy bấm chọn vào khung đúng ở bên dưới nhé!</div>`;
-      }
-      else if (q.template === "shape_svg") {
+          return `<div class="group-card"><div class="group-label">${trK(grp.label)}</div><div class="group-icons">${grp.icons.join(" ")}</div></div>`;
+        }).join("")}</div>`;
+      } else if (q.template === "pick_group") {
+        visualArea.innerHTML = `<div style="color:#64748b;font-weight:600;">👇 ${isEn ? "Tap the correct group below!" : "Bé hãy bấm chọn vào khung đúng ở bên dưới nhé!"}</div>`;
+      } else if (q.template === "shape_svg") {
         const { shape, color } = q.visualData;
-        let svgInner = "";
-        if (shape === "circle") svgInner = `<circle cx="80" cy="80" r="62" fill="${color}" />`;
-        if (shape === "square") svgInner = `<rect x="22" y="22" width="116" height="116" rx="6" fill="${color}" />`;
-        if (shape === "rectangle") svgInner = `<rect x="10" y="38" width="140" height="84" rx="6" fill="${color}" />`;
-        if (shape === "triangle") svgInner = `<polygon points="80,16 146,138 14,138" fill="${color}" />`;
-        visualArea.innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160">${svgInner}</svg>`;
-      }
-      else if (q.template === "visual_add") {
+        const map = {
+          circle: `<circle cx="80" cy="80" r="62" fill="${color}" />`,
+          square: `<rect x="22" y="22" width="116" height="116" rx="6" fill="${color}" />`,
+          rectangle: `<rect x="10" y="38" width="140" height="84" rx="6" fill="${color}" />`,
+          triangle: `<polygon points="80,16 146,138 14,138" fill="${color}" />`
+        };
+        visualArea.innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160">${map[shape] || ""}</svg>`;
+      } else if (q.template === "visual_add") {
         const { icon, a, b } = q.visualData;
-        visualArea.innerHTML = `
-          <div class="math-wrap">
-            <div class="math-visual-row">
-              <span>${Array(a).fill(icon).join(" ")}</span>
-              <span class="math-op">+</span>
-              <span>${Array(b).fill(icon).join(" ")}</span>
-            </div>
-            <div class="math-equation">${a} + ${b} = ?</div>
-          </div>
-        `;
-      }
-      else if (q.template === "text_compare") {
-        if (q.visualData.equation) {
-          visualArea.innerHTML = `<div class="big-equation">${q.visualData.equation}</div>`;
+        visualArea.innerHTML = `<div class="math-wrap"><div class="math-visual-row"><span>${Array(a).fill(icon).join(" ")}</span><span class="math-op">+</span><span>${Array(b).fill(icon).join(" ")}</span></div><div class="math-equation">${a} + ${b} = ?</div></div>`;
+      } else if (q.template === "visual_sub") {
+        const { icon, total, remove } = q.visualData;
+        const items = Array.from({ length: total }, (_, i) => `<span class="sub-item${i >= total - remove ? " crossed" : ""}">${icon}</span>`).join(" ");
+        visualArea.innerHTML = `<div class="math-wrap"><div class="math-visual-row">${items}</div><div class="math-equation">${total} - ${remove} = ?</div></div>`;
+      } else if (q.template === "measure_compare") {
+        const { orientation, valA, valB } = q.visualData;
+        if (orientation === "horizontal") {
+          visualArea.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start;">
+            <div><strong>${trK("Băng A")}:</strong> <div style="height:24px;width:${valA * 1.4}px;background:#3b82f6;border-radius:8px;margin-top:4px;"></div></div>
+            <div><strong>${trK("Băng B")}:</strong> <div style="height:24px;width:${valB * 1.4}px;background:#10b981;border-radius:8px;margin-top:4px;"></div></div>
+          </div>`;
         } else {
-          visualArea.innerHTML = `<div class="big-equation">${q.visualData.left} &nbsp; và &nbsp; ${q.visualData.right}</div>`;
+          visualArea.innerHTML = `<div style="display:flex;gap:40px;align-items:flex-end;height:160px;">
+            <div style="text-align:center;"><div style="width:44px;height:${valA}px;background:#f59e0b;border-radius:8px 8px 0 0;"></div><strong>${trK("Cột A")}</strong></div>
+            <div style="text-align:center;"><div style="width:44px;height:${valB}px;background:#8b5cf6;border-radius:8px 8px 0 0;"></div><strong>${trK("Cột B")}</strong></div>
+          </div>`;
         }
-      }
-      else if (q.template === "position_grid") {
+      } else if (q.template === "text_compare") {
+        visualArea.innerHTML = q.visualData.equation
+          ? `<div class="big-equation">${q.visualData.equation}</div>`
+          : `<div class="big-equation">${q.visualData.left} &nbsp; ${isEn ? "and" : "và"} &nbsp; ${q.visualData.right}</div>`;
+      } else if (q.template === "position_grid") {
         const cls = q.visualData.mode === "vertical" ? "pos-box vertical" : "pos-box";
         visualArea.innerHTML = `<div class="${cls}">${q.visualData.items.map(i => `<span>${i}</span>`).join("")}</div>`;
-      }
-      else if (q.template === "clock_svg") {
+      } else if (q.template === "clock_svg") {
         const angle = (q.visualData.hour % 12) * 30;
-        visualArea.innerHTML = `
-          <svg width="160" height="160" viewBox="0 0 160 160">
-            <circle cx="80" cy="80" r="70" fill="#fff" stroke="#4f46e5" stroke-width="6"/>
-            <text x="72" y="28" font-size="14" font-weight="700">12</text>
-            <text x="134" y="85" font-size="14" font-weight="700">3</text>
-            <text x="76" y="143" font-size="14" font-weight="700">6</text>
-            <text x="18" y="85" font-size="14" font-weight="700">9</text>
-            <line x1="80" y1="80" x2="80" y2="32" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-            <line x1="80" y1="80" x2="80" y2="44" stroke="#1e293b" stroke-width="6" stroke-linecap="round" transform="rotate(${angle} 80 80)"/>
-            <circle cx="80" cy="80" r="5" fill="#4f46e5"/>
-          </svg>`;
-      }
-      else if (q.template === "money_vnd") {
-        visualArea.innerHTML = `<div class="vnd-bill" style="background:${q.visualData.color}"><div>${q.visualData.val}</div><div style="font-size:0.8rem;opacity:0.9;">TIỀN VIỆT NAM</div></div>`;
-      }
-      else if (q.template === "fraction_svg") {
+        visualArea.innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="70" fill="#fff" stroke="#4f46e5" stroke-width="6"/>
+          <text x="72" y="28" font-size="14" font-weight="700">12</text><text x="134" y="85" font-size="14" font-weight="700">3</text>
+          <text x="76" y="143" font-size="14" font-weight="700">6</text><text x="18" y="85" font-size="14" font-weight="700">9</text>
+          <line x1="80" y1="80" x2="80" y2="32" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="80" y1="80" x2="80" y2="44" stroke="#1e293b" stroke-width="6" stroke-linecap="round" transform="rotate(${angle} 80 80)"/>
+          <circle cx="80" cy="80" r="5" fill="#4f46e5"/></svg>`;
+      } else if (q.template === "money_vnd") {
+        visualArea.innerHTML = `<div class="vnd-bill" style="background:${q.visualData.color}"><div>${q.visualData.val}</div><div style="font-size:0.8rem;opacity:0.9;">${isEn ? "VND BANKNOTE" : "TIỀN VIỆT NAM"}</div></div>`;
+      } else if (q.template === "fraction_svg") {
         const eq = q.visualData.equalSide === "left";
-        const drawBox = (isEq, label) => `
-          <div style="text-align:center">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <rect x="5" y="5" width="90" height="90" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="4"/>
-              <line x1="${isEq ? 50 : 24}" y1="5" x2="${isEq ? 50 : 24}" y2="95" stroke="#4f46e5" stroke-width="4"/>
-            </svg>
-            <div style="font-weight:700;margin-top:6px;">${label}</div>
-          </div>`;
+        const drawBox = (isEq, label) => `<div style="text-align:center"><svg width="100" height="100" viewBox="0 0 100 100"><rect x="5" y="5" width="90" height="90" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="4"/><line x1="${isEq ? 50 : 24}" y1="5" x2="${isEq ? 50 : 24}" y2="95" stroke="#4f46e5" stroke-width="4"/></svg><div style="font-weight:700;margin-top:6px;">${trK(label)}</div></div>`;
         visualArea.innerHTML = `<div style="display:flex;gap:36px;">${drawBox(eq, "Hình A")}${drawBox(!eq, "Hình B")}</div>`;
-      }
-      else if (q.template === "shape3d_svg") {
+      } else if (q.template === "shape3d_svg") {
         const s = q.visualData.shape;
-        let inner = "";
-        if (s === "sphere") inner = `<circle cx="80" cy="80" r="56" fill="#3b82f6"/><ellipse cx="64" cy="60" rx="18" ry="10" fill="#93c5fd" opacity="0.6"/>`;
-        if (s === "cube") inner = `<polygon points="40,50 100,50 100,110 40,110" fill="#6366f1"/><polygon points="40,50 65,30 125,30 100,50" fill="#a5b4fc"/><polygon points="100,50 125,30 125,90 100,110" fill="#4338ca"/>`;
-        if (s === "cylinder") inner = `<rect x="45" y="40" width="70" height="80" fill="#10b981"/><ellipse cx="80" cy="40" rx="35" ry="12" fill="#6ee7b7"/><ellipse cx="80" cy="120" rx="35" ry="12" fill="#059669"/>`;
-        if (s === "cone") inner = `<polygon points="80,22 40,122 120,122" fill="#f59e0b"/><ellipse cx="80" cy="122" rx="40" ry="12" fill="#d97706"/>`;
-        visualArea.innerHTML = `<svg width="160" height="150" viewBox="0 0 160 150">${inner}</svg>`;
-      }
-      else if (q.template === "chart_bar") {
+        const map3d = {
+          sphere: `<circle cx="80" cy="80" r="56" fill="#3b82f6"/><ellipse cx="64" cy="60" rx="18" ry="10" fill="#93c5fd" opacity="0.6"/>`,
+          cube: `<polygon points="40,50 100,50 100,110 40,110" fill="#6366f1"/><polygon points="40,50 65,30 125,30 100,50" fill="#a5b4fc"/><polygon points="100,50 125,30 125,90 100,110" fill="#4338ca"/>`,
+          cylinder: `<rect x="45" y="40" width="70" height="80" fill="#10b981"/><ellipse cx="80" cy="40" rx="35" ry="12" fill="#6ee7b7"/><ellipse cx="80" cy="120" rx="35" ry="12" fill="#059669"/>`,
+          cone: `<polygon points="80,22 40,122 120,122" fill="#f59e0b"/><ellipse cx="80" cy="122" rx="40" ry="12" fill="#d97706"/>`
+        };
+        visualArea.innerHTML = `<svg width="160" height="150" viewBox="0 0 160 150">${map3d[s] || ""}</svg>`;
+      } else if (q.template === "chart_bar") {
         visualArea.innerHTML = `<div class="chart-table">${q.visualData.rows.map(r => `<div class="chart-row"><span>${r.icon}</span><span>|</span><span>${Array(r.count).fill(r.icon).join(" ")}</span></div>`).join("")}</div>`;
       }
     }
 
     function launchFireworks() {
       const canvas = document.getElementById("fireworksCanvas");
+      if (!canvas) return;
       const ctx = canvas.getContext("2d");
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
       const colors = ["#ef4444", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899"];
       const particles = [];
-
-      // Tạo 4 chùm pháo hoa ở các vị trí ngẫu nhiên nửa trên màn hình
       for (let b = 0; b < 4; b++) {
-        const cx = canvas.width * (0.2 + Math.random() * 0.6);
-        const cy = canvas.height * (0.15 + Math.random() * 0.35);
-        for (let i = 0; i < 45; i++) {
-          const angle = (Math.PI * 2 * i) / 45 + Math.random() * 0.2;
-          const speed = 2 + Math.random() * 5.5;
-          particles.push({
-            x: cx, y: cy,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            alpha: 1,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: 3 + Math.random() * 3
-          });
+        const cx = canvas.width * (0.2 + Math.random() * 0.6), cy = canvas.height * (0.15 + Math.random() * 0.35);
+        for (let i = 0; i < 40; i++) {
+          const angle = (Math.PI * 2 * i) / 40, speed = 2 + Math.random() * 5;
+          particles.push({ x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, alpha: 1, color: colors[i % colors.length], size: 4 });
         }
       }
-
-      const startTime = Date.now();
       function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = particles.length - 1; i >= 0; i--) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.08; // Trọng lực rơi nhẹ
-          p.alpha -= 0.015;
-          if (p.alpha <= 0) {
-            particles.splice(i, 1);
-            continue;
-          }
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
+          const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.alpha -= 0.018;
+          if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+          ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
         }
         ctx.globalAlpha = 1;
-
-        if (particles.length > 0 && Date.now() - startTime < 3500) {
-          requestAnimationFrame(animate);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        if (particles.length > 0) requestAnimationFrame(animate);
       }
       animate();
     }
@@ -1230,19 +1302,10 @@
       q.options.forEach(opt => {
         const btn = document.createElement("button");
         btn.className = "opt-btn";
-
         let optValue = opt;
-        if (q.template === "pick_group") {
-          btn.classList.add("group-opt");
-          btn.textContent = opt.icons.join(" ");
-          optValue = opt.value;
-        } else if (q.template === "compare_groups") {
-          btn.textContent = opt.label;
-          optValue = opt.value;
-        } else {
-          btn.textContent = opt;
-        }
-
+        if (q.template === "pick_group") { btn.classList.add("group-opt"); btn.textContent = opt.icons.join(" "); optValue = opt.value; }
+        else if (q.template === "compare_groups") { btn.textContent = opt.label; optValue = opt.value; }
+        else { btn.textContent = opt; }
         btn.onclick = () => checkAnswer(optValue, btn);
         optionsArea.appendChild(btn);
       });
@@ -1251,8 +1314,6 @@
     function checkAnswer(selected, btnElement) {
       if (answered) return;
       answered = true;
-
-
       if (selected === currentQuestion.correctAnswer) {
         const prevScore = score;
         score = Math.min(100, score + 10);
@@ -1260,12 +1321,11 @@
         btnElement.style.borderColor = "var(--success)";
         btnElement.style.background = "var(--success-bg)";
         feedbackBox.className = "feedback ok";
-
         if (prevScore < 100 && score === 100) {
-          feedbackMsg.textContent = "🏆 XUẤT SẮC! Bé đã đạt 100 điểm và giành huy hiệu Vàng!";
+          feedbackMsg.textContent = isEn ? "🏆 AWESOME! You reached 100 points and won the Gold Medal!" : "🏆 XUẤT SẮC! Bé đã đạt 100 điểm và giành huy hiệu Vàng!";
           launchFireworks();
         } else {
-          feedbackMsg.textContent = "🎉 Tuyệt vời! Bé trả lời chính xác rồi!";
+          feedbackMsg.textContent = isEn ? "🎉 Great job! That is correct!" : "🎉 Tuyệt vời! Bé trả lời chính xác rồi!";
         }
       } else {
         score = Math.max(0, score - 5);
@@ -1273,93 +1333,70 @@
         btnElement.style.borderColor = "var(--warn)";
         btnElement.style.background = "var(--warn-bg)";
         feedbackBox.className = "feedback err";
-        feedbackMsg.textContent = `💡 Chưa đúng rồi! Gợi ý: ${currentQuestion.hint}`;
+        feedbackMsg.textContent = isEn ? `💡 Not quite! Correct answer: ${currentQuestion.correctAnswer}` : `💡 Chưa đúng rồi! Gợi ý: ${currentQuestion.hint}`;
       }
-
-      savedProgress[currentLesson] = {
-        score,
-        best: Math.max(savedProgress[currentLesson]?.best || 0, score)
-      };
-
-      fetch('/api/skill-progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skillId: currentLesson, score })
-      }).catch(() => {});
+      savedProgress[currentLesson] = { score, best: Math.max(savedProgress[currentLesson]?.best || 0, score) };
+      fetch("/api/skill-progress", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ skillId: currentLesson, score }) }).catch(() => {});
     }
 
     document.getElementById("nextBtn").onclick = loadQuestion;
 
-    // --- CHUYỂN ĐỔI 3 TAB ---
     const tabs = document.querySelectorAll(".mode-tab");
-    const panels = {
-      skills: document.getElementById("panel-skills"),
-      videos: document.getElementById("panel-videos"),
-      games: document.getElementById("panel-games")
-    };
-
+    const panels = { skills: document.getElementById("panel-skills"), videos: document.getElementById("panel-videos"), games: document.getElementById("panel-games") };
     tabs.forEach(btn => {
       btn.onclick = () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        btn.classList.add("active");
+        tabs.forEach(t => t.classList.remove("active")); btn.classList.add("active");
         Object.values(panels).forEach(p => p.classList.add("hidden"));
         panels[btn.dataset.tab].classList.remove("hidden");
         if (btn.dataset.tab === "games") startBalloonRound();
       };
     });
 
-    // --- TAB VIDEO (Dễ dàng gắn link YouTube ID thật của bạn) ---
-    const VIDEOS = [
-      { title: "Bài giảng 1: Tập đếm từ 1 đến 10", desc: "Học đếm qua đồ vật quen thuộc.", emoji: "🔢", youtubeId: "" },
-      { title: "Bài giảng 2: Nhận biết Hình tròn, Vuông, Tam giác", desc: "Phân biệt các hình 2D cơ bản.", emoji: "🔺", youtubeId: "" },
-      { title: "Bài giảng 3: Làm quen Phép cộng bằng hình ảnh", desc: "Gộp 2 nhóm đồ vật trong phạm vi 10.", emoji: "➕", youtubeId: "" },
-      { title: "Bài giảng 4: Xem đồng hồ giờ đúng", desc: "Cách nhìn kim ngắn và kim dài.", emoji: "🕒", youtubeId: "" }
-    ];
+    function renderVideos() {
+      const VIDEOS = [
+        { title: isEn ? "Lesson 1: Counting from 1 to 10" : "Bài giảng 1: Tập đếm từ 1 đến 10", desc: isEn ? "Learn counting with familiar objects." : "Học đếm qua đồ vật quen thuộc.", emoji: "🔢", youtubeId: "" },
+        { title: isEn ? "Lesson 2: Circles, Squares & Triangles" : "Bài giảng 2: Nhận biết Hình tròn, Vuông, Tam giác", desc: isEn ? "Identify basic 2D shapes." : "Phân biệt các hình 2D cơ bản.", emoji: "🔺", youtubeId: "" },
+        { title: isEn ? "Lesson 3: Visual Addition within 10" : "Bài giảng 3: Làm quen Phép cộng bằng hình ảnh", desc: isEn ? "Combine two groups of items." : "Gộp 2 nhóm đồ vật trong phạm vi 10.", emoji: "➕", youtubeId: "" },
+        { title: isEn ? "Lesson 4: Reading Exact Hours" : "Bài giảng 4: Xem đồng hồ giờ đúng", desc: isEn ? "Read the hour and minute hands." : "Cách nhìn kim ngắn và kim dài.", emoji: "🕒", youtubeId: "" }
+      ];
+      document.getElementById("videoGrid").innerHTML = VIDEOS.map((v, idx) => {
+        const locked = !isLoggedIn && idx >= 1;
+        return `
+          <div class="video-card" style="${locked ? "opacity:0.78;border-style:dashed;cursor:pointer;" : ""}" onclick="${locked ? "document.getElementById('lockModal').classList.add('open')" : ""}">
+            <div class="video-thumb">
+              <span>${locked ? "🔒" : v.emoji}</span>
+              <small>${locked ? "VIP" : (isEn ? "Free Sample" : "Miễn phí")}</small>
+            </div>
+            <div style="font-weight:700;font-size:1.05rem;">${v.title}</div>
+            <div style="font-size:0.9rem;color:var(--muted);">${v.desc}</div>
+          </div>`;
+      }).join("");
+    }
 
-    const videoGrid = document.getElementById("videoGrid");
-    videoGrid.innerHTML = VIDEOS.map(v => `
-      <div class="video-card">
-        ${v.youtubeId
-          ? `<iframe width="100%" height="170" style="border-radius:12px;border:none;" src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen></iframe>`
-          : `<div class="video-thumb"><span>${v.emoji}</span><small>Chưa gắn YouTube ID</small></div>`
-        }
-        <div style="font-weight:700;font-size:1.05rem;">${v.title}</div>
-        <div style="font-size:0.9rem;color:var(--muted);">${v.desc}</div>
-      </div>
-    `).join("");
-
-    // --- TAB TRÒ CHƠI: BẮT BÓNG SỐ ĐÚNG ---
     let gameScore = 0;
     function startBalloonRound() {
       const target = Math.floor(Math.random() * 10) + 1;
-      const gamePrompt = document.getElementById("gamePrompt");
-      const gameBoard = document.getElementById("gameBoard");
-      const gameMsg = document.getElementById("gameMsg");
-
-      gamePrompt.textContent = `Bé hãy bấm vào quả bóng mang số ${target} nhé!`;
-      gameMsg.textContent = "";
-
+      document.getElementById("gamePrompt").textContent = isEn ? `Tap the balloon with number ${target}!` : `Bé hãy bấm vào quả bóng mang số ${target} nhé!`;
+      document.getElementById("gameMsg").textContent = "";
       const set = new Set([target]);
       while (set.size < 5) set.add(Math.floor(Math.random() * 10) + 1);
       const nums = Array.from(set).sort(() => Math.random() - 0.5);
       const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
-
+      const gameBoard = document.getElementById("gameBoard");
       gameBoard.innerHTML = "";
       nums.forEach((num, idx) => {
         const b = document.createElement("button");
-        b.className = "balloon-btn";
-        b.style.background = colors[idx % colors.length];
-        b.textContent = num;
+        b.className = "balloon-btn"; b.style.background = colors[idx % colors.length]; b.textContent = num;
         b.onclick = () => {
+          const gameMsg = document.getElementById("gameMsg");
           if (num === target) {
-            gameScore += 10;
-            document.getElementById("gameScore").textContent = gameScore;
+            gameScore += 10; document.getElementById("gameScore").textContent = gameScore;
             gameMsg.style.color = "var(--success)";
-            gameMsg.textContent = "🎉 Đúng rồi! Đang tạo bóng mới...";
+            gameMsg.textContent = isEn ? "🎉 Correct! Next round..." : "🎉 Đúng rồi! Đang tạo bóng mới...";
             setTimeout(startBalloonRound, 900);
           } else {
             gameMsg.style.color = "var(--warn)";
-            gameMsg.textContent = `Ôi, đó là số ${num} rồi! Tìm số ${target} cơ mà.`;
+            gameMsg.textContent = isEn ? `Oops, that's ${num}! Find ${target}!` : `Ôi, đó là số ${num} rồi! Tìm số ${target} cơ mà.`;
           }
         };
         gameBoard.appendChild(b);
@@ -1367,14 +1404,11 @@
     }
 
     loadProgress();
-
-    // Tự động mở đúng tab Videos / Games khi bấm từ trang chủ (?tab=videos | games)
-    const urlTab = new URLSearchParams(window.location.search).get('tab');
+    const urlTab = new URLSearchParams(window.location.search).get("tab");
     if (urlTab && panels[urlTab]) {
       const targetBtn = document.querySelector(`.mode-tab[data-tab="${urlTab}"]`);
       if (targetBtn) targetBtn.click();
     }
-
   </script>
 </body>
 

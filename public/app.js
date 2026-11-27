@@ -16,25 +16,34 @@ async function loadCourses() {
   }
 }
 
+function translateGradeName(rawGrade, lang) {
+  if (lang !== 'en') return rawGrade;
+  const g = (rawGrade || '').toLowerCase();
+  if (g.includes('mầm non')) return 'Kindergarten';
+  for (let i = 1; i <= 9; i++) {
+    if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) return `Grade ${i}`;
+  }
+  return rawGrade;
+}
+
 function renderFilters() {
   const lang = localStorage.getItem('mathpro_lang') || 'vi';
   const allLabel = lang === 'en' ? 'All' : 'Tất cả';
-  const grades = [allLabel, ...new Set(allCourses.map(c => c.grade))];
+  const rawGrades = [...new Set(allCourses.map(c => c.grade))];
   const filterBar = document.getElementById('grade-filters');
   if (!filterBar) return;
 
-  filterBar.innerHTML = grades.map((g, idx) => `
-    <button class="filter-btn ${idx === 0 ? 'active' : ''}" data-grade="${idx === 0 ? 'ALL' : g}">${g}</button>
-  `).join('');
+  filterBar.innerHTML = [
+    `<button class="filter-btn active" data-grade="ALL">${allLabel}</button>`,
+    ...rawGrades.map(g => `<button class="filter-btn" data-grade="${g}">${translateGradeName(g, lang)}</button>`)
+  ].join('');
 
   filterBar.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const selected = btn.dataset.grade;
-      const filtered = selected === 'ALL'
-        ? allCourses
-        : allCourses.filter(c => c.grade === selected);
+      const filtered = selected === 'ALL' ? allCourses : allCourses.filter(c => c.grade === selected);
       renderCourses(filtered);
     });
   });
@@ -46,42 +55,38 @@ function renderCourses(courses) {
   const lang = localStorage.getItem('mathpro_lang') || 'vi';
 
   const gradeStyles = {
-    'mầm non': { badge: 'K', color: '#f59e0b', en: 'Kindergarten' },
-    'lớp 1':   { badge: '1', color: '#65a30d', en: 'Grade 1' },
-    'lớp 2':   { badge: '2', color: '#dc2626', en: 'Grade 2' },
-    'lớp 3':   { badge: '3', color: '#0284c7', en: 'Grade 3' },
-    'lớp 4':   { badge: '4', color: '#7c3aed', en: 'Grade 4' },
-    'lớp 5':   { badge: '5', color: '#059669', en: 'Grade 5' },
-    'lớp 6':   { badge: '6', color: '#ea580c', en: 'Grade 6' },
-    'lớp 7':   { badge: '7', color: '#15803d', en: 'Grade 7' },
-    'lớp 8':   { badge: '8', color: '#ca8a04', en: 'Grade 8' },
-    'lớp 9':   { badge: '9', color: '#6d28d9', en: 'Grade 9' }
+    'mầm non': { badge: 'K', color: '#f59e0b', en: 'Kindergarten', enDesc: 'Number recognition, visual counting, patterns, and early logical thinking.' },
+    'lớp 1':   { badge: '1', color: '#65a30d', en: 'Grade 1', enDesc: 'Addition & subtraction within 20, place value, time, and 2D/3D shapes.' },
+    'lớp 2':   { badge: '2', color: '#dc2626', en: 'Grade 2', enDesc: '3-digit operations, mental math, measurement, and intro to multiplication.' },
+    'lớp 3':   { badge: '3', color: '#0284c7', en: 'Grade 3', enDesc: 'Multiplication & division tables, perimeter, area, and basic fractions.' },
+    'lớp 4':   { badge: '4', color: '#7c3aed', en: 'Grade 4', enDesc: 'Multi-digit operations, divisibility, fractions, angles, and word problems.' },
+    'lớp 5':   { badge: '5', color: '#059669', en: 'Grade 5', enDesc: 'Decimals, percentages, geometry, volume, and rate-time-distance problems.' },
+    'lớp 6':   { badge: '6', color: '#ea580c', en: 'Grade 6', enDesc: 'Integers, exponents, GCF/LCM, ratios, percents, and algebraic expressions.' },
+    'lớp 7':   { badge: '7', color: '#15803d', en: 'Grade 7', enDesc: 'Rational numbers, proportions, two-step equations, inequalities, and probability.' },
+    'lớp 8':   { badge: '8', color: '#ca8a04', en: 'Grade 8', enDesc: 'Real numbers, linear functions, slope, systems of equations, and Pythagorean theorem.' },
+    'lớp 9':   { badge: '9', color: '#6d28d9', en: 'Grade 9', enDesc: 'Quadratics, Vieta’s formulas, radicals, trigonometry, and circle geometry.' }
   };
 
   grid.innerHTML = courses.map(c => {
     const g = (c.grade || '').toLowerCase();
     let href = `/course.html?id=${c.id}`;
     let lessonCount = c.lesson_count || 0;
-    let style = { badge: 'M', color: '#0b5ed7', en: c.grade };
+    let style = { badge: 'M', color: '#0b5ed7', en: c.grade, enDesc: c.description };
     let gradeNum = 0;
 
     if (g.includes('mầm non')) {
-      href = '/kindergarten.html';
-      lessonCount = 42;
-      style = gradeStyles['mầm non'];
+      href = '/kindergarten.html'; lessonCount = 42; style = gradeStyles['mầm non'];
     } else {
       for (let i = 1; i <= 9; i++) {
         if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) {
-          href = `/grade${i}.html`;
-          lessonCount = 44;
-          gradeNum = i;
-          style = gradeStyles[`lớp ${i}`] || style;
-          break;
+          href = `/grade${i}.html`; lessonCount = 44; gradeNum = i;
+          style = gradeStyles[`lớp ${i}`] || style; break;
         }
       }
     }
 
-    const displayGrade = lang === 'en' ? (style.en || c.grade) : c.grade;
+    const displayGrade = lang === 'en' ? style.en : c.grade;
+    const displayDesc = lang === 'en' ? style.enDesc : c.description;
     const lblMath = lang === 'en' ? 'Math Thinking' : 'Toán tư duy';
     const lblPractice = lang === 'en' ? 'Practice' : 'Luyện tập';
     const lblLecture = lang === 'en' ? 'Lectures' : 'Bài giảng';
@@ -106,8 +111,7 @@ function renderCourses(courses) {
           <div class="ixl-row-actions">
             <a href="${href}?tab=videos" class="ixl-link">🎬 ${lblVideos} &rsaquo;</a>
           </div>
-        </div>
-      `
+        </div>`
       : `
         <div class="ixl-row">
           <span class="ixl-row-label">${lblMath}</span>
@@ -124,8 +128,7 @@ function renderCourses(courses) {
             <span class="ixl-sep">|</span>
             <a href="${href}?tab=fluency" class="ixl-link">${lblFluency} &rsaquo;</a>
           </div>
-        </div>
-      `;
+        </div>`;
 
     return `
       <div class="ixl-card" style="--grade-color: ${style.color};">
@@ -134,13 +137,10 @@ function renderCourses(courses) {
             <div class="ixl-badge">${style.badge}</div>
             <a href="${href}" class="ixl-title">${displayGrade}</a>
           </div>
-          <p class="ixl-desc">${c.description}</p>
+          <p class="ixl-desc">${displayDesc}</p>
         </div>
-        <div class="ixl-links">
-          ${linksHtml}
-        </div>
-      </div>
-    `;
+        <div class="ixl-links">${linksHtml}</div>
+      </div>`;
   }).join('');
 }
 

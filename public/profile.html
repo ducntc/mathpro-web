@@ -314,6 +314,71 @@
   </main>
 
   <script>
+    const isEn = (localStorage.getItem('mathpro_lang') || 'vi') === 'en';
+
+    function trGrade(raw) {
+      if (!isEn) return raw;
+      const g = (raw || '').toLowerCase();
+      if (g.includes('mầm non')) return 'Kindergarten';
+      for (let i = 1; i <= 9; i++) {
+        if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) return `Grade ${i}`;
+      }
+      return raw;
+    }
+
+    function trCourseTitle(rawGrade, rawTitle) {
+      if (!isEn) return rawTitle;
+      const g = (rawGrade || '').toLowerCase();
+      if (g.includes('mầm non')) return 'Early Math Thinking';
+      for (let i = 1; i <= 9; i++) {
+        if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) return `Grade ${i} Interactive Math`;
+      }
+      return rawTitle;
+    }
+
+    // 1. Đồng bộ toàn bộ nhãn giao diện tĩnh trên trang
+    function applyStaticProfileI18n() {
+      document.title = isEn ? 'Learning Profile - MathPro' : 'Hồ sơ học tập - MathPro';
+      const navHome = document.querySelector('.nav-btn-home');
+      const navCourses = document.querySelector('nav a[href="/#courses"]');
+      const navLogout = document.getElementById('logout-btn');
+      if (navHome) navHome.innerHTML = isEn ? '🏠 Home' : '🏠 Trang chủ';
+      if (navCourses) navCourses.innerHTML = isEn ? '📚 Courses' : '📚 Khóa học';
+      if (navLogout) navLogout.textContent = isEn ? 'Sign Out' : 'Đăng xuất';
+
+      const bannerTitle = document.querySelector('.profile-banner h1');
+      const bannerBtn = document.querySelector('.profile-banner .btn-sm');
+      if (bannerTitle) bannerTitle.textContent = isEn ? '🎓 Learning Profile' : '🎓 Hồ Sơ Học Tập';
+      if (bannerBtn) bannerBtn.textContent = isEn ? 'Continue Practicing →' : 'Tiếp tục luyện tập →';
+      document.getElementById('user-info').textContent = isEn ? 'Loading student info...' : 'Đang tải thông tin học viên...';
+
+      const statLabels = document.querySelectorAll('.stat-label');
+      if (statLabels[0]) statLabels[0].textContent = isEn ? 'Completed Skills & Lessons' : 'Bài học đã hoàn thành';
+      if (statLabels[1]) statLabels[1].textContent = isEn ? 'Average Quiz Score' : 'Điểm TB trắc nghiệm';
+      if (statLabels[2]) statLabels[2].textContent = isEn ? 'Total Stars Earned' : 'Sao tích lũy';
+
+      const secTitles = document.querySelectorAll('.section-title');
+      if (secTitles[0]) secTitles[0].textContent = isEn ? '📚 Progress by Grade Level' : '📚 Tiến Độ Theo Khối Lớp';
+      if (secTitles[1]) secTitles[1].textContent = isEn ? '🕒 Learning History & Scores' : '🕒 Lịch Sử Học Tập & Điểm Số';
+      if (secTitles[2]) secTitles[2].textContent = isEn ? '💎 Membership Status (VIP)' : '💎 Trạng thái gói học (VIP)';
+      if (secTitles[3]) secTitles[3].textContent = isEn ? '🔑 Change Password' : '🔑 Đổi mật khẩu';
+
+      const ths = document.querySelectorAll('thead th');
+      if (ths[0]) ths[0].textContent = isEn ? 'Grade' : 'Khối lớp';
+      if (ths[1]) ths[1].textContent = isEn ? 'Lesson' : 'Bài học';
+      if (ths[2]) ths[2].textContent = isEn ? 'Score' : 'Điểm số';
+      if (ths[3]) ths[3].textContent = isEn ? 'Action' : 'Thao tác';
+
+      const lblCur = document.querySelector('label[for="currentPass"]');
+      const lblNew = document.querySelector('label[for="newPass"]');
+      const lblCon = document.querySelector('label[for="confirmPass"]');
+      const btnPass = document.querySelector('#changePassForm .btn-full');
+      if (lblCur) lblCur.textContent = isEn ? 'Current Password' : 'Mật khẩu hiện tại';
+      if (lblNew) lblNew.textContent = isEn ? 'New Password (min 6 chars)' : 'Mật khẩu mới (tối thiểu 6 ký tự)';
+      if (lblCon) lblCon.textContent = isEn ? 'Confirm New Password' : 'Nhập lại mật khẩu mới';
+      if (btnPass) btnPass.textContent = isEn ? 'Update Password' : 'Cập nhật mật khẩu';
+    }
+
     async function loadProfile() {
       const [res, skillRes] = await Promise.all([
         fetch('/api/profile'),
@@ -321,7 +386,7 @@
       ]);
 
       if (res.status === 401) {
-        alert('Vui lòng đăng nhập để xem hồ sơ học tập!');
+        alert(isEn ? 'Please sign in to view your learning profile!' : 'Vui lòng đăng nhập để xem hồ sơ học tập!');
         window.location.href = '/login.html';
         return;
       }
@@ -339,7 +404,9 @@
         totalDynamicDone += gDone[i];
       }
 
-      document.getElementById('user-info').textContent = `Học viên: ${data.user.name} (${data.user.email})`;
+      document.getElementById('user-info').textContent = isEn
+        ? `Student: ${data.user.name} (${data.user.email})`
+        : `Học viên: ${data.user.name} (${data.user.email})`;
       document.getElementById('stat-completed').textContent = data.stats.completedCount + totalDynamicDone;
       document.getElementById('stat-avg').textContent = `${data.stats.avgPercent}%`;
       document.getElementById('stat-stars').textContent = `⭐ ${data.stats.stars + totalDynamicDone * 10}`;
@@ -357,19 +424,23 @@
           }
         }
         const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const btnLabel = pct > 0 && pct < 100
+          ? (isEn ? 'Continue →' : 'Học tiếp →')
+          : (isEn ? 'Start Learning →' : 'Vào học ngay →');
+
         return `
           <div class="course-card">
             <div>
-              <div class="course-grade">${c.grade}</div>
-              <div class="course-name">${c.title}</div>
+              <div class="course-grade">${trGrade(c.grade)}</div>
+              <div class="course-name">${trCourseTitle(c.grade, c.title)}</div>
             </div>
             <div>
               <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
               <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted); margin-bottom:10px;">
-                <span>Đã học: <strong>${completed}/${total}</strong></span>
+                <span>${isEn ? 'Completed:' : 'Đã học:'} <strong>${completed}/${total}</strong></span>
                 <strong>${pct}%</strong>
               </div>
-              <a href="${href}" class="btn-sm" style="width:100%;">${pct > 0 && pct < 100 ? 'Học tiếp →' : 'Vào học ngay →'}</a>
+              <a href="${href}" class="btn-sm" style="width:100%;">${btnLabel}</a>
             </div>
           </div>
         `;
@@ -379,16 +450,16 @@
         ? data.history.map(h => {
             const scoreText = h.quiz_total
               ? `<strong>${h.quiz_score}/${h.quiz_total}</strong> (${Math.round((h.quiz_score / h.quiz_total) * 100)}%)`
-              : '<span style="color:#64748b;">Đã đọc xong</span>';
+              : `<span style="color:#64748b;">${isEn ? 'Completed' : 'Đã đọc xong'}</span>`;
             return `
               <tr>
-                <td><strong>${h.grade}</strong></td>
-                <td>Bài ${h.lesson_order}: ${h.lesson_title}</td>
+                <td><strong>${trGrade(h.grade)}</strong></td>
+                <td>${isEn ? 'Lesson' : 'Bài'} ${h.lesson_order}: ${h.lesson_title}</td>
                 <td>${scoreText}</td>
-                <td><a href="/lesson.html?id=${h.lesson_id}" style="color:var(--blue); font-weight:700; text-decoration:none;">Ôn lại →</a></td>
+                <td><a href="/lesson.html?id=${h.lesson_id}" style="color:var(--blue); font-weight:700; text-decoration:none;">${isEn ? 'Review →' : 'Ôn lại →'}</a></td>
               </tr>`;
           }).join('')
-        : '<tr><td colspan="4" style="color:var(--muted);">Bạn chưa hoàn thành bài học nào. Hãy bắt đầu ngay nhé!</td></tr>';
+        : `<tr><td colspan="4" style="color:var(--muted);">${isEn ? 'No completed lessons yet. Start practicing now!' : 'Bạn chưa hoàn thành bài học nào. Hãy bắt đầu ngay nhé!'}</td></tr>`;
     }
 
     async function loadVipStatus() {
@@ -402,35 +473,45 @@
         const prog = await progRes.json();
 
         if (!user) {
-          box.innerHTML = 'Bạn chưa đăng nhập. <a href="/login.html" style="color:var(--blue);font-weight:700;">Đăng nhập ngay →</a>';
+          box.innerHTML = isEn
+            ? 'Not signed in. <a href="/login.html" style="color:var(--blue);font-weight:700;">Sign in now →</a>'
+            : 'Bạn chưa đăng nhập. <a href="/login.html" style="color:var(--blue);font-weight:700;">Đăng nhập ngay →</a>';
           return;
         }
         if (user.role === 'admin') {
           box.style.background = '#eef2ff';
           box.style.color = '#3730a3';
-          box.innerHTML = '👑 <strong>Tài khoản Quản trị viên</strong><br>Toàn quyền truy cập không giới hạn.';
+          box.innerHTML = isEn
+            ? '👑 <strong>Administrator Account</strong><br>Full unlimited access.'
+            : '👑 <strong>Tài khoản Quản trị viên</strong><br>Toàn quyền truy cập không giới hạn.';
           return;
         }
         if (prog.hasAccess && prog.vipExpiresAt) {
           const expDate = new Date(prog.vipExpiresAt);
           const daysLeft = Math.max(1, Math.ceil((expDate - new Date()) / (1000 * 60 * 60 * 24)));
-          const dateStr = expDate.toLocaleDateString('vi-VN', { timeZone: 'Asia/Bangkok', day: '2-digit', month: '2-digit', year: 'numeric' });
+          const dateStr = expDate.toLocaleDateString(isEn ? 'en-GB' : 'vi-VN', { timeZone: 'Asia/Bangkok', day: '2-digit', month: '2-digit', year: 'numeric' });
           box.style.background = '#dcfce7';
           box.style.color = '#166534';
-          box.innerHTML = `
-            <div>✅ <strong>Gói học đang hoạt động</strong></div>
-            <div>📅 Hết hạn: <strong>${dateStr}</strong> (còn <strong>${daysLeft}</strong> ngày)</div>
-            <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#16a34a;">Gia hạn thêm →</a>`;
+          box.innerHTML = isEn
+            ? `<div>✅ <strong>Active VIP Membership</strong></div>
+               <div>📅 Expires: <strong>${dateStr}</strong> (<strong>${daysLeft}</strong> days left)</div>
+               <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#16a34a;">Extend Membership →</a>`
+            : `<div>✅ <strong>Gói học đang hoạt động</strong></div>
+               <div>📅 Hết hạn: <strong>${dateStr}</strong> (còn <strong>${daysLeft}</strong> ngày)</div>
+               <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#16a34a;">Gia hạn thêm →</a>`;
         } else {
           box.style.background = '#fff7ed';
           box.style.color = '#c2410c';
-          box.innerHTML = `
-            <div>🔒 <strong>Chưa kích hoạt VIP</strong></div>
-            <div style="font-size:13px;">Bạn hiện chỉ xem được các bài học thử miễn phí.</div>
-            <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#f97316;">Đăng ký / Gia hạn ngay →</a>`;
+          box.innerHTML = isEn
+            ? `<div>🔒 <strong>VIP Not Activated</strong></div>
+               <div style="font-size:13px;">You currently have free trial access (10% of content).</div>
+               <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#f97316;">Upgrade VIP Now →</a>`
+            : `<div>🔒 <strong>Chưa kích hoạt VIP</strong></div>
+               <div style="font-size:13px;">Bạn hiện chỉ xem được các bài học thử miễn phí.</div>
+               <a href="/subscribe.html" class="btn-sm" style="margin-top:10px; background:#f97316;">Đăng ký / Gia hạn ngay →</a>`;
         }
       } catch (err) {
-        box.textContent = 'Không thể tải trạng thái gói học.';
+        box.textContent = isEn ? 'Unable to load membership status.' : 'Không thể tải trạng thái gói học.';
       }
     }
 
@@ -449,7 +530,7 @@
 
       if (newPassword !== confirmPassword) {
         msg.style.color = '#dc2626';
-        msg.textContent = 'Mật khẩu mới nhập lại không khớp!';
+        msg.textContent = isEn ? 'New passwords do not match!' : 'Mật khẩu mới nhập lại không khớp!';
         return;
       }
 
@@ -464,6 +545,7 @@
       if (res.ok) e.target.reset();
     });
 
+    applyStaticProfileI18n();
     loadProfile();
     loadVipStatus();
   </script>

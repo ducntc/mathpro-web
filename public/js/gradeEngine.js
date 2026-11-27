@@ -262,8 +262,136 @@ window.initGradePage = function (config) {
     if (tabName === 'lessons' && grade >= 6) renderLessons();
   };
 
+  function formatTopicOrSkill(raw) {
+    if (!raw) return '';
+    const isEn = (localStorage.getItem('mathpro_lang') || 'vi') === 'en';
+    let s = String(raw).replace(/\s*\(Free\)/gi, '').trim();
+
+    if (!isEn) {
+      // Chế độ Tiếng Việt: Gỡ phần tiếng Anh phụ trong ngoặc đơn ở cuối (VD: "Đếm & Quy luật số (Counting)")
+      return s.replace(/\s*\([A-Za-z][A-Za-z0-9\s\-&’'/.]+\)$/, '').trim();
+    }
+
+    // Chế độ Tiếng Anh: Nếu cuối tiêu đề đã có sẵn tên tiếng Anh chuẩn trong ngoặc đơn thì lấy luôn
+    const m = s.match(/^(.+?)\s*\(([A-Za-z][A-Za-z0-9\s\-&’'/.]+)\)$/);
+    if (m && !['VIP','cm','kg','ml','ha','GCF','LCM','PEMDAS','FOIL','Mean','Median','Scalar'].includes(m[2])) {
+      return m[2];
+    }
+
+    const rules = [
+      ['Đếm đồ vật đến', 'Count objects up to'],
+      ['Đếm cách', 'Skip-count by'],
+      ['Đếm & Quy luật số', 'Counting & Number Patterns'],
+      ['Cộng bằng hình ảnh trong phạm vi', 'Add with pictures within'],
+      ['Viết phép cộng tương ứng', 'Write addition sentences'],
+      ['Cộng với', 'Add'],
+      ['Cộng 3 số có 1 chữ số', 'Add three 1-digit numbers'],
+      ['Cộng qua 10 trong phạm vi', 'Add across 10 within'],
+      ['Cộng nhẩm qua 10', 'Mental addition across 10'],
+      ['Cộng nhẩm phạm vi', 'Mental addition within'],
+      ['Cộng tròn chục', 'Add multiples of 10'],
+      ['Cộng tròn trăm', 'Add multiples of 100'],
+      ['Cộng có nhớ phạm vi', 'Add with regrouping within'],
+      ['Tìm số còn thiếu trong phép cộng', 'Missing addends'],
+      ['Tìm số hạng còn thiếu', 'Find the missing addend'],
+      ['Bài toán có lời văn', 'Word problems'],
+      ['Bài toán bớt đi', 'Subtraction word problems'],
+      ['Toán đố phép cộng', 'Addition word problems'],
+      ['Toán đố phép trừ', 'Subtraction word problems'],
+      ['Trừ trong phạm vi', 'Subtract within'],
+      ['Trừ có nhớ phạm vi', 'Subtract with regrouping within'],
+      ['Trừ nhẩm phạm vi', 'Mental subtraction within'],
+      ['Trừ nhẩm qua 10', 'Mental subtraction across 10'],
+      ['Trừ tròn trăm', 'Subtract multiples of 100'],
+      ['Trừ với 0 và trừ chính nó', 'Subtract zero and all'],
+      ['Trừ đi', 'Subtract'],
+      ['Tách 10 để trừ', 'Make a 10 to subtract'],
+      ['Liên hệ giữa Cộng và Trừ', 'Relate addition and subtraction'],
+      ['Tìm số còn thiếu trong phép trừ', 'Missing numbers in subtraction'],
+      ['Tìm số bị trừ / số trừ', 'Find minuend or subtrahend'],
+      ['Cân bằng hai vế phép trừ', 'Balance subtraction equations'],
+      ['Chọn dấu + hoặc - thích hợp', 'Choose + or - sign'],
+      ['Tính giá trị biểu thức 2 bước', 'Evaluate 2-step expressions'],
+      ['Phân tích số thành Chục & Đơn vị', 'Tens and ones place value'],
+      ['Ghép Chục & Đơn vị thành số', 'Compose tens and ones'],
+      ['So sánh hai số đến', 'Compare numbers up to'],
+      ['So sánh số có', 'Compare numbers with'],
+      ['So sánh & Sắp xếp số', 'Compare & Order Numbers'],
+      ['So sánh', 'Compare'],
+      ['Tìm số lớn nhất / nhỏ nhất', 'Greatest and least numbers'],
+      ['Số liền trước, liền sau', 'Before and after numbers'],
+      ['Số chẵn, Số lẻ & Ước lượng', 'Even, Odd & Estimation'],
+      ['Số chẵn & Số lẻ', 'Even & Odd Numbers'],
+      ['Nhận biết số chẵn, số lẻ', 'Identify even and odd numbers'],
+      ['Tổng hai số chẵn/lẻ', 'Sum of even and odd numbers'],
+      ['Làm tròn đến hàng trăm nghìn', 'Round to hundred thousands'],
+      ['Làm tròn đến hàng nghìn', 'Round to thousands'],
+      ['Làm tròn đến hàng trăm', 'Round to hundreds'],
+      ['Làm tròn đến hàng chục gần nhất', 'Round to the nearest ten'],
+      ['Làm tròn đến hàng chục', 'Round to tens'],
+      ['Làm tròn đến hàng đơn vị', 'Round to whole numbers'],
+      ['Làm tròn đến hàng phần mười', 'Round to tenths'],
+      ['Làm tròn', 'Rounding'],
+      ['Ước lượng', 'Estimate'],
+      ['Đo độ dài bằng xăng-ti-mét', 'Measure length in cm'],
+      ['So sánh dài hơn / ngắn hơn', 'Longer and shorter'],
+      ['Xem giờ đúng', 'Read exact hours'],
+      ['Xem giờ rưỡi', 'Read half hours'],
+      ['Xem đồng hồ', 'Read clocks'],
+      ['Cộng giá trị tiền (nghìn đồng)', 'Add money amounts'],
+      ['Tính tiền thừa khi mua hàng', 'Calculate change'],
+      ['Tính tiền thừa khi mua sắm', 'Calculate change'],
+      ['Đọc số liệu từ bảng kiểm đếm', 'Read tally charts'],
+      ['So sánh nhiều hơn / ít hơn trên biểu đồ', 'Compare data on graphs'],
+      ['Nhận biết hình tròn, vuông, tam giác', 'Identify circles, squares, triangles'],
+      ['Đếm số cạnh và đỉnh của hình 2D', 'Sides and vertices of 2D shapes'],
+      ['Nhận biết khối lập phương, khối cầu, khối trụ', 'Identify cubes, spheres, cylinders'],
+      ['Đồ vật thực tế dạng khối 3D', 'Real-world 3D shapes'],
+      ['Nhận biết một nửa', 'Identify halves'],
+      ['Nhận biết một phần tư', 'Identify fourths'],
+      ['Bảng nhân', 'Multiply by'],
+      ['Bảng chia', 'Divide by'],
+      ['Phân số', 'Fractions'],
+      ['Số thập phân', 'Decimals'],
+      ['Phần trăm', 'Percents'],
+      ['Tỉ số', 'Ratios'],
+      ['Phương trình', 'Equations'],
+      ['Bất phương trình', 'Inequalities'],
+      ['Diện tích', 'Area of'],
+      ['Chu vi', 'Perimeter of'],
+      ['Thể tích', 'Volume of'],
+      ['Xác suất', 'Probability'],
+      ['Thống kê', 'Statistics'],
+      ['Lũy thừa', 'Exponents'],
+      ['Số nguyên', 'Integers'],
+      ['Số hữu tỉ', 'Rational numbers'],
+      ['Căn bậc hai', 'Square roots'],
+      ['Đa thức', 'Polynomials'],
+      ['Hàm số', 'Functions'],
+      ['Tam giác', 'Triangles'],
+      ['Hình tròn', 'Circles'],
+      ['Đổi', 'Convert'],
+      ['Tính', 'Calculate'],
+      ['Tìm', 'Find'],
+      ['Giải', 'Solve'],
+      ['Cộng', 'Add'],
+      ['Trừ', 'Subtract'],
+      ['Nhân', 'Multiply'],
+      ['Chia', 'Divide'],
+      ['chữ số', 'digits'],
+      ['phạm vi', 'within'],
+      ['Phạm vi', 'within'],
+      ['đến', 'up to'],
+      ['sang', 'to'],
+      ['và', '&']
+    ];
+    rules.forEach(([vi, en]) => { s = s.split(vi).join(en); });
+    return s;
+  }
+
   function renderTopics() {
     const container = document.getElementById('topics-container');
+    const isEn = (localStorage.getItem('mathpro_lang') || 'vi') === 'en';
     container.innerHTML = '';
     (topics || []).forEach(topic => {
       const card = document.createElement('div');
@@ -271,17 +399,17 @@ window.initGradePage = function (config) {
       card.innerHTML = `
         <div class="topic-header">
           <div class="topic-code">${topic.code}</div>
-          <div class="topic-title">${topic.title}</div>
+          <div class="topic-title">${formatTopicOrSkill(topic.title)}</div>
         </div>
         <ul class="skill-list">
           ${topic.skills.map(sk => {
             const saved = progressMap[sk.id] || 0;
             return `
               <li class="skill-item" onclick="startSkill('${sk.id}')">
-                <span class="skill-name">${sk.title}</span>
+                <span class="skill-name">${formatTopicOrSkill(sk.title)}</span>
                 <span class="skill-meta">
                   ${saved > 0 ? `<span class="score-pill">${saved}%</span>` : ''}
-                  ${sk.free ? `<span class="badge-free">Free</span>` : `<span class="badge-vip">VIP</span>`}
+                  ${sk.free ? `<span class="badge-free">${isEn ? 'Free' : 'Miễn phí'}</span>` : `<span class="badge-vip">VIP</span>`}
                 </span>
               </li>`;
           }).join('')}
@@ -631,7 +759,7 @@ window.initGradePage = function (config) {
     smartScore = progressMap[skill.id] || 0;
     document.getElementById('topics-container').style.display = 'none';
     document.getElementById('practice-arena').style.display = 'block';
-    document.getElementById('active-skill-title').innerText = skill.title;
+    document.getElementById('active-skill-title').innerText = formatTopicOrSkill(skill.title);
     updateScoreUI();
     nextQuestion();
   };
