@@ -55,7 +55,7 @@ window.generateGrade3Question = function (type, max = 100) {
     case 'times_less': { const k=r(2,5), ans=r(4,12), a=ans*k; return { q:`Đoạn thẳng dài ${a} cm giảm đi ${k} lần thì còn:`, opts:opts(ans,[a-k,ans+1,ans+2]), ans:String(ans) }; }
     case 'two_step': { const a=r(5,12),b=r(2,5),c=r(4,10), ans=a*b+c; return { q:`Có ${b} hộp, mỗi hộp ${a} cái kẹo và thêm ${c} cái lẻ. Tổng số kẹo:`, opts:opts(ans,[a+b+c,ans+5,ans-5]), ans:String(ans) }; }
     case 'unitary': { const n=r(3,6), u=r(4,10), m=r(2,5), ans=u*m; return { q:`${n} hộp đựng ${n*u} cái bánh. Hỏi ${m} hộp đựng bao nhiêu cái bánh?`, opts:opts(ans,[ans+u,ans-u,n*u]), ans:String(ans) }; }
-    case 'roman': { const map=[,[4,'IV'],[5,'V'],[9,'IX'],[10,'X'],[14,'XIV'],[19,'XIX']]; const p=map[r(0,map.length-1)]; return { q:`Số La Mã ${p} tương ứng với số nào?`, opts:opts(p[0],[p[0]+1,Math.max(1,p[0]-1),p[0]+2]), ans:String(p[0]) }; }
+    case 'roman': { const map=[[4,'IV'],[5,'V'],[9,'IX'],[10,'X'],[14,'XIV'],[19,'XIX']]; const p=map[r(0,map.length-1)]; return { q:`Số La Mã ${p} tương ứng với số nào?`, opts:opts(p[0],[p[0]+1,Math.max(1,p[0]-1),p[0]+2]), ans:String(p[0]) }; }
     case 'km_m': { const k=r(2,9), ans=`${k*1000} m`; return { q:`${k} km = ___ m?`, opts:sh([ans,`${k*100} m`,`${k*10} m`]), ans }; }
     case 'cm_mm': { const c=r(2,15), ans=`${c*10} mm`; return { q:`${c} cm = ___ mm?`, opts:sh([ans,`${c*100} mm`,`${c+10} mm`]), ans }; }
     case 'kg_g': { const k=r(2,8), ans=`${k*1000} g`; return { q:`${k} kg = ___ g?`, opts:sh([ans,`${k*100} g`,`${k*10} g`]), ans }; }

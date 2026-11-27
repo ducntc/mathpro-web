@@ -237,8 +237,9 @@ window.renderMathArcade = function (grade, launchFireworks) {
   function startBingo() {
     const cells = [];
     const used = new Set();
-    while (cells.length < 9) {
-      const a = r(2, grade * 3 + 5), b = r(2, grade >= 3 ? 9 : 9);
+    let guard = 0;
+    while (cells.length < 9 && guard++ < 200) {
+      const a = r(2, grade * 3 + 5), b = r(2, 12);
       const ans = grade >= 3 ? a * b : a + b;
       const q = grade >= 4 ? `${a} × x = ${ans} (x=?)` : `${a} ${grade >= 3 ? '×' : '+'} ${b} = ?`;
       const val = grade >= 4 ? b : ans;

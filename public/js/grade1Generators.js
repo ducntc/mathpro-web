@@ -260,7 +260,7 @@ window.generateGrade1Question = function (type, max = 20) {
       const a = rand(2, max), isZero = rand(0, 1) === 0;
       const b = isZero ? 0 : a;
       const ans = String(a - b);
-      return { q: `Tính nhanh: ${a} - ${b} = ?`, opts: makeOpts(ans,), ans };
+      return { q: `Tính nhanh: ${a} - ${b} = ?`, opts: makeOpts(ans, [a, b, 1]), ans };
     }
     case 'sub_small': {
       const a = rand(4, max), b = rand(1, 3);
