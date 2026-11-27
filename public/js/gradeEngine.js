@@ -5,8 +5,6 @@ window.initGradePage = function (config) {
   let currentSkill = null;
   let currentQuestion = null;
   let smartScore = 0;
-  let gameScore = 0;
-  let gameStreak = 0;
   const storageKey = `mathpro_g${grade}_progress`;
   let progressMap = JSON.parse(localStorage.getItem(storageKey) || '{}');
 
@@ -73,7 +71,7 @@ window.initGradePage = function (config) {
     document.head.appendChild(style);
   }
 
-  // 2. Thêm nút Quay lại Trang chủ vào Header (vị trí đầu thanh điều hướng)
+  // 2. Thêm nút Quay lại Trang chủ vào Header
   const navActions = document.querySelector('.nav-actions');
   if (navActions && !navActions.querySelector('.home-nav-btn')) {
     const homeBtn = document.createElement('a');
@@ -104,6 +102,9 @@ window.initGradePage = function (config) {
     document.getElementById('tab-' + tabName).classList.add('active');
     btn.classList.add('active');
     if (tabName === 'games') initGame();
+    if (tabName === 'fluency' && window.renderFluencyZone) {
+      window.renderFluencyZone(grade, launchFireworks);
+    }
   };
 
   function renderTopics() {
@@ -277,110 +278,12 @@ window.initGradePage = function (config) {
     alert(next === 'en' ? 'Switched to English!' : 'Đã chuyển sang Tiếng Việt!');
   };
 
-  // 4. Giao diện Tab Games nâng cấp (Bắn Bóng Phép Tính)
+  // 4. Giao diện Tab Games (Math Arcade)
   window.initGame = function () {
-    const tabGames = document.getElementById('tab-games');
-    if (tabGames && !tabGames.querySelector('.game-arena')) {
-      tabGames.innerHTML = `
-        <div class="game-arena">
-          <span class="badge-free">Mini Game Tương Tác</span>
-          <h2 style="margin:10px 0; color:#1e3a8a;">🎈 Bắn Bóng Phép Tính</h2>
-          <div class="game-hud">
-            <span class="game-pill">🏆 Điểm: <span id="g-score">${gameScore}</span></span>
-            <span class="game-pill">🔥 Chuỗi đúng: <span id="g-streak">${gameStreak}</span></span>
-          </div>
-          <p id="game-prompt" style="font-size:22px;font-weight:800;margin:14px 0 22px;color:#0f172a;"></p>
-          <div class="options-grid" id="game-options"></div>
-          <div id="game-fb" class="feedback-msg"></div>
-          <button class="btn-primary" style="margin-top:20px;" onclick="initGame()">🔄 Đổi câu mới</button>
-        </div>`;
+    if (window.renderMathArcade) {
+      window.renderMathArcade(grade, launchFireworks);
     }
-
-    const a = Math.floor(Math.random() * (grade * 10)) + 5;
-    const b = Math.floor(Math.random() * (grade * 5)) + 2;
-    const target = grade >= 3 ? a * b : a + b;
-    const op = grade >= 3 ? '×' : '+';
-    document.getElementById('game-prompt').innerText = `Tìm quả bóng có kết quả bằng ${target}:`;
-    document.getElementById('game-fb').innerText = '';
-    const opts = [
-      { label: `🎈 ${a} ${op} ${b}`, ok: true },
-      { label: `🎈 ${a + 1} ${op} ${b}`, ok: false },
-      { label: `🎈 ${a} ${op} ${b + 1}`, ok: false }
-    ].sort(() => Math.random() - 0.5);
-
-    const box = document.getElementById('game-options');
-    box.innerHTML = '';
-    opts.forEach((o, idx) => {
-      const btn = document.createElement('button');
-      btn.className = `balloon-btn b-c${idx % 3}`;
-      btn.innerText = o.label;
-      btn.onclick = () => {
-        const fb = document.getElementById('game-fb');
-        if (o.ok) {
-          gameScore += 10;
-          gameStreak++;
-          fb.innerText = '💥 Tuyệt vời! Bóng đã nổ (+10 điểm)!';
-          fb.className = 'feedback-msg fb-ok';
-          if (gameStreak % 5 === 0) launchFireworks();
-          setTimeout(initGame, 800);
-        } else {
-          gameStreak = 0;
-          fb.innerText = '😅 Trượt rồi, chọn lại quả bóng khác nhé!';
-          fb.className = 'feedback-msg fb-err';
-        }
-        document.getElementById('g-score').innerText = gameScore;
-        document.getElementById('g-streak').innerText = gameStreak;
-      };
-      box.appendChild(btn);
-    });
   };
-
-  // Fluency Zone
-  let fzTimer = null, fzScore = 0, fzAns = 0;
-  window.startFluency = function () {
-    fzScore = 0;
-    let timeLeft = 30;
-    document.getElementById('fz-score').innerText = fzScore;
-    document.getElementById('fz-time').innerText = timeLeft;
-    const input = document.getElementById('fz-input');
-    input.disabled = false;
-    input.value = '';
-    input.focus();
-    nextFluency();
-    clearInterval(fzTimer);
-    fzTimer = setInterval(() => {
-      timeLeft--;
-      document.getElementById('fz-time').innerText = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(fzTimer);
-        input.disabled = true;
-        document.getElementById('fz-question').innerText = `Hết giờ! Tổng điểm: ${fzScore} 🎉`;
-        if (fzScore >= 50) launchFireworks();
-      }
-    }, 1000);
-  };
-
-  function nextFluency() {
-    const maxN = fluencyMax || grade * 12;
-    const a = Math.floor(Math.random() * maxN) + 2;
-    const b = Math.floor(Math.random() * (grade >= 3 ? 9 : maxN)) + 2;
-    if (grade >= 3) {
-      fzAns = a * b;
-      document.getElementById('fz-question').innerText = `${a} × ${b} = ?`;
-    } else {
-      fzAns = a + b;
-      document.getElementById('fz-question').innerText = `${a} + ${b} = ?`;
-    }
-  }
-
-  document.getElementById('fz-input').addEventListener('input', function () {
-    if (parseInt(this.value, 10) === fzAns) {
-      fzScore += 10;
-      document.getElementById('fz-score').innerText = fzScore;
-      this.value = '';
-      nextFluency();
-    }
-  });
 
   function launchFireworks() {
     const canvas = document.getElementById('fireworks-canvas');

@@ -3,59 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MathPro - Đăng ký gói học</title>
+  <title>MathPro - Đăng ký gói học VIP</title>
   <style>
-    * { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
-    body { margin: 0; background: #f8fafc; color: #1e293b; }
-    header { background: #fff; padding: 14px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-    .brand { font-size: 1.4rem; font-weight: 800; color: #0b5ed7; text-decoration: none; }
-    .container { max-width: 900px; margin: 36px auto; padding: 0 16px; }
-    h1 { text-align: center; font-size: 2rem; margin-bottom: 8px; }
-    .sub { text-align: center; color: #64748b; margin-bottom: 28px; }
+    :root {
+      --primary: #059669;
+      --primary-light: #10b981;
+      --blue: #0284c7;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); line-height: 1.5; }
 
-    .billing-toggle { display: flex; justify-content: center; gap: 10px; margin-bottom: 28px; }
-    .toggle-btn { padding: 10px 22px; border-radius: 999px; border: 2px solid #cbd5e1; background: #fff; font-weight: 700; cursor: pointer; }
-    .toggle-btn.active { background: #0b5ed7; color: #fff; border-color: #0b5ed7; }
+    /* Header đồng bộ toàn hệ thống */
+    .navbar {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; font-weight: 800; font-size: 18px; }
+    .brand img { height: 44px; width: auto; background: #fff; padding: 4px 10px; border-radius: 10px; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .nav-btn-home {
+      background: #fff;
+      color: var(--primary);
+      padding: 7px 15px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      transition: 0.2s;
+    }
+    .nav-btn-home:hover { background: #ecfdf5; }
+    .lang-select {
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+    }
+    .lang-select option { color: var(--text); }
 
-    .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .plan-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 20px; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.04); }
-    .plan-card.popular { border-color: #f97316; position: relative; }
-    .badge { position: absolute; top: -12px; right: 20px; background: #f97316; color: #fff; font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
-    .price { font-size: 2.2rem; font-weight: 800; color: #0b5ed7; margin: 12px 0; }
-    .price span { font-size: 1rem; color: #64748b; font-weight: 500; }
-    ul { padding-left: 20px; color: #475569; line-height: 1.8; margin-bottom: 24px; }
-    .join-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #16a34a; color: #fff; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+    .container { max-width: 960px; margin: 36px auto; padding: 0 16px; }
+    h1 { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+    .sub { text-align: center; color: var(--muted); margin-bottom: 28px; font-size: 15.5px; }
+
+    .billing-toggle { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+    .toggle-btn {
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .toggle-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(5,150,105,0.22); }
+
+    .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .plan-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .plan-card:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08); }
+    .plan-card.popular { border: 2px solid var(--accent); position: relative; }
+    .badge {
+      position: absolute;
+      top: -13px;
+      right: 22px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 999px;
+    }
+    .plan-card h2 { font-size: 20px; font-weight: 800; }
+    .price { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 12px 0; }
+    .price span { font-size: 1rem; color: var(--muted); font-weight: 500; }
+    ul { padding-left: 20px; color: #475569; line-height: 1.85; margin-bottom: 24px; font-size: 14.5px; }
+    .join-btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
     .join-btn:hover { opacity: 0.92; }
 
-    /* Modal thanh toán */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 999; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: #fff; border-radius: 20px; max-width: 480px; width: 100%; padding: 26px; position: relative; max-height: 92vh; overflow-y: auto; }
-    .close-btn { position: absolute; top: 14px; right: 16px; border: none; background: none; font-size: 1.5rem; cursor: pointer; color: #64748b; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
-    .form-group input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; }
-    .bank-box { background: #f0f9ff; border: 2px dashed #0b5ed7; border-radius: 14px; padding: 16px; text-align: center; margin-top: 12px; }
-    .bank-info { text-align: left; font-size: 0.95rem; line-height: 1.7; margin-top: 10px; background: #fff; padding: 12px; border-radius: 10px; }
+    /* Khung tra cứu */
+    .lookup-box {
+      margin-top: 36px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 26px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(15,23,42,0.03);
+    }
 
-    @media (max-width: 700px) { .plans { grid-template-columns: 1fr; } }
+    /* Modal thanh toán */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 999; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 22px; max-width: 480px; width: 100%; padding: 28px; position: relative; max-height: 92vh; overflow-y: auto; }
+    .close-btn { position: absolute; top: 14px; right: 16px; border: none; background: none; font-size: 1.6rem; cursor: pointer; color: var(--muted); }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13.5px; color: #334155; }
+    .form-group input { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; outline: none; }
+    .form-group input:focus { border-color: var(--primary); }
+    .bank-box { background: #f0fdf4; border: 2px dashed var(--primary); border-radius: 14px; padding: 16px; text-align: center; margin-top: 12px; }
+    .bank-info { text-align: left; font-size: 14px; line-height: 1.7; margin-top: 10px; background: #fff; padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+
+    @media (max-width: 720px) { .plans { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <header>
-    <a href="/" class="brand">🧮 MathPro</a>
-    <div style="display:flex;align-items:center;gap:14px;">
-      <select id="langSelect" onchange="applyLang(this.value)" style="padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;font-weight:600;cursor:pointer;">
+  <header class="navbar">
+    <a href="/" class="brand">
+      <img src="/images/logo-mathpro.svg" alt="MathPro Logo" />
+    </a>
+    <div class="nav-actions">
+      <a href="/" class="nav-btn-home" data-i18n="backHome">🏠 Trang chủ</a>
+      <select id="langSelect" class="lang-select" onchange="applyLang(this.value)">
         <option value="vi">🇻🇳 VN</option>
         <option value="en">🇺🇸 EN</option>
       </select>
-      <a href="/" data-i18n="backHome" style="text-decoration:none;color:#475569;font-weight:600;">← Quay lại trang chủ</a>
     </div>
   </header>
 
   <div class="container">
     <h1 data-i18n="title">Chọn gói học phù hợp cho bé</h1>
-    <p class="sub" data-i18n="subtitle">Học không giới hạn toàn bộ bài tập từ Mầm non đến Lớp 5 theo chuẩn IXL.</p>
+    <p class="sub" data-i18n="subtitle">Học không giới hạn toàn bộ bài tập từ Mầm non đến Lớp 9 theo chuẩn IXL.</p>
 
     <div class="billing-toggle">
       <button class="toggle-btn active" data-i18n="monthly" onclick="setBilling('monthly', this)">Theo Tháng</button>
@@ -68,8 +172,8 @@
           <h2 data-i18n="basicName">Gói Cơ Bản (Toán học)</h2>
           <div class="price" id="price-basic">99.000đ <span>/ tháng</span></div>
           <ul>
-            <li data-i18n="b1">Truy cập toàn bộ bài tập Toán Mầm non – Lớp 5</li>
-            <li data-i18n="b2">Lưu điểm SmartScore & Huy hiệu thành tích</li>
+            <li data-i18n="b1">Truy cập toàn bộ bài tập Toán Mầm non – Lớp 9</li>
+            <li data-i18n="b2">Lưu điểm SmartScore &amp; Huy hiệu thành tích</li>
             <li data-i18n="b3">Đọc đề bằng giọng nói tiếng Việt</li>
           </ul>
         </div>
@@ -80,23 +184,24 @@
         <span class="badge" data-i18n="popular">Phổ biến nhất</span>
         <div>
           <h2 data-i18n="familyName">Gói Toàn Diện (Gia đình)</h2>
-          <div class="price" id="price-family">149.000đ <span>/ tháng</span></div>
+          <div class="price" id="price-family" style="color:var(--accent);">149.000đ <span>/ tháng</span></div>
           <ul>
             <li data-i18n="f1">Tất cả quyền lợi của Gói Cơ Bản</li>
             <li data-i18n="f2">Học song ngữ Việt – Anh (VN / EN)</li>
             <li data-i18n="f3">Báo cáo tiến độ chi tiết gửi phụ huynh</li>
           </ul>
         </div>
-        <button class="join-btn" data-i18n="joinBtn" style="background:#f97316;" onclick="openCheckout('family')">Đăng ký gói này</button>
+        <button class="join-btn" data-i18n="joinBtn" style="background:var(--accent);" onclick="openCheckout('family')">Đăng ký gói này</button>
       </div>
     </div>
-  
+
     <!-- KHUNG TRA CỨU MÃ XÁC NHẬN & TÀI KHOẢN -->
-    <div style="margin-top:40px;background:#fff;border:2px solid #e2e8f0;border-radius:20px;padding:24px;text-align:center;">
-      <h3 style="margin-top:0;">🔍 Đã chuyển khoản? Tra cứu Mã xác nhận & Tài khoản</h3>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
-        <input type="text" id="lookupCode" placeholder="Nhập mã đơn (VD: MP123456)" style="padding:10px 14px;border:1px solid #cbd5e1;border-radius:10px;min-width:240px;font-size:1rem;" />
-        <button class="join-btn" style="width:auto;padding:10px 22px;background:#0b5ed7;" onclick="checkOrderStatus()">Kiểm tra ngay</button>
+    <div class="lookup-box">
+      <h3 style="margin-bottom:6px;">🔍 Đã chuyển khoản? Tra cứu Mã xác nhận &amp; Tài khoản</h3>
+      <p style="font-size:13.5px; color:var(--muted);">Nhập mã đơn hàng (VD: MP123456) để nhận tài khoản VIP ngay sau khi Admin duyệt.</p>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+        <input type="text" id="lookupCode" placeholder="Nhập mã đơn (VD: MP123456)" style="padding:10px 14px; border:1.5px solid #cbd5e1; border-radius:10px; min-width:240px; font-size:15px;" />
+        <button class="join-btn" style="width:auto; padding:10px 22px; background:var(--blue);" onclick="checkOrderStatus()">Kiểm tra ngay</button>
       </div>
       <div id="lookupResult" style="margin-top:16px;"></div>
     </div>
@@ -109,7 +214,7 @@
 
       <!-- Bước 1: Nhập thông tin -->
       <div id="step-form">
-        <h2 style="margin-top:0;" id="modalPlanTitle">Đăng ký gói học</h2>
+        <h2 style="margin-bottom:14px;" id="modalPlanTitle">Đăng ký gói học</h2>
         <div class="form-group">
           <label data-i18n="lblName">Họ tên phụ huynh / học sinh</label>
           <input type="text" id="parentName" placeholder="Ví dụ: Nguyễn Văn A" required />
@@ -123,12 +228,12 @@
 
       <!-- Bước 2: Hiện QR & Tài khoản ngân hàng -->
       <div id="step-payment" style="display:none;">
-        <h2 style="margin-top:0;color:#0b5ed7;" data-i18n="payTitle">Thông tin chuyển khoản</h2>
+        <h2 style="margin-bottom:8px; color:var(--primary);" data-i18n="payTitle">Thông tin chuyển khoản</h2>
         <div class="bank-box">
-          <img id="vietqrImg" src="" alt="Mã QR chuyển khoản" style="max-width:210px;border-radius:10px;" />
+          <img id="vietqrImg" src="" alt="Mã QR chuyển khoản" style="max-width:210px; border-radius:10px;" />
           <div class="bank-info" id="bankInfoBox"></div>
         </div>
-        <p style="font-size:0.9rem;color:#475569;margin-top:14px;" data-i18n="payNote">
+        <p style="font-size:13.5px; color:#475569; margin:14px 0;" data-i18n="payNote">
           Sau khi chuyển khoản thành công, Admin sẽ kiểm tra và gửi <strong>Mã xác nhận kích hoạt</strong> về Zalo/Email của bạn trong ít phút!
         </p>
         <button class="join-btn" onclick="closeModal()" data-i18n="btnDone">Tôi đã chuyển khoản xong</button>
@@ -137,12 +242,11 @@
   </div>
 
   <script>
-    // ====== CẤU HÌNH TÀI KHOẢN NGÂN HÀNG CỦA BẠN ======
     const BANK_CONFIG = {
-      BANK_ID: "VCB",                 // Mã ngân hàng (VD: MB, VCB, TCB, ACB, BIDV...)
+      BANK_ID: "VCB",
       BANK_NAME: "Ngân hàng TMCP Ngoại thương Việt Nam",
-      ACCOUNT_NO: "0011004075989",      // <--- ĐỔI THÀNH SỐ TÀI KHOẢN CỦA BẠN
-      ACCOUNT_NAME: "NGUYEN TRI DUC"   // <--- ĐỔI THÀNH TÊN CHỦ TÀI KHOẢN (IN HOA KHÔNG DẤU)
+      ACCOUNT_NO: "0011004075989",
+      ACCOUNT_NAME: "NGUYEN TRI DUC"
     };
 
     const PRICES = {
@@ -152,11 +256,11 @@
 
     const I18N = {
       vi: {
-        backHome: "← Quay lại trang chủ",
+        backHome: "🏠 Trang chủ",
         title: "Chọn gói học phù hợp cho bé",
-        subtitle: "Học không giới hạn toàn bộ bài tập từ Mầm non đến Lớp 5 theo chuẩn IXL.",
+        subtitle: "Học không giới hạn toàn bộ bài tập từ Mầm non đến Lớp 9 theo chuẩn IXL.",
         monthly: "Theo Tháng", yearly: "Theo Năm (Tiết kiệm 25%)",
-        basicName: "Gói Cơ Bản (Toán học)", b1: "Truy cập toàn bộ bài tập Toán Mầm non – Lớp 5",
+        basicName: "Gói Cơ Bản (Toán học)", b1: "Truy cập toàn bộ bài tập Toán Mầm non – Lớp 9",
         b2: "Lưu điểm SmartScore & Huy hiệu thành tích", b3: "Đọc đề bằng giọng nói tiếng Việt",
         popular: "Phổ biến nhất", familyName: "Gói Toàn Diện (Gia đình)",
         f1: "Tất cả quyền lợi của Gói Cơ Bản", f2: "Học song ngữ Việt – Anh (VN / EN)",
@@ -168,11 +272,11 @@
         btnDone: "Tôi đã chuyển khoản xong"
       },
       en: {
-        backHome: "← Back to Home",
+        backHome: "🏠 Home",
         title: "Choose the right plan for your child",
-        subtitle: "Unlimited access to all Math exercises from Kindergarten to Grade 5.",
+        subtitle: "Unlimited access to all Math exercises from Kindergarten to Grade 9.",
         monthly: "Monthly", yearly: "Yearly (Save 25%)",
-        basicName: "Core Plan (Math)", b1: "Full access to Kindergarten – Grade 5 Math",
+        basicName: "Core Plan (Math)", b1: "Full access to Kindergarten – Grade 9 Math",
         b2: "Save SmartScore & Achievement Badges", b3: "Voice read-aloud support",
         popular: "Most Popular", familyName: "Family Plan (All-in-One)",
         f1: "Everything in Core Plan", f2: "Bilingual learning (VN / EN)",
@@ -251,14 +355,7 @@
       const data = await res.json();
       if (!res.ok) return alert(data.message || "Có lỗi xảy ra!");
 
-      // // Tạo ảnh VietQR tự động điền số tiền & mã đơn
-      // const qrUrl = `https://img.vietqr.io/image/${BANK_CONFIG.BANK_ID}-${BANK_CONFIG.ACCOUNT_NO}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(data.orderCode)}&accountName=${encodeURIComponent(BANK_CONFIG.ACCOUNT_NAME)}`;
-      // document.getElementById("vietqrImg").src = qrUrl;
-      
       const amt = Math.round(Number(amount));
-      if (!Number.isInteger(amt) || amt <= 0) throw new Error("Số tiền không hợp lệ");
-
-      // Chỉ giữ chữ + số, tối đa 25 ký tự
       const info = String(data.orderCode || "")
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         .replace(/[^A-Za-z0-9]/g, "")
@@ -268,7 +365,7 @@
 
       document.getElementById("bankInfoBox").innerHTML = `
         <div><strong>Ngân hàng:</strong> ${BANK_CONFIG.BANK_NAME}</div>
-        <div><strong>Số tài khoản:</strong> <span style="color:#0b5ed7;font-weight:800;">${BANK_CONFIG.ACCOUNT_NO}</span></div>
+        <div><strong>Số tài khoản:</strong> <span style="color:var(--primary);font-weight:800;">${BANK_CONFIG.ACCOUNT_NO}</span></div>
         <div><strong>Chủ tài khoản:</strong> ${BANK_CONFIG.ACCOUNT_NAME}</div>
         <div><strong>Số tiền:</strong> ${amount.toLocaleString("vi-VN")}đ</div>
         <div><strong>Nội dung CK:</strong> <span style="background:#fef08a;padding:2px 8px;border-radius:6px;font-weight:800;">${data.orderCode}</span></div>
@@ -307,16 +404,13 @@
         box.innerHTML = `
           <div style="background:#dcfce7;color:#166534;padding:18px;border-radius:14px;text-align:left;max-width:480px;margin:0 auto;line-height:2;">
             <div style="font-size:1.1rem;font-weight:800;margin-bottom:6px;">🎉 Kích hoạt thành công!</div>
-            <div>
-              🎟️ <strong>Mã xác nhận:</strong>
-              <span style="background:#fff;padding:2px 8px;border-radius:6px;font-weight:700;">${data.confirm_code}</span>
-            </div>
+            <div>🎟️ <strong>Mã xác nhận:</strong> <span style="background:#fff;padding:2px 8px;border-radius:6px;font-weight:700;">${data.confirm_code}</span></div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-              <span>👤 <strong>Tên đăng nhập:</strong> <span id="valUser">${data.login_user}</span></span>
+              <span>👤 <strong>Tên đăng nhập:</strong> <span>${data.login_user}</span></span>
               <button type="button" onclick="copyText('${data.login_user}', this)" style="border:1px solid #16a34a;background:#fff;color:#166534;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">📋 Copy</button>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-              <span>🔑 <strong>Mật khẩu:</strong> <span id="valPass" style="font-family:monospace;font-size:1.05rem;">${data.temp_pass}</span></span>
+              <span>🔑 <strong>Mật khẩu:</strong> <span style="font-family:monospace;font-size:1.05rem;">${data.temp_pass}</span></span>
               <button type="button" onclick="copyText('${data.temp_pass}', this)" style="border:1px solid #16a34a;background:#fff;color:#166534;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">📋 Copy</button>
             </div>
             <a href="/login.html" style="display:inline-block;margin-top:12px;background:#16a34a;color:#fff;padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:700;">Đăng nhập học ngay →</a>
