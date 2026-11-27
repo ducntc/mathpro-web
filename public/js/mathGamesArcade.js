@@ -7,6 +7,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
   let activeGame = 'balloon';
   const r = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
   const sh = arr => [...arr].sort(() => Math.random() - 0.5);
+  const isVip = window.MathProVIP && window.MathProVIP.isVipUser;
 
   container.innerHTML = `
     <style>
@@ -17,6 +18,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
         background: #fff; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;
       }
       .arcade-btn.active, .arcade-btn:hover { border-color: #0284c7; background: #e0f2fe; color: #0369a1; }
+      .arcade-btn.vip-locked { opacity: 0.75; border-style: dashed; background: #f8fafc; color: #64748b; }
       .arcade-stage {
         background: linear-gradient(180deg, #eff6ff 0%, #f0fdf4 100%);
         border: 2px solid #93c5fd; border-radius: 22px; padding: 26px; text-align: center;
@@ -52,10 +54,10 @@ window.renderMathArcade = function (grade, launchFireworks) {
     </style>
     <div class="arcade-wrap">
       <div class="arcade-menu">
-        <button class="arcade-btn active" onclick="selectArcadeGame('balloon', this)">🎈 Bắn Bóng</button>
-        <button class="arcade-btn" onclick="selectArcadeGame('match', this)">🎯 Lật Thẻ Ghép Cặp</button>
-        <button class="arcade-btn" onclick="selectArcadeGame('ninja', this)">🥷 Ninja Chặt Số</button>
-        <button class="arcade-btn" onclick="selectArcadeGame('bingo', this)">🏆 Math BINGO 3×3</button>
+        <button class="arcade-btn active" onclick="selectArcadeGame('balloon', this)">🎈 Bắn Bóng (Free)</button>
+        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('match', this)">${isVip ? '🎯' : '🔒'} Lật Thẻ Ghép Cặp</button>
+        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('ninja', this)">${isVip ? '🥷' : '🔒'} Ninja Chặt Số</button>
+        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('bingo', this)">${isVip ? '🏆' : '🔒'} Math BINGO 3×3</button>
       </div>
       <div class="arcade-stage">
         <div class="arcade-hud">
@@ -74,6 +76,12 @@ window.renderMathArcade = function (grade, launchFireworks) {
   }
 
   window.selectArcadeGame = function (name, btn) {
+    // Chỉ cho phép chơi miễn phí 10% (1/4 game = Bắn Bóng), 3 game sau khóa VIP
+    if (name !== 'balloon' && !(window.MathProVIP && window.MathProVIP.isVipUser)) {
+      if (window.MathProVIP) window.MathProVIP.openVipModal();
+      return;
+    }
+
     activeGame = name;
     container.querySelectorAll('.arcade-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
@@ -244,9 +252,9 @@ window.renderMathArcade = function (grade, launchFireworks) {
       <div class="bingo-grid" id="bg-grid"></div>
       <div id="bg-fb" class="feedback-msg"></div>
     `;
-    const wins = [,[3,4,5],[6,7,8],[0,3,6],,[2,5,8],[0,4,8],[2,4,6]];
+    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     const grid = document.getElementById('bg-grid');
-    cells.forEach((c, idx) => {
+    cells.forEach((c) => {
       const btn = document.createElement('button');
       btn.className = 'bingo-cell';
       btn.innerText = c.val;

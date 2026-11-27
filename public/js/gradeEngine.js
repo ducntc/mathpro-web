@@ -1,6 +1,44 @@
+// === VIP ACCESS HELPER (Dùng chung cho Skills, Videos, Games, Fluency) ===
+window.MathProVIP = {
+  isVipUser: false,
+
+  isVipOrAdmin(user) {
+    if (!user) return false;
+    if (user.role === 'admin' || user.email === 'admin@mathpro.vn') return true;
+    if (user.vip_expires_at && new Date(user.vip_expires_at) > new Date()) return true;
+    return false;
+  },
+
+  // Tính số lượng item miễn phí (10%, tối thiểu 1 item nếu danh sách > 0)
+  getFreeCount(total) {
+    if (!total || total <= 0) return 0;
+    return Math.max(1, Math.ceil(total * 0.1));
+  },
+
+  // Kiểm tra xem item ở vị trí index có bị khóa không
+  isLocked(index, total) {
+    if (this.isVipUser) return false;
+    return index >= this.getFreeCount(total);
+  },
+
+  // Mở Modal nâng cấp VIP đồng bộ của trang
+  openVipModal() {
+    const modal = document.getElementById('vip-modal');
+    if (modal) {
+      modal.classList.add('open');
+    } else {
+      const lang = localStorage.getItem('mathpro_lang') || 'vi';
+      const msg = lang === 'en'
+        ? '🔒 This content is for VIP Members only (Free accounts can access 10%). Go to VIP registration page?'
+        : '🔒 Nội dung này chỉ dành cho Thành viên VIP (Tài khoản thường xem miễn phí 10%). Chuyển đến trang đăng ký VIP ngay?';
+      if (confirm(msg)) window.location.href = '/subscribe.html';
+    }
+  }
+};
+
 // public/js/gradeEngine.js
 window.initGradePage = function (config) {
-  const { grade, title, topics, generator, videos, fluencyMax } = config;
+  const { grade, title, topics, generator, videos } = config;
   let isVipUser = false;
   let currentSkill = null;
   let currentQuestion = null;
@@ -8,7 +46,7 @@ window.initGradePage = function (config) {
   const storageKey = `mathpro_g${grade}_progress`;
   let progressMap = JSON.parse(localStorage.getItem(storageKey) || '{}');
 
-  // 1. Tiêm CSS nâng cấp cho nút Trang chủ, Tab Videos & Tab Games
+  // 1. Tiêm CSS nâng cấp cho nút Trang chủ, Tab Videos, Tab Games & Thẻ khóa VIP
   if (!document.getElementById('grade-engine-enhancements')) {
     const style = document.createElement('style');
     style.id = 'grade-engine-enhancements';
@@ -26,6 +64,7 @@ window.initGradePage = function (config) {
         background: #fff; border-radius: 18px; overflow: hidden;
         border: 1px solid #e2e8f0; box-shadow: 0 4px 14px rgba(0,0,0,0.05);
         display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
       }
       .video-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(16,185,129,0.15); }
       .video-thumb {
@@ -43,6 +82,25 @@ window.initGradePage = function (config) {
         color: #fff; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 8px;
       }
       .video-body { padding: 18px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 10px; }
+
+      /* CSS đồng bộ thẻ khóa VIP */
+      .vip-locked-card {
+        opacity: 0.78;
+        border: 1.5px dashed #cbd5e1 !important;
+      }
+      .vip-locked-card:hover { opacity: 0.95; }
+      .vip-lock-badge {
+        position: absolute; top: 10px; left: 10px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff; font-size: 12px; font-weight: 700;
+        padding: 4px 10px; border-radius: 999px;
+        box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35); z-index: 2;
+      }
+      .free-badge {
+        position: absolute; top: 10px; left: 10px;
+        background: #10b981; color: #fff; font-size: 11px; font-weight: 700;
+        padding: 3px 9px; border-radius: 999px; z-index: 2;
+      }
 
       /* Game Arena nâng cấp */
       .game-arena {
@@ -91,7 +149,10 @@ window.initGradePage = function (config) {
         const data = await res.json();
         const isAdmin = data.user && (data.user.role === 'admin' || data.user.email === 'admin@mathpro.vn');
         const hasValidVip = data.vip_expires_at && new Date(data.vip_expires_at) > new Date();
-        if (isAdmin || hasValidVip) isVipUser = true;
+        if (isAdmin || hasValidVip) {
+          isVipUser = true;
+          window.MathProVIP.isVipUser = true;
+        }
       }
     } catch (e) {}
   }
@@ -135,19 +196,27 @@ window.initGradePage = function (config) {
     });
   }
 
-  // 3. Giao diện Tab Videos nâng cấp + Modal trình phát
+  // 3. Giao diện Tab Videos + Khóa 90% VIP (chỉ mở 10% miễn phí)
   function renderVideos() {
     const box = document.getElementById('videos-container');
     if (!box) return;
+    const list = videos || [];
     const gradients = [
       'linear-gradient(135deg, #059669, #10b981)',
       'linear-gradient(135deg, #2563eb, #60a5fa)',
       'linear-gradient(135deg, #7c3aed, #a78bfa)'
     ];
-    box.innerHTML = (videos || []).map((v, i) => `
-      <div class="video-card">
-        <div class="video-thumb" style="background:${gradients[i % gradients.length]}" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${v.desc.replace(/'/g, "\\'")}')">
-          <div class="video-play-circle">▶</div>
+    box.innerHTML = list.map((v, i) => {
+      const locked = window.MathProVIP.isLocked(i, list.length);
+      const clickAction = locked
+        ? `window.MathProVIP.openVipModal()`
+        : `openVideoModal('${v.title.replace(/'/g, "\\'")}', '${v.desc.replace(/'/g, "\\'")}')`;
+
+      return `
+      <div class="video-card ${locked ? 'vip-locked-card' : ''}">
+        <div class="video-thumb" style="background:${gradients[i % gradients.length]}" onclick="${clickAction}">
+          ${locked ? `<span class="vip-lock-badge">🔒 VIP</span>` : `<span class="free-badge">FREE</span>`}
+          <div class="video-play-circle">${locked ? '🔒' : '▶'}</div>
           <span class="video-duration">🎬 Bài giảng #${i + 1}</span>
         </div>
         <div class="video-body">
@@ -155,9 +224,12 @@ window.initGradePage = function (config) {
             <h3 style="margin-bottom:6px; font-size:17px;">${v.title}</h3>
             <p style="color:var(--muted); font-size:14px;">${v.desc}</p>
           </div>
-          <button class="btn-primary" style="width:100%;" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${v.desc.replace(/'/g, "\\'")}')">▶ Xem bài giảng</button>
+          <button class="btn-primary" style="width:100%; ${locked ? 'background:#f59e0b; border-color:#d97706;' : ''}" onclick="${clickAction}">
+            ${locked ? '🔒 Mở khóa VIP để xem' : '▶ Xem bài giảng'}
+          </button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   window.openVideoModal = function (vTitle, vDesc) {
@@ -310,8 +382,10 @@ window.initGradePage = function (config) {
     animate();
   }
 
-  renderVideos();
-  checkUserStatus().then(renderTopics);
+  checkUserStatus().then(() => {
+    renderTopics();
+    renderVideos();
+  });
 
   // Mở đúng tab theo ?tab=...
   const urlTab = new URLSearchParams(window.location.search).get('tab');

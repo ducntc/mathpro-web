@@ -52,6 +52,7 @@ window.renderFluencyZone = function (grade, launchFireworks) {
         background: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: 0.15s;
       }
       .fz-set-btn.active, .fz-set-btn:hover { border-color: #f59e0b; background: #fef3c7; color: #b45309; }
+      .fz-set-btn.vip-locked { opacity: 0.72; border-style: dashed; background: #f8fafc; color: #64748b; }
       .fz-card {
         background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
         border: 2px solid #fbbf24; border-radius: 22px; padding: 26px; text-align: center;
@@ -93,10 +94,15 @@ window.renderFluencyZone = function (grade, launchFireworks) {
 
   const setsBar = document.getElementById('fz-sets-bar');
   sets.forEach((s, idx) => {
+    const locked = window.MathProVIP ? window.MathProVIP.isLocked(idx, sets.length) : idx > 0;
     const b = document.createElement('button');
-    b.className = 'fz-set-btn' + (idx === 0 ? ' active' : '');
-    b.innerText = s.label;
+    b.className = 'fz-set-btn' + (idx === 0 ? ' active' : '') + (locked ? ' vip-locked' : '');
+    b.innerText = locked ? `🔒 ${s.label}` : s.label;
     b.onclick = () => {
+      if (locked) {
+        if (window.MathProVIP) window.MathProVIP.openVipModal();
+        return;
+      }
       currentSet = s;
       setsBar.querySelectorAll('.fz-set-btn').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
