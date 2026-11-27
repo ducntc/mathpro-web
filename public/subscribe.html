@@ -143,155 +143,136 @@
     @media (max-width: 720px) { .plans { grid-template-columns: 1fr; } }
   </style>
 </head>
+
 <body>
   <header class="navbar">
     <a href="/" class="brand">
       <img src="/images/logo-mathpro.svg" alt="MathPro Logo" />
     </a>
     <div class="nav-actions">
-      <a href="/" class="nav-btn-home" data-i18n="backHome">🏠 Trang chủ</a>
+      <a href="/" class="nav-btn-home" data-i18n="nav.home">🏠 Trang chủ</a>
     </div>
   </header>
 
   <div class="container">
-    <h1 data-i18n="title">Chọn gói học phù hợp cho bé</h1>
-    <p class="sub" data-i18n="subtitle">Học không giới hạn toàn bộ bài tập từ Mầm non đến Lớp 9 theo chuẩn IXL.</p>
+    <h1 data-vi="Chọn gói học phù hợp cho bé" data-en="Choose the Right Plan for Your Child">Chọn gói học phù hợp cho bé</h1>
+    <p class="sub" data-vi="Học không giới hạn toàn bộ bài tập, bài giảng và trò chơi từ Mầm non đến Lớp 9." data-en="Unlimited access to all interactive skills, lessons, videos, and games from Kindergarten to Grade 9.">
+      Học không giới hạn toàn bộ bài tập, bài giảng và trò chơi từ Mầm non đến Lớp 9.
+    </p>
 
     <div class="billing-toggle">
-      <button class="toggle-btn active" data-i18n="monthly" onclick="setBilling('monthly', this)">Theo Tháng</button>
-      <button class="toggle-btn" data-i18n="yearly" onclick="setBilling('yearly', this)">Theo Năm (Tiết kiệm 25%)</button>
+      <button class="toggle-btn active" data-vi="Theo Tháng" data-en="Monthly" onclick="setBilling('monthly', this)">Theo Tháng</button>
+      <button class="toggle-btn" data-vi="Theo Năm (Tiết kiệm 25%)" data-en="Yearly (Save 25%)" onclick="setBilling('yearly', this)">Theo Năm (Tiết kiệm 25%)</button>
     </div>
 
     <div class="plans">
       <div class="plan-card">
         <div>
-          <h2 data-i18n="basicName">Gói Cơ Bản (Toán học)</h2>
+          <h2 data-vi="Gói Cơ Bản (Toán học)" data-en="Core Plan (Math)">Gói Cơ Bản (Toán học)</h2>
           <div class="price" id="price-basic">99.000đ <span>/ tháng</span></div>
           <ul>
-            <li data-i18n="b1">Truy cập toàn bộ bài tập Toán Mầm non – Lớp 9</li>
-            <li data-i18n="b2">Lưu điểm SmartScore &amp; Huy hiệu thành tích</li>
-            <li data-i18n="b3">Đọc đề bằng giọng nói tiếng Việt</li>
+            <li data-vi="Truy cập toàn bộ bài tập Toán Mầm non – Lớp 9" data-en="Full access to Kindergarten – Grade 9 Math">Truy cập toàn bộ bài tập Toán Mầm non – Lớp 9</li>
+            <li data-vi="Lưu điểm mục tiêu & Huy hiệu thành tích" data-en="Save SmartScore & Achievement Badges">Lưu điểm mục tiêu &amp; Huy hiệu thành tích</li>
+            <li data-vi="Đọc đề bài tự động bằng giọng nói" data-en="Automatic voice read-aloud support">Đọc đề bài tự động bằng giọng nói</li>
           </ul>
         </div>
-        <button class="join-btn" data-i18n="joinBtn" onclick="openCheckout('basic')">Đăng ký gói này</button>
+        <button class="join-btn" data-vi="Đăng ký gói này" data-en="Join Now" onclick="openCheckout('basic')">Đăng ký gói này</button>
       </div>
 
       <div class="plan-card popular">
-        <span class="badge" data-i18n="popular">Phổ biến nhất</span>
+        <span class="badge" data-vi="Phổ biến nhất" data-en="Most Popular">Phổ biến nhất</span>
         <div>
-          <h2 data-i18n="familyName">Gói Toàn Diện (Gia đình)</h2>
+          <h2 data-vi="Gói Toàn Diện (Gia đình)" data-en="Family Plan (All-in-One)">Gói Toàn Diện (Gia đình)</h2>
           <div class="price" id="price-family" style="color:var(--accent);">149.000đ <span>/ tháng</span></div>
           <ul>
-            <li data-i18n="f1">Tất cả quyền lợi của Gói Cơ Bản</li>
-            <li data-i18n="f2">Học song ngữ Việt – Anh (VN / EN)</li>
-            <li data-i18n="f3">Báo cáo tiến độ chi tiết gửi phụ huynh</li>
+            <li data-vi="Tất cả quyền lợi của Gói Cơ Bản" data-en="Everything in Core Plan">Tất cả quyền lợi của Gói Cơ Bản</li>
+            <li data-vi="Chuyển đổi linh hoạt chương trình Tiếng Việt & Quốc tế" data-en="Switch seamlessly between Vietnamese & International English">Chuyển đổi linh hoạt chương trình Tiếng Việt &amp; Quốc tế</li>
+            <li data-vi="Báo cáo tiến độ chi tiết gửi phụ huynh" data-en="Detailed progress reports for parents">Báo cáo tiến độ chi tiết gửi phụ huynh</li>
           </ul>
         </div>
-        <button class="join-btn" data-i18n="joinBtn" style="background:var(--accent);" onclick="openCheckout('family')">Đăng ký gói này</button>
+        <button class="join-btn" style="background:var(--accent);" data-vi="Đăng ký gói này" data-en="Join Now" onclick="openCheckout('family')">Đăng ký gói này</button>
       </div>
     </div>
 
-    <!-- KHUNG TRA CỨU MÃ XÁC NHẬN & TÀI KHOẢN -->
     <div class="lookup-box">
-      <h3 style="margin-bottom:6px;">🔍 Đã chuyển khoản? Tra cứu Mã xác nhận &amp; Tài khoản</h3>
-      <p style="font-size:13.5px; color:var(--muted);">Nhập mã đơn hàng (VD: MP123456) để nhận tài khoản VIP ngay sau khi Admin duyệt.</p>
+      <h3 style="margin-bottom:6px;" data-vi="🔍 Đã chuyển khoản? Tra cứu Mã xác nhận & Tài khoản" data-en="🔍 Already Transferred? Check Confirmation Code & Account">
+        🔍 Đã chuyển khoản? Tra cứu Mã xác nhận &amp; Tài khoản
+      </h3>
+      <p style="font-size:13.5px; color:var(--muted);" data-vi="Nhập mã đơn hàng (VD: MP123456) để nhận tài khoản VIP ngay sau khi Quản trị viên duyệt." data-en="Enter your order code (e.g. MP123456) to get your VIP account once approved.">
+        Nhập mã đơn hàng (VD: MP123456) để nhận tài khoản VIP ngay sau khi Quản trị viên duyệt.
+      </p>
       <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
-        <input type="text" id="lookupCode" placeholder="Nhập mã đơn (VD: MP123456)" style="padding:10px 14px; border:1.5px solid #cbd5e1; border-radius:10px; min-width:240px; font-size:15px;" />
-        <button class="join-btn" style="width:auto; padding:10px 22px; background:var(--blue);" onclick="checkOrderStatus()">Kiểm tra ngay</button>
+        <input type="text" id="lookupCode"
+               data-vi-placeholder="Nhập mã đơn (VD: MP123456)"
+               data-en-placeholder="Enter order code (e.g. MP123456)"
+               placeholder="Nhập mã đơn (VD: MP123456)"
+               style="padding:10px 14px; border:1.5px solid #cbd5e1; border-radius:10px; min-width:240px; font-size:15px;" />
+        <button class="join-btn" style="width:auto; padding:10px 22px; background:var(--blue);"
+                data-vi="Kiểm tra ngay" data-en="Check Status" onclick="checkOrderStatus()">Kiểm tra ngay</button>
       </div>
       <div id="lookupResult" style="margin-top:16px;"></div>
     </div>
   </div>
 
-  <!-- MODAL ĐIỀN THÔNG TIN & CHUYỂN KHOẢN -->
   <div class="modal-overlay" id="checkoutModal">
     <div class="modal">
       <button class="close-btn" onclick="closeModal()">&times;</button>
 
-      <!-- Bước 1: Nhập thông tin -->
       <div id="step-form">
         <h2 style="margin-bottom:14px;" id="modalPlanTitle">Đăng ký gói học</h2>
         <div class="form-group">
-          <label data-i18n="lblName">Họ tên phụ huynh / học sinh</label>
-          <input type="text" id="parentName" placeholder="Ví dụ: Nguyễn Văn A" required />
+          <label data-vi="Họ tên phụ huynh / học sinh" data-en="Parent / Student Name">Họ tên phụ huynh / học sinh</label>
+          <input type="text" id="parentName"
+                 data-vi-placeholder="Ví dụ: Nguyễn Văn A"
+                 data-en-placeholder="e.g. Alex Nguyen"
+                 placeholder="Ví dụ: Nguyễn Văn A" required />
         </div>
         <div class="form-group">
-          <label data-i18n="lblContact">Số Zalo / Email nhận mã xác nhận</label>
-          <input type="text" id="contactInput" placeholder="Ví dụ: 0901234567 hoặc email@gmail.com" required />
+          <label data-vi="Số Zalo / Email nhận mã xác nhận" data-en="Phone / Email for Confirmation Code">Số Zalo / Email nhận mã xác nhận</label>
+          <input type="text" id="contactInput"
+                 data-vi-placeholder="Ví dụ: 0901234567 hoặc email@gmail.com"
+                 data-en-placeholder="e.g. 0901234567 or email@gmail.com"
+                 placeholder="Ví dụ: 0901234567 hoặc email@gmail.com" required />
         </div>
-        <button class="join-btn" onclick="submitOrder()" data-i18n="btnNext">Tiếp tục thanh toán →</button>
+        <button class="join-btn" onclick="submitOrder()" data-vi="Tiếp tục thanh toán →" data-en="Continue to Payment →">Tiếp tục thanh toán →</button>
       </div>
 
-      <!-- Bước 2: Hiện QR & Tài khoản ngân hàng -->
       <div id="step-payment" style="display:none;">
-        <h2 style="margin-bottom:8px; color:var(--primary);" data-i18n="payTitle">Thông tin chuyển khoản</h2>
+        <h2 style="margin-bottom:8px; color:var(--primary);" data-vi="Quét mã QR hoặc Chuyển khoản" data-en="Scan QR or Bank Transfer">Quét mã QR hoặc Chuyển khoản</h2>
         <div class="bank-box">
-          <img id="vietqrImg" src="" alt="Mã QR chuyển khoản" style="max-width:210px; border-radius:10px;" />
+          <img id="vietqrImg" src="" alt="QR" style="max-width:210px; border-radius:10px;" />
           <div class="bank-info" id="bankInfoBox"></div>
         </div>
-        <p style="font-size:13.5px; color:#475569; margin:14px 0;" data-i18n="payNote">
-          Sau khi chuyển khoản thành công, Admin sẽ kiểm tra và gửi <strong>Mã xác nhận kích hoạt</strong> về Zalo/Email của bạn trong ít phút!
+        <p style="font-size:13.5px; color:#475569; margin:14px 0;"
+           data-vi="Sau khi chuyển khoản thành công, Quản trị viên sẽ kiểm tra và kích hoạt tài khoản VIP cho bạn trong ít phút!"
+           data-en="Once transferred, our team will verify and activate your VIP account within minutes!">
+          Sau khi chuyển khoản thành công, Quản trị viên sẽ kiểm tra và kích hoạt tài khoản VIP cho bạn trong ít phút!
         </p>
-        <button class="join-btn" onclick="closeModal()" data-i18n="btnDone">Tôi đã chuyển khoản xong</button>
+        <button class="join-btn" onclick="closeModal()" data-vi="Tôi đã chuyển khoản xong" data-en="I Have Completed the Transfer">Tôi đã chuyển khoản xong</button>
       </div>
     </div>
   </div>
 
+  <script src="/js/i18n.js"></script>
   <script>
     const BANK_CONFIG = {
       BANK_ID: "VCB",
-      BANK_NAME: "Ngân hàng TMCP Ngoại thương Việt Nam",
+      BANK_NAME_VI: "Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)",
+      BANK_NAME_EN: "Vietcombank (VCB)",
       ACCOUNT_NO: "0011004075989",
       ACCOUNT_NAME: "NGUYEN TRI DUC"
     };
 
     const PRICES = {
       basic:  { monthly: 99000,  yearly: 890000,  vi: "Gói Cơ Bản (Toán học)", en: "Core Plan (Math)" },
-      family: { monthly: 149000, yearly: 1340000, vi: "Gói Toàn Diện (Gia đình)", en: "Family Plan" }
-    };
-
-    const I18N = {
-      vi: {
-        backHome: "🏠 Trang chủ",
-        title: "Chọn gói học phù hợp cho bé",
-        subtitle: "Học không giới hạn toàn bộ bài tập từ Mầm non đến Lớp 9 theo chuẩn IXL.",
-        monthly: "Theo Tháng", yearly: "Theo Năm (Tiết kiệm 25%)",
-        basicName: "Gói Cơ Bản (Toán học)", b1: "Truy cập toàn bộ bài tập Toán Mầm non – Lớp 9",
-        b2: "Lưu điểm SmartScore & Huy hiệu thành tích", b3: "Đọc đề bằng giọng nói tiếng Việt",
-        popular: "Phổ biến nhất", familyName: "Gói Toàn Diện (Gia đình)",
-        f1: "Tất cả quyền lợi của Gói Cơ Bản", f2: "Học song ngữ Việt – Anh (VN / EN)",
-        f3: "Báo cáo tiến độ chi tiết gửi phụ huynh", joinBtn: "Đăng ký gói này",
-        perMonth: "/ tháng", perYear: "/ năm",
-        lblName: "Họ tên phụ huynh / học sinh", lblContact: "Số Zalo / Email nhận mã xác nhận",
-        btnNext: "Tiếp tục thanh toán →", payTitle: "Quét mã QR hoặc Chuyển khoản",
-        payNote: "Sau khi chuyển khoản thành công, Admin sẽ kiểm tra và gửi Mã xác nhận về Zalo/Email của bạn trong ít phút!",
-        btnDone: "Tôi đã chuyển khoản xong"
-      },
-      en: {
-        backHome: "🏠 Home",
-        title: "Choose the right plan for your child",
-        subtitle: "Unlimited access to all Math exercises from Kindergarten to Grade 9.",
-        monthly: "Monthly", yearly: "Yearly (Save 25%)",
-        basicName: "Core Plan (Math)", b1: "Full access to Kindergarten – Grade 9 Math",
-        b2: "Save SmartScore & Achievement Badges", b3: "Voice read-aloud support",
-        popular: "Most Popular", familyName: "Family Plan (All-in-One)",
-        f1: "Everything in Core Plan", f2: "Bilingual learning (VN / EN)",
-        f3: "Detailed progress reports for parents", joinBtn: "Join Now",
-        perMonth: "/ month", perYear: "/ year",
-        lblName: "Parent / Student Name", lblContact: "Zalo / Email to receive Confirmation Code",
-        btnNext: "Continue to Payment →", payTitle: "Bank Transfer / VietQR",
-        payNote: "Once transferred, Admin will verify and send your Activation Code via Zalo/Email shortly!",
-        btnDone: "I have completed the transfer"
-      }
+      family: { monthly: 149000, yearly: 1340000, vi: "Gói Toàn Diện (Gia đình)", en: "Family Plan (All-in-One)" }
     };
 
     let currentBilling = "monthly";
-    let currentLang = localStorage.getItem("mathpro_lang") || "vi";
     let selectedPlan = "basic";
 
     function updatePrices() {
-      const t = I18N[currentLang];
-      const suffix = currentBilling === "monthly" ? t.perMonth : t.perYear;
+      const suffix = currentBilling === "monthly" ? t("/ tháng", "/ month") : t("/ năm", "/ year");
       document.getElementById("price-basic").innerHTML = `${PRICES.basic[currentBilling].toLocaleString("vi-VN")}đ <span>${suffix}</span>`;
       document.getElementById("price-family").innerHTML = `${PRICES.family[currentBilling].toLocaleString("vi-VN")}đ <span>${suffix}</span>`;
     }
@@ -303,21 +284,11 @@
       updatePrices();
     }
 
-    function applyLang(lang) {
-      currentLang = lang;
-      localStorage.setItem("mathpro_lang", lang);
-      const t = I18N[lang];
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        if (t[el.dataset.i18n]) el.textContent = t[el.dataset.i18n];
-      });
-      updatePrices();
-    }
-
     function openCheckout(planKey) {
       selectedPlan = planKey;
       const amount = PRICES[planKey][currentBilling];
-      document.getElementById("modalPlanTitle").textContent =
-        `${PRICES[planKey][currentLang]} - ${amount.toLocaleString("vi-VN")}đ`;
+      const planTitle = MP_I18N.isEn() ? PRICES[planKey].en : PRICES[planKey].vi;
+      document.getElementById("modalPlanTitle").textContent = `${planTitle} - ${amount.toLocaleString("vi-VN")}đ`;
       document.getElementById("step-form").style.display = "block";
       document.getElementById("step-payment").style.display = "none";
       document.getElementById("checkoutModal").classList.add("open");
@@ -331,7 +302,7 @@
       const parentName = document.getElementById("parentName").value.trim();
       const contact = document.getElementById("contactInput").value.trim();
       if (!parentName || !contact) {
-        return alert(currentLang === "en" ? "Please fill in all fields!" : "Vui lòng nhập đầy đủ tên và Zalo/Email!");
+        return alert(t("Vui lòng nhập đầy đủ họ tên và Số điện thoại / Email!", "Please fill in your name and phone/email!"));
       }
 
       const amount = PRICES[selectedPlan][currentBilling];
@@ -348,22 +319,21 @@
       });
 
       const data = await res.json();
-      if (!res.ok) return alert(data.message || "Có lỗi xảy ra!");
+      if (!res.ok) return alert(MP_I18N.apiMsg(data.message) || t("Có lỗi xảy ra!", "Something went wrong!"));
 
       const amt = Math.round(Number(amount));
       const info = String(data.orderCode || "")
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         .replace(/[^A-Za-z0-9]/g, "")
         .slice(0, 25);
-      const qrUrl = `https://img.vietqr.io/image/${BANK_CONFIG.BANK_ID}-${BANK_CONFIG.ACCOUNT_NO}-qr_only.png?amount=${amt}&addInfo=${encodeURIComponent(info)}`;
-      document.getElementById("vietqrImg").src = qrUrl;
+      document.getElementById("vietqrImg").src = `https://img.vietqr.io/image/${BANK_CONFIG.BANK_ID}-${BANK_CONFIG.ACCOUNT_NO}-qr_only.png?amount=${amt}&addInfo=${encodeURIComponent(info)}`;
 
       document.getElementById("bankInfoBox").innerHTML = `
-        <div><strong>Ngân hàng:</strong> ${BANK_CONFIG.BANK_NAME}</div>
-        <div><strong>Số tài khoản:</strong> <span style="color:var(--primary);font-weight:800;">${BANK_CONFIG.ACCOUNT_NO}</span></div>
-        <div><strong>Chủ tài khoản:</strong> ${BANK_CONFIG.ACCOUNT_NAME}</div>
-        <div><strong>Số tiền:</strong> ${amount.toLocaleString("vi-VN")}đ</div>
-        <div><strong>Nội dung CK:</strong> <span style="background:#fef08a;padding:2px 8px;border-radius:6px;font-weight:800;">${data.orderCode}</span></div>
+        <div><strong>${t("Ngân hàng:", "Bank:")}</strong> ${t(BANK_CONFIG.BANK_NAME_VI, BANK_CONFIG.BANK_NAME_EN)}</div>
+        <div><strong>${t("Số tài khoản:", "Account No:")}</strong> <span style="color:var(--primary);font-weight:800;">${BANK_CONFIG.ACCOUNT_NO}</span></div>
+        <div><strong>${t("Chủ tài khoản:", "Account Name:")}</strong> ${BANK_CONFIG.ACCOUNT_NAME}</div>
+        <div><strong>${t("Số tiền:", "Amount:")}</strong> ${amount.toLocaleString("vi-VN")}đ</div>
+        <div><strong>${t("Nội dung CK:", "Transfer Memo:")}</strong> <span style="background:#fef08a;padding:2px 8px;border-radius:6px;font-weight:800;">${data.orderCode}</span></div>
       `;
 
       document.getElementById("step-form").style.display = "none";
@@ -374,7 +344,7 @@
     function copyText(text, btn) {
       navigator.clipboard.writeText(text).then(() => {
         const old = btn.textContent;
-        btn.textContent = "✅ Đã copy!";
+        btn.textContent = t("✅ Đã sao chép!", "✅ Copied!");
         setTimeout(() => { btn.textContent = old; }, 1500);
       });
     }
@@ -389,32 +359,38 @@
       const data = await res.json();
 
       if (!res.ok) {
-        box.innerHTML = `<p style="color:#dc2626;font-weight:600;">${data.message}</p>`;
+        box.innerHTML = `<p style="color:#dc2626;font-weight:600;">${MP_I18N.apiMsg(data.message)}</p>`;
         return;
       }
 
       if (data.status === "pending") {
-        box.innerHTML = `<div style="background:#fff7ed;color:#c2410c;padding:14px;border-radius:12px;font-weight:600;">⏳ Đơn <strong>${data.order_code}</strong> đang chờ Admin xác nhận chuyển khoản. Vui lòng bấm kiểm tra lại sau ít phút!</div>`;
+        box.innerHTML = `<div style="background:#fff7ed;color:#c2410c;padding:14px;border-radius:12px;font-weight:600;">${
+          t(`⏳ Đơn <strong>${data.order_code}</strong> đang chờ Quản trị viên xác nhận chuyển khoản. Vui lòng kiểm tra lại sau ít phút!`,
+            `⏳ Order <strong>${data.order_code}</strong> is awaiting verification. Please check again in a few minutes!`)
+        }</div>`;
       } else {
+        const copyLbl = t("📋 Sao chép", "📋 Copy");
         box.innerHTML = `
           <div style="background:#dcfce7;color:#166534;padding:18px;border-radius:14px;text-align:left;max-width:480px;margin:0 auto;line-height:2;">
-            <div style="font-size:1.1rem;font-weight:800;margin-bottom:6px;">🎉 Kích hoạt thành công!</div>
-            <div>🎟️ <strong>Mã xác nhận:</strong> <span style="background:#fff;padding:2px 8px;border-radius:6px;font-weight:700;">${data.confirm_code}</span></div>
+            <div style="font-size:1.1rem;font-weight:800;margin-bottom:6px;">🎉 ${t("Kích hoạt thành công!", "VIP Activated Successfully!")}</div>
+            <div>🎟️ <strong>${t("Mã xác nhận:", "Confirmation Code:")}</strong> <span style="background:#fff;padding:2px 8px;border-radius:6px;font-weight:700;">${data.confirm_code}</span></div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-              <span>👤 <strong>Tên đăng nhập:</strong> <span>${data.login_user}</span></span>
-              <button type="button" onclick="copyText('${data.login_user}', this)" style="border:1px solid #16a34a;background:#fff;color:#166534;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">📋 Copy</button>
+              <span>👤 <strong>${t("Tên đăng nhập:", "Username:")}</strong> <span>${data.login_user}</span></span>
+              <button type="button" onclick="copyText('${data.login_user}', this)" style="border:1px solid #16a34a;background:#fff;color:#166534;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">${copyLbl}</button>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-              <span>🔑 <strong>Mật khẩu:</strong> <span style="font-family:monospace;font-size:1.05rem;">${data.temp_pass}</span></span>
-              <button type="button" onclick="copyText('${data.temp_pass}', this)" style="border:1px solid #16a34a;background:#fff;color:#166534;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">📋 Copy</button>
+              <span>🔑 <strong>${t("Mật khẩu:", "Password:")}</strong> <span style="font-family:monospace;font-size:1.05rem;">${data.temp_pass}</span></span>
+              <button type="button" onclick="copyText('${data.temp_pass}', this)" style="border:1px solid #16a34a;background:#fff;color:#166534;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">${copyLbl}</button>
             </div>
-            <a href="/login.html" style="display:inline-block;margin-top:12px;background:#16a34a;color:#fff;padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:700;">Đăng nhập học ngay →</a>
+            <a href="/login.html" style="display:inline-block;margin-top:12px;background:#16a34a;color:#fff;padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:700;">${t("Đăng nhập học ngay →", "Sign In & Start Learning →")}</a>
           </div>
         `;
       }
     }
 
-    applyLang(currentLang);
+    document.title = t("MathPro - Đăng ký gói học VIP", "MathPro - VIP Membership");
+    MP_I18N.applyDOM(document);
+    updatePrices();
   </script>
 </body>
 </html>

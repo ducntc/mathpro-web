@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chi tiết bài học - MathPro</title>
+  <title>MathPro</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     .lesson-section { background: #f8f9fc; padding: 18px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #0b5ed7; }
@@ -16,79 +16,81 @@
   <header class="navbar">
     <div class="logo"><a href="/" style="margin:0; text-decoration:none; color:inherit;">MATH<span>PRO</span></a></div>
     <nav>
-      <a href="/">Trang chủ</a>
-      <a href="/#courses">Tất cả khóa học</a>
+      <a href="/" data-i18n="nav.home">🏠 Trang chủ</a>
+      <a href="/#courses" data-i18n="nav.courses">📚 Tất cả khóa học</a>
     </nav>
   </header>
 
   <main class="container">
     <div id="lesson-box" class="card" style="padding: 32px;">
-      <p>Đang tải nội dung bài học...</p>
+      <p data-i18n="common.loading">Đang tải dữ liệu...</p>
     </div>
   </main>
 
+  <script src="/js/i18n.js"></script>
   <script>
     async function loadLesson() {
+      document.title = t('Chi tiết bài học - MathPro', 'Lesson Details - MathPro');
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
       const box = document.getElementById('lesson-box');
 
       if (!id) {
-        box.innerHTML = '<p>Chưa chọn bài học. <a href="/">Quay lại trang chủ</a></p>';
+        box.innerHTML = `<p>${t('Chưa chọn bài học.', 'No lesson selected.')} <a href="/">${t('Quay lại trang chủ', 'Back to Home')}</a></p>`;
         return;
       }
 
       const res = await fetch(`/api/lessons/${id}`);
       if (!res.ok) {
-        box.innerHTML = '<p>Không tìm thấy bài học. <a href="/">Quay lại trang chủ</a></p>';
+        box.innerHTML = `<p>${t('Không tìm thấy bài học.', 'Lesson not found.')} <a href="/">${t('Quay lại trang chủ', 'Back to Home')}</a></p>`;
         return;
       }
 
       const lesson = await res.json();
       box.innerHTML = `
-        <span style="color:#0b5ed7; font-weight:700;">Bài ${lesson.lesson_order} • ⏱ ${lesson.duration}</span>
+        <span style="color:#0b5ed7; font-weight:700;">${t('Bài', 'Lesson')} ${lesson.lesson_order} • ⏱ ${lesson.duration}</span>
         <h1 style="margin: 10px 0 22px; color:#ff7a00;">${lesson.title}</h1>
 
         <div class="lesson-section">
-          <h3>🎯 Mục tiêu bài học</h3>
+          <h3>🎯 ${t('Mục tiêu bài học', 'Learning Objectives')}</h3>
           <p>${lesson.objectives}</p>
         </div>
 
         <div class="lesson-section">
-          <h3>📖 Lý thuyết trọng tâm</h3>
+          <h3>📖 ${t('Lý thuyết trọng tâm', 'Key Concepts')}</h3>
           <p>${lesson.content}</p>
         </div>
 
         <div class="lesson-section" style="border-left-color: #ff7a00;">
-          <h3 style="color:#ff7a00;">💡 Ví dụ minh họa</h3>
+          <h3 style="color:#ff7a00;">💡 ${t('Ví dụ minh họa', 'Worked Example')}</h3>
           <p>${lesson.example}</p>
         </div>
 
         <div class="lesson-section" style="border-left-color: #2e7d32;">
-          <h3 style="color:#2e7d32;">✍️ Bài tập tự luyện</h3>
+          <h3 style="color:#2e7d32;">✍️ ${t('Bài tập tự luyện', 'Practice Exercise')}</h3>
           <p>${lesson.exercise}</p>
           <button id="toggle-answer" class="btn-primary" style="margin-top:12px; padding:8px 16px; font-size:14px; background:#2e7d32;">
-            Xem đáp án
+            ${t('Xem đáp án', 'Show Answer')}
           </button>
           <div id="answer-box" class="answer-box">${lesson.answer}</div>
         </div>
 
         <div id="quiz-container" class="lesson-section" style="border-left-color: #6f42c1;">
-          <h3 style="color:#6f42c1;">📝 Kiểm tra nhanh (Trắc nghiệm)</h3>
-          <div id="quiz-list"><p>Đang tải câu hỏi...</p></div>
+          <h3 style="color:#6f42c1;">📝 ${t('Kiểm tra nhanh (Trắc nghiệm)', 'Quick Quiz')}</h3>
+          <div id="quiz-list"><p>${t('Đang tải câu hỏi...', 'Loading questions...')}</p></div>
         </div>
 
         <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div>
             ${lesson.prevLessonId
-              ? `<a href="/lesson.html?id=${lesson.prevLessonId}" class="btn-primary" style="background:#6c757d;">← Bài trước</a>`
+              ? `<a href="/lesson.html?id=${lesson.prevLessonId}" class="btn-primary" style="background:#6c757d;">← ${t('Bài trước', 'Previous')}</a>`
               : ''}
-            <a href="/course.html?id=${lesson.course_id}" style="margin-left:12px; color:#0b5ed7; font-weight:600; text-decoration:none;">Danh sách bài học</a>
+            <a href="/course.html?id=${lesson.course_id}" style="margin-left:12px; color:#0b5ed7; font-weight:600; text-decoration:none;">${t('Danh sách bài học', 'Lesson List')}</a>
           </div>
           <div style="display:flex; gap:10px; align-items:center;">
-            <button id="mark-complete-btn" class="btn-primary" style="background:#2e7d32;">✓ Đánh dấu đã học xong</button>
+            <button id="mark-complete-btn" class="btn-primary" style="background:#2e7d32;">✓ ${t('Đánh dấu đã học xong', 'Mark as Completed')}</button>
             ${lesson.nextLessonId
-              ? `<a href="/lesson.html?id=${lesson.nextLessonId}" class="btn-primary">Bài tiếp theo →</a>`
+              ? `<a href="/lesson.html?id=${lesson.nextLessonId}" class="btn-primary">${t('Bài tiếp theo', 'Next Lesson')} →</a>`
               : ''}
           </div>
         </div>
@@ -99,7 +101,7 @@
         const btn = document.getElementById('toggle-answer');
         const isHidden = ans.style.display === 'none' || ans.style.display === '';
         ans.style.display = isHidden ? 'block' : 'none';
-        btn.textContent = isHidden ? 'Ẩn đáp án' : 'Xem đáp án';
+        btn.textContent = isHidden ? t('Ẩn đáp án', 'Hide Answer') : t('Xem đáp án', 'Show Answer');
       });
 
       document.getElementById('mark-complete-btn').addEventListener('click', async () => {
@@ -107,11 +109,11 @@
         const data = await completeRes.json();
         const btn = document.getElementById('mark-complete-btn');
         if (completeRes.ok) {
-          btn.textContent = '✅ Đã lưu hoàn thành!';
+          btn.textContent = t('✅ Đã lưu hoàn thành!', '✅ Marked as Completed!');
           btn.disabled = true;
           btn.style.opacity = '0.8';
         } else {
-          alert(data.message);
+          alert(MP_I18N.apiMsg(data.message));
         }
       });
 
@@ -124,7 +126,7 @@
       const quizList = document.getElementById('quiz-list');
 
       if (questions.length === 0) {
-        quizList.innerHTML = '<p>Bài học này chưa có bài trắc nghiệm.</p>';
+        quizList.innerHTML = `<p>${t('Bài học này chưa có bài trắc nghiệm.', 'No quiz questions for this lesson yet.')}</p>`;
         return;
       }
 
@@ -132,7 +134,7 @@
         <form id="quiz-form">
           ${questions.map((q, index) => `
             <div class="quiz-item" data-id="${q.id}" style="margin-bottom: 16px;">
-              <p><strong>Câu ${index + 1}:</strong> ${q.question}</p>
+              <p><strong>${t('Câu', 'Question')} ${index + 1}:</strong> ${q.question}</p>
               <label style="display:block; margin:4px 0;"><input type="radio" name="q_${q.id}" value="A" required> A. ${q.option_a}</label>
               <label style="display:block; margin:4px 0;"><input type="radio" name="q_${q.id}" value="B"> B. ${q.option_b}</label>
               <label style="display:block; margin:4px 0;"><input type="radio" name="q_${q.id}" value="C"> C. ${q.option_c}</label>
@@ -140,7 +142,7 @@
               <p class="quiz-feedback" style="font-size:14px; font-weight:600; margin-top:4px;"></p>
             </div>
           `).join('')}
-          <button type="submit" class="btn-primary" style="background:#6f42c1;">Nộp bài &amp; Chấm điểm</button>
+          <button type="submit" class="btn-primary" style="background:#6f42c1;">${t('Nộp bài & Chấm điểm', 'Submit Quiz')}</button>
         </form>
         <div id="quiz-score" style="margin-top:16px; font-size:18px; font-weight:700;"></div>
       `;
@@ -164,15 +166,16 @@
           const feedback = document.querySelector(`.quiz-item[data-id="${r.quizId}"] .quiz-feedback`);
           feedback.style.color = r.isCorrect ? 'green' : 'red';
           feedback.textContent = r.isCorrect
-            ? '✅ Chính xác!'
-            : `❌ Sai rồi. Đáp án đúng là ${r.correctOption}.`;
+            ? t('✅ Chính xác!', '✅ Correct!')
+            : t(`❌ Sai rồi. Đáp án đúng là ${r.correctOption}.`, `❌ Incorrect. Correct option: ${r.correctOption}.`);
         });
 
         const saveNote = data.savedProgress
-          ? ' (Đã lưu vào hồ sơ học tập ✅)'
-          : ' (Hãy đăng nhập để lưu điểm số!)';
+          ? t(' (Đã lưu vào hồ sơ học tập ✅)', ' (Saved to profile ✅)')
+          : t(' (Hãy đăng nhập để lưu điểm số!)', ' (Sign in to save your score!)');
         document.getElementById('quiz-score').textContent =
-          `🎯 Kết quả của bạn: ${data.score}/${data.total} câu đúng (${data.percentage}%)${saveNote}`;
+          t(`🎯 Kết quả của bạn: ${data.score}/${data.total} câu đúng (${data.percentage}%)${saveNote}`,
+            `🎯 Your Score: ${data.score}/${data.total} correct (${data.percentage}%)${saveNote}`);
       });
     }
 
