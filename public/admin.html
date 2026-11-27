@@ -84,64 +84,67 @@
 </head>
 <body>
   <header class="navbar">
-    <div class="logo"><a href="/">🧮 MathPro</a> <span style="font-size:14px; color:#34d399;">| Quản trị Admin</span></div>
+    <div class="logo">
+      <a href="/">🧮 MathPro</a>
+      <span style="font-size:14px; color:#34d399;" data-vi="| Quản trị hệ thống" data-en="| Admin Dashboard">| Quản trị hệ thống</span>
+    </div>
     <nav class="nav-actions">
-      <a href="/" class="nav-btn nav-btn-home">🏠 Trang chủ</a>
-      <a href="/profile.html" class="nav-btn">👤 Hồ sơ</a>
+      <a href="/" class="nav-btn nav-btn-home" data-i18n="nav.home">🏠 Trang chủ</a>
+      <a href="/profile.html" class="nav-btn" data-i18n="nav.profile">👤 Hồ sơ</a>
       <span id="admin-name-badge" style="font-size:13px; color:#cbd5e1;"></span>
-      <button class="nav-btn" onclick="logout()">Đăng xuất</button>
+      <button class="nav-btn" onclick="logout()" data-i18n="nav.logout">Đăng xuất</button>
     </nav>
   </header>
 
   <main class="container">
     <div class="tabs">
-      <button class="tab-btn active" data-tab="tab-subs">💎 1. Duyệt đơn VIP</button>
-      <button class="tab-btn" data-tab="tab-course">📚 2. Khóa học (Mầm non – Lớp 9)</button>
-      <button class="tab-btn" data-tab="tab-lesson">📖 3. Bài học</button>
-      <button class="tab-btn" data-tab="tab-quiz">📝 4. Thêm Trắc nghiệm</button>
-      <button class="tab-btn" data-tab="tab-reg">📋 5. Học thử (CSV)</button>
+      <button class="tab-btn active" data-tab="tab-subs" data-vi="💎 1. Duyệt đơn VIP" data-en="💎 1. VIP Orders">💎 1. Duyệt đơn VIP</button>
+      <button class="tab-btn" data-tab="tab-course" data-vi="📚 2. Khóa học (Mầm non – Lớp 9)" data-en="📚 2. Courses (K–9)">📚 2. Khóa học (Mầm non – Lớp 9)</button>
+      <button class="tab-btn" data-tab="tab-lesson" data-vi="📖 3. Bài học" data-en="📖 3. Lessons">📖 3. Bài học</button>
+      <button class="tab-btn" data-tab="tab-quiz" data-vi="📝 4. Thêm Trắc nghiệm" data-en="📝 4. Add Quiz">📝 4. Thêm Trắc nghiệm</button>
+      <button class="tab-btn" data-tab="tab-reg" data-vi="📋 5. Học thử (CSV)" data-en="📋 5. Trial Leads (CSV)">📋 5. Học thử (CSV)</button>
     </div>
 
     <!-- TAB 1: DUYỆT ĐƠN VIP -->
     <div id="tab-subs" class="tab-panel active">
       <div class="panel">
         <div class="panel-title">
-          <span>💳 Danh sách đăng ký gói VIP (VietQR)</span>
-          <button class="btn btn-blue" onclick="loadSubscriptions()">🔄 Làm mới</button>
+          <span data-vi="💳 Danh sách đăng ký gói VIP (VietQR)" data-en="💳 VIP Subscription Orders (VietQR)">💳 Danh sách đăng ký gói VIP (VietQR)</span>
+          <button class="btn btn-blue" onclick="loadSubscriptions()" data-vi="🔄 Làm mới" data-en="🔄 Refresh">🔄 Làm mới</button>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Mã đơn</th>
-                <th>Phụ huynh</th>
-                <th>Zalo / Email</th>
-                <th>Gói học</th>
-                <th>Số tiền</th>
-                <th>Trạng thái / Tài khoản</th>
-                <th>Thao tác</th>
+                <th data-vi="Mã đơn" data-en="Order Code">Mã đơn</th>
+                <th data-vi="Phụ huynh / Học sinh" data-en="Customer">Phụ huynh / Học sinh</th>
+                <th data-vi="Liên hệ" data-en="Contact">Liên hệ</th>
+                <th data-vi="Gói học" data-en="Plan">Gói học</th>
+                <th data-vi="Số tiền" data-en="Amount">Số tiền</th>
+                <th data-vi="Trạng thái / Tài khoản" data-en="Status / Credentials">Trạng thái / Tài khoản</th>
+                <th data-vi="Thao tác" data-en="Action">Thao tác</th>
               </tr>
             </thead>
-            <tbody id="subTableBody"><tr><td colspan="7">Đang tải...</td></tr></tbody>
+            <tbody id="subTableBody"><tr><td colspan="7" data-i18n="common.loading">Đang tải dữ liệu...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: KHÓA HỌC (THÊM / SỬA / XÓA) -->
+    <!-- TAB 2: KHÓA HỌC -->
     <div id="tab-course" class="tab-panel">
       <div class="panel">
-        <div class="panel-title"><span id="course-form-title">➕ Thêm Khóa Học Mới</span></div>
+        <div class="panel-title"><span id="course-form-title" data-vi="➕ Thêm Khóa Học Mới" data-en="➕ Add New Course">➕ Thêm Khóa Học Mới</span></div>
         <form id="add-course-form">
           <input type="hidden" id="edit-course-id" value="" />
           <div class="form-grid">
-            <input type="text" id="grade" class="form-input" placeholder="Khối lớp (VD: Lớp 10)" required />
-            <input type="text" id="title" class="form-input" placeholder="Tên khóa học" required />
-            <input type="text" id="description" class="form-input" placeholder="Mô tả ngắn..." required />
+            <input type="text" id="grade" class="form-input" data-vi-placeholder="Khối lớp (VD: Lớp 10)" data-en-placeholder="Grade (e.g. Grade 10)" placeholder="Khối lớp (VD: Lớp 10)" required />
+            <input type="text" id="title" class="form-input" data-vi-placeholder="Tên khóa học" data-en-placeholder="Course Title" placeholder="Tên khóa học" required />
+            <input type="text" id="description" class="form-input" data-vi-placeholder="Mô tả ngắn..." data-en-placeholder="Short description..." placeholder="Mô tả ngắn..." required />
           </div>
           <div style="display:flex; gap:10px;">
-            <button type="submit" id="course-submit-btn" class="btn btn-primary">Lưu Khóa Học</button>
-            <button type="button" id="cancel-edit-btn" class="btn btn-gray" style="display:none;">Hủy</button>
+            <button type="submit" id="course-submit-btn" class="btn btn-primary" data-vi="Lưu Khóa Học" data-en="Save Course">Lưu Khóa Học</button>
+            <button type="button" id="cancel-edit-btn" class="btn btn-gray" style="display:none;" data-vi="Hủy" data-en="Cancel">Hủy</button>
           </div>
         </form>
         <p id="course-msg" style="margin-top:10px; font-weight:600;"></p>
@@ -149,36 +152,42 @@
       <div id="admin-course-list" class="course-grid"></div>
     </div>
 
-    <!-- TAB 3: BÀI HỌC (THÊM / XÓA) -->
+    <!-- TAB 3: BÀI HỌC -->
     <div id="tab-lesson" class="tab-panel">
       <div class="panel">
-        <div class="panel-title"><span>📖 Thêm Bài Học Mới</span></div>
+        <div class="panel-title"><span data-vi="📖 Thêm Bài Học Mới" data-en="📖 Add New Lesson">📖 Thêm Bài Học Mới</span></div>
         <form id="add-lesson-form">
           <div class="form-grid">
             <select id="lesson-course-id" class="form-input" required></select>
-            <input type="number" id="lesson-order" class="form-input" placeholder="Thứ tự bài (VD: 1, 2...)" min="1" required />
-            <input type="text" id="lesson-title" class="form-input" placeholder="Tên bài học" required />
-            <input type="text" id="lesson-duration" class="form-input" placeholder="Thời lượng (VD: 15 phút)" required />
-            <input type="url" id="lesson-video" class="form-input" placeholder="🎥 Link video YouTube (tùy chọn)" />
+            <input type="number" id="lesson-order" class="form-input" data-vi-placeholder="Thứ tự bài (VD: 1, 2...)" data-en-placeholder="Lesson order (e.g. 1, 2...)" placeholder="Thứ tự bài (VD: 1, 2...)" min="1" required />
+            <input type="text" id="lesson-title" class="form-input" data-vi-placeholder="Tên bài học" data-en-placeholder="Lesson title" placeholder="Tên bài học" required />
+            <input type="text" id="lesson-duration" class="form-input" data-vi-placeholder="Thời lượng (VD: 15 phút)" data-en-placeholder="Duration (e.g. 15 mins)" placeholder="Thời lượng (VD: 15 phút)" required />
+            <input type="url" id="lesson-video" class="form-input" data-vi-placeholder="🎥 Link video YouTube (tùy chọn)" data-en-placeholder="🎥 YouTube video URL (optional)" placeholder="🎥 Link video YouTube (tùy chọn)" />
           </div>
           <div class="form-grid">
-            <textarea id="lesson-objectives" rows="2" placeholder="🎯 Mục tiêu bài học..." required></textarea>
-            <textarea id="lesson-content" rows="2" placeholder="📖 Lý thuyết trọng tâm..." required></textarea>
-            <textarea id="lesson-example" rows="2" placeholder="💡 Ví dụ minh họa..." required></textarea>
-            <textarea id="lesson-exercise" rows="2" placeholder="✍️ Bài tập tự luyện..." required></textarea>
-            <textarea id="lesson-answer" rows="2" placeholder="✅ Đáp án..." required></textarea>
+            <textarea id="lesson-objectives" rows="2" data-vi-placeholder="🎯 Mục tiêu bài học..." data-en-placeholder="🎯 Learning objectives..." placeholder="🎯 Mục tiêu bài học..." required></textarea>
+            <textarea id="lesson-content" rows="2" data-vi-placeholder="📖 Lý thuyết trọng tâm..." data-en-placeholder="📖 Key concepts & theory..." placeholder="📖 Lý thuyết trọng tâm..." required></textarea>
+            <textarea id="lesson-example" rows="2" data-vi-placeholder="💡 Ví dụ minh họa..." data-en-placeholder="💡 Worked example..." placeholder="💡 Ví dụ minh họa..." required></textarea>
+            <textarea id="lesson-exercise" rows="2" data-vi-placeholder="✍️ Bài tập tự luyện..." data-en-placeholder="✍️ Practice exercise..." placeholder="✍️ Bài tập tự luyện..." required></textarea>
+            <textarea id="lesson-answer" rows="2" data-vi-placeholder="✅ Đáp án..." data-en-placeholder="✅ Answer..." placeholder="✅ Đáp án..." required></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Lưu Bài Học</button>
+          <button type="submit" class="btn btn-primary" data-vi="Lưu Bài Học" data-en="Save Lesson">Lưu Bài Học</button>
         </form>
         <p id="lesson-msg" style="margin-top:10px; font-weight:600;"></p>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><span>📚 Danh Sách Bài Học Hiện Có</span></div>
+        <div class="panel-title"><span data-vi="📚 Danh Sách Bài Học Hiện Có" data-en="📚 Existing Lessons">📚 Danh Sách Bài Học Hiện Có</span></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Khối lớp</th><th>Bài học</th><th>Thao tác</th></tr></thead>
-            <tbody id="admin-lesson-table"><tr><td colspan="3">Đang tải...</td></tr></tbody>
+            <thead>
+              <tr>
+                <th data-vi="Khối lớp" data-en="Grade">Khối lớp</th>
+                <th data-vi="Bài học" data-en="Lesson">Bài học</th>
+                <th data-vi="Thao tác" data-en="Action">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="admin-lesson-table"><tr><td colspan="3" data-i18n="common.loading">Đang tải dữ liệu...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -187,28 +196,28 @@
     <!-- TAB 4: THÊM TRẮC NGHIỆM -->
     <div id="tab-quiz" class="tab-panel">
       <div class="panel">
-        <div class="panel-title"><span>📝 Thêm Câu Hỏi Trắc Nghiệm</span></div>
+        <div class="panel-title"><span data-vi="📝 Thêm Câu Hỏi Trắc Nghiệm" data-en="📝 Add Quiz Question">📝 Thêm Câu Hỏi Trắc Nghiệm</span></div>
         <form id="add-quiz-form">
           <div class="form-grid">
             <select id="quiz-lesson-id" class="form-input" required></select>
             <select id="correct-opt" class="form-input" required>
-              <option value="">-- Chọn đáp án đúng --</option>
-              <option value="A">Đáp án đúng: A</option>
-              <option value="B">Đáp án đúng: B</option>
-              <option value="C">Đáp án đúng: C</option>
-              <option value="D">Đáp án đúng: D</option>
+              <option value="" data-vi="-- Chọn đáp án đúng --" data-en="-- Select Correct Option --">-- Chọn đáp án đúng --</option>
+              <option value="A" data-vi="Đáp án đúng: A" data-en="Correct Option: A">Đáp án đúng: A</option>
+              <option value="B" data-vi="Đáp án đúng: B" data-en="Correct Option: B">Đáp án đúng: B</option>
+              <option value="C" data-vi="Đáp án đúng: C" data-en="Correct Option: C">Đáp án đúng: C</option>
+              <option value="D" data-vi="Đáp án đúng: D" data-en="Correct Option: D">Đáp án đúng: D</option>
             </select>
           </div>
           <div class="form-grid">
-            <textarea id="quiz-question" rows="2" placeholder="Nội dung câu hỏi..." required></textarea>
+            <textarea id="quiz-question" rows="2" data-vi-placeholder="Nội dung câu hỏi..." data-en-placeholder="Question text..." placeholder="Nội dung câu hỏi..." required></textarea>
           </div>
           <div class="form-grid">
-            <input type="text" id="opt-a" class="form-input" placeholder="Đáp án A" required />
-            <input type="text" id="opt-b" class="form-input" placeholder="Đáp án B" required />
-            <input type="text" id="opt-c" class="form-input" placeholder="Đáp án C" required />
-            <input type="text" id="opt-d" class="form-input" placeholder="Đáp án D" required />
+            <input type="text" id="opt-a" class="form-input" data-vi-placeholder="Đáp án A" data-en-placeholder="Option A" placeholder="Đáp án A" required />
+            <input type="text" id="opt-b" class="form-input" data-vi-placeholder="Đáp án B" data-en-placeholder="Option B" placeholder="Đáp án B" required />
+            <input type="text" id="opt-c" class="form-input" data-vi-placeholder="Đáp án C" data-en-placeholder="Option C" placeholder="Đáp án C" required />
+            <input type="text" id="opt-d" class="form-input" data-vi-placeholder="Đáp án D" data-en-placeholder="Option D" placeholder="Đáp án D" required />
           </div>
-          <button type="submit" class="btn btn-purple">Lưu Câu Hỏi</button>
+          <button type="submit" class="btn btn-purple" data-vi="Lưu Câu Hỏi" data-en="Save Question">Lưu Câu Hỏi</button>
         </form>
         <p id="quiz-msg" style="margin-top:10px; font-weight:600;"></p>
       </div>
@@ -218,21 +227,30 @@
     <div id="tab-reg" class="tab-panel">
       <div class="panel">
         <div class="panel-title">
-          <span>📋 Danh Sách Đăng Ký Học Thử</span>
-          <a href="/api/registrations/export" class="btn btn-primary">📥 Xuất file Excel (.csv)</a>
+          <span data-vi="📋 Danh Sách Đăng Ký Học Thử" data-en="📋 Free Trial Registrations">📋 Danh Sách Đăng Ký Học Thử</span>
+          <a href="/api/registrations/export" class="btn btn-primary" data-vi="📥 Xuất tệp (.csv)" data-en="📥 Export CSV">📥 Xuất tệp (.csv)</a>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Học sinh</th><th>Email</th><th>Khối lớp</th><th>Ngày đăng ký</th></tr></thead>
-            <tbody id="reg-table-body"><tr><td colspan="4">Đang tải...</td></tr></tbody>
+            <thead>
+              <tr>
+                <th data-vi="Học sinh" data-en="Student">Học sinh</th>
+                <th>Email</th>
+                <th data-vi="Khối lớp" data-en="Grade">Khối lớp</th>
+                <th data-vi="Ngày đăng ký" data-en="Registered At">Ngày đăng ký</th>
+              </tr>
+            </thead>
+            <tbody id="reg-table-body"><tr><td colspan="4" data-i18n="common.loading">Đang tải dữ liệu...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
   </main>
 
+  <script src="/js/i18n.js"></script>
   <script>
     let cachedCourses = [];
+    document.title = t('Quản trị hệ thống - MathPro', 'Admin Dashboard - MathPro');
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -247,20 +265,19 @@
       const res = await fetch('/api/me');
       const { user } = await res.json();
       if (!user) {
-        alert('Vui lòng đăng nhập!');
+        alert(t('Vui lòng đăng nhập!', 'Please sign in!'));
         window.location.href = '/login.html';
       } else if (user.role !== 'admin') {
-        alert('Chỉ tài khoản Admin mới được truy cập trang này!');
+        alert(t('Chỉ tài khoản Quản trị viên mới được truy cập trang này!', 'Administrator access only!'));
         window.location.href = '/';
       } else {
-        document.getElementById('admin-name-badge').textContent = `Admin: ${user.name}`;
+        document.getElementById('admin-name-badge').textContent = `${t('Quản trị:', 'Admin:')} ${user.name}`;
         loadInitialData();
         loadSubscriptions();
       }
     }
 
     async function loadInitialData() {
-      // 1. Tải khóa học (tính đúng 42 bài Mầm non & 44 bài Lớp 1-9)
       const cRes = await fetch('/api/courses');
       cachedCourses = await cRes.json();
       document.getElementById('admin-course-list').innerHTML = cachedCourses.map(c => {
@@ -269,55 +286,54 @@
         return `
           <div class="course-card">
             <div>
-              <h3 style="color:var(--primary); margin-bottom:4px;">${c.grade}</h3>
+              <h3 style="color:var(--primary); margin-bottom:4px;">${MP_I18N.gradeName(c.grade)}</h3>
               <p style="font-weight:700; font-size:14px; margin-bottom:6px;">${c.title}</p>
               <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">${c.description}</p>
             </div>
             <div>
-              <p style="font-size:13px; color:var(--blue); font-weight:700; margin-bottom:10px;">📚 ${count} bài học</p>
+              <p style="font-size:13px; color:var(--blue); font-weight:700; margin-bottom:10px;">📚 ${count} ${t('kỹ năng / bài học', 'skills / lessons')}</p>
               <div style="display:flex; gap:8px;">
-                <button class="btn btn-blue" onclick="startEditCourse(${c.id})">✏️ Sửa</button>
-                <button class="btn btn-danger" onclick="deleteCourse(${c.id}, '${c.title.replace(/'/g, "\\'")}')">🗑️ Xóa</button>
+                <button class="btn btn-blue" onclick="startEditCourse(${c.id})">✏️ ${t('Sửa', 'Edit')}</button>
+                <button class="btn btn-danger" onclick="deleteCourse(${c.id}, '${c.title.replace(/'/g, "\\'")}')">🗑️ ${t('Xóa', 'Delete')}</button>
               </div>
             </div>
           </div>`;
       }).join('');
 
       document.getElementById('lesson-course-id').innerHTML =
-        '<option value="">-- Chọn khóa học --</option>' +
-        cachedCourses.map(c => `<option value="${c.id}">${c.grade} - ${c.title}</option>`).join('');
+        `<option value="">${t('-- Chọn khóa học --', '-- Select Course --')}</option>` +
+        cachedCourses.map(c => `<option value="${c.id}">${MP_I18N.gradeName(c.grade)} - ${c.title}</option>`).join('');
 
-      // 2. Tải bài học
       const lRes = await fetch('/api/lessons');
       if (lRes.ok) {
         const lessons = await lRes.json();
         document.getElementById('quiz-lesson-id').innerHTML =
-          '<option value="">-- Chọn bài học --</option>' +
-          lessons.map(l => `<option value="${l.id}">[${l.grade}] Bài ${l.lesson_order}: ${l.title}</option>`).join('');
+          `<option value="">${t('-- Chọn bài học --', '-- Select Lesson --')}</option>` +
+          lessons.map(l => `<option value="${l.id}">[${MP_I18N.gradeName(l.grade)}] ${t('Bài', 'Lesson')} ${l.lesson_order}: ${l.title}</option>`).join('');
 
         document.getElementById('admin-lesson-table').innerHTML = lessons.length
           ? lessons.map(l => `
               <tr>
-                <td><strong>${l.grade}</strong></td>
-                <td>Bài ${l.lesson_order}: ${l.title}</td>
-                <td><button class="btn btn-danger" onclick="deleteLesson(${l.id}, '${l.title.replace(/'/g, "\\'")}')">🗑️ Xóa</button></td>
+                <td><strong>${MP_I18N.gradeName(l.grade)}</strong></td>
+                <td>${t('Bài', 'Lesson')} ${l.lesson_order}: ${l.title}</td>
+                <td><button class="btn btn-danger" onclick="deleteLesson(${l.id}, '${l.title.replace(/'/g, "\\'")}')">🗑️ ${t('Xóa', 'Delete')}</button></td>
               </tr>`).join('')
-          : '<tr><td colspan="3">Chưa có bài học nào.</td></tr>';
+          : `<tr><td colspan="3">${t('Chưa có bài học nào.', 'No lessons found.')}</td></tr>`;
       }
 
-      // 3. Tải danh sách đăng ký học thử
       const rRes = await fetch('/api/registrations');
       if (rRes.ok) {
         const regs = await rRes.json();
+        const loc = MP_I18N.isEn() ? 'en-GB' : 'vi-VN';
         document.getElementById('reg-table-body').innerHTML = regs.length
           ? regs.map(r => `
               <tr>
                 <td><strong>${r.name}</strong></td>
                 <td>${r.email}</td>
-                <td>${r.grade}</td>
-                <td>${new Date(r.created_at).toLocaleString('vi-VN', { timeZone: 'Asia/Bangkok' })}</td>
+                <td>${MP_I18N.gradeName(r.grade)}</td>
+                <td>${new Date(r.created_at).toLocaleString(loc, { timeZone: 'Asia/Bangkok' })}</td>
               </tr>`).join('')
-          : '<tr><td colspan="4">Chưa có lượt đăng ký nào.</td></tr>';
+          : `<tr><td colspan="4">${t('Chưa có lượt đăng ký nào.', 'No registrations yet.')}</td></tr>`;
       }
     }
 
@@ -327,7 +343,7 @@
         const res = await fetch('/api/admin/subscriptions');
         const rows = await res.json();
         if (!rows.length) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Chưa có đơn đăng ký nào.</td></tr>';
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">${t('Chưa có đơn đăng ký nào.', 'No subscription orders yet.')}</td></tr>`;
           return;
         }
         tbody.innerHTML = rows.map(r => `
@@ -335,34 +351,38 @@
             <td><strong>${r.order_code}</strong></td>
             <td>${r.parent_name}</td>
             <td>${r.contact}</td>
-            <td>${r.plan_name} (${r.billing_cycle === 'yearly' ? '12 tháng' : '1 tháng'})</td>
+            <td>${r.plan_name} (${r.billing_cycle === 'yearly' ? t('12 tháng', '12 months') : t('1 tháng', '1 month')})</td>
             <td>${Number(r.amount).toLocaleString('vi-VN')}đ</td>
             <td>
               ${r.status === 'approved'
-                ? `<span class="badge b-approved">✅ Đã duyệt</span><br>Mã: <b>${r.confirm_code}</b><br>TK: <b>${r.login_user}</b> / MK: <b>${r.temp_pass}</b>`
-                : '<span class="badge b-pending">⏳ Chờ chuyển khoản</span>'}
+                ? `<span class="badge b-approved">✅ ${t('Đã duyệt', 'Approved')}</span><br>${t('Mã:', 'Code:')} <b>${r.confirm_code}</b><br>${t('TK:', 'User:')} <b>${r.login_user}</b> / ${t('MK:', 'Pass:')} <b>${r.temp_pass}</b>`
+                : `<span class="badge b-pending">⏳ ${t('Chờ chuyển khoản', 'Pending Transfer')}</span>`}
             </td>
             <td>
               ${r.status === 'pending'
-                ? `<button class="btn btn-amber" onclick="approveOrder(${r.id})">✅ Duyệt & Cấp TK</button>`
-                : 'Đã xong'}
+                ? `<button class="btn btn-amber" onclick="approveOrder(${r.id})">✅ ${t('Duyệt & Cấp TK', 'Approve & Issue Account')}</button>`
+                : t('Đã xong', 'Completed')}
             </td>
           </tr>`).join('');
       } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="7" style="color:red;">Lỗi tải danh sách đơn.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red;">${t('Lỗi tải danh sách đơn.', 'Failed to load orders.')}</td></tr>`;
       }
     }
 
     async function approveOrder(id) {
-      if (!confirm('Xác nhận đã nhận tiền chuyển khoản cho đơn này?')) return;
+      if (!confirm(t('Xác nhận đã nhận tiền chuyển khoản cho đơn này?', 'Confirm payment received and approve this VIP order?'))) return;
       const res = await fetch(`/api/admin/subscriptions/${id}/approve`, { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
-        const exp = new Date(data.expiresAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Bangkok' });
-        alert(`✅ Đã duyệt VIP!\nMã xác nhận: ${data.confirmCode}\nTài khoản: ${data.loginUser}\nMật khẩu: ${data.tempPass}\nHạn VIP: ${exp}`);
+        const loc = MP_I18N.isEn() ? 'en-GB' : 'vi-VN';
+        const exp = new Date(data.expiresAt).toLocaleDateString(loc, { timeZone: 'Asia/Bangkok' });
+        alert(t(
+          `✅ Đã duyệt VIP!\nMã xác nhận: ${data.confirmCode}\nTài khoản: ${data.loginUser}\nMật khẩu: ${data.tempPass}\nHạn VIP: ${exp}`,
+          `✅ VIP Approved!\nCode: ${data.confirmCode}\nUsername: ${data.loginUser}\nPassword: ${data.tempPass}\nExpires: ${exp}`
+        ));
         loadSubscriptions();
       } else {
-        alert(data.message || 'Có lỗi xảy ra khi duyệt!');
+        alert(MP_I18N.apiMsg(data.message) || t('Có lỗi xảy ra khi duyệt!', 'Error approving order!'));
       }
     }
 
@@ -373,8 +393,8 @@
       document.getElementById('grade').value = course.grade;
       document.getElementById('title').value = course.title;
       document.getElementById('description').value = course.description;
-      document.getElementById('course-form-title').textContent = `✏️ Sửa Khóa Học #${course.id}`;
-      document.getElementById('course-submit-btn').textContent = 'Cập Nhật Khóa Học';
+      document.getElementById('course-form-title').textContent = t(`✏️ Sửa Khóa Học #${course.id}`, `✏️ Edit Course #${course.id}`);
+      document.getElementById('course-submit-btn').textContent = t('Cập Nhật Khóa Học', 'Update Course');
       document.getElementById('cancel-edit-btn').style.display = 'inline-block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -382,25 +402,25 @@
     function resetCourseForm() {
       document.getElementById('add-course-form').reset();
       document.getElementById('edit-course-id').value = '';
-      document.getElementById('course-form-title').textContent = '➕ Thêm Khóa Học Mới';
-      document.getElementById('course-submit-btn').textContent = 'Lưu Khóa Học';
+      document.getElementById('course-form-title').textContent = t('➕ Thêm Khóa Học Mới', '➕ Add New Course');
+      document.getElementById('course-submit-btn').textContent = t('Lưu Khóa Học', 'Save Course');
       document.getElementById('cancel-edit-btn').style.display = 'none';
     }
     document.getElementById('cancel-edit-btn').addEventListener('click', resetCourseForm);
 
     async function deleteCourse(id, title) {
-      if (!confirm(`Xóa khóa học "${title}" và toàn bộ bài học bên trong?`)) return;
+      if (!confirm(t(`Xóa khóa học "${title}" và toàn bộ bài học bên trong?`, `Delete course "${title}" and all its lessons?`))) return;
       const res = await fetch(`/api/courses/${id}`, { method: 'DELETE' });
       const data = await res.json();
-      alert(data.message);
+      alert(MP_I18N.apiMsg(data.message));
       if (res.ok) loadInitialData();
     }
 
     async function deleteLesson(id, title) {
-      if (!confirm(`Xóa bài học "${title}"?`)) return;
+      if (!confirm(t(`Xóa bài học "${title}"?`, `Delete lesson "${title}"?`))) return;
       const res = await fetch(`/api/lessons/${id}`, { method: 'DELETE' });
       const data = await res.json();
-      alert(data.message);
+      alert(MP_I18N.apiMsg(data.message));
       if (res.ok) loadInitialData();
     }
 
@@ -419,7 +439,7 @@
       const data = await res.json();
       const msg = document.getElementById('course-msg');
       msg.style.color = res.ok ? 'green' : 'red';
-      msg.textContent = data.message;
+      msg.textContent = MP_I18N.apiMsg(data.message);
       if (res.ok) { resetCourseForm(); loadInitialData(); }
     });
 
@@ -444,7 +464,7 @@
       const data = await res.json();
       const msg = document.getElementById('lesson-msg');
       msg.style.color = res.ok ? 'green' : 'red';
-      msg.textContent = data.message;
+      msg.textContent = MP_I18N.apiMsg(data.message);
       if (res.ok) { e.target.reset(); loadInitialData(); }
     });
 
@@ -466,7 +486,7 @@
       const data = await res.json();
       const msg = document.getElementById('quiz-msg');
       msg.style.color = res.ok ? 'green' : 'red';
-      msg.textContent = data.message;
+      msg.textContent = MP_I18N.apiMsg(data.message);
       if (res.ok) e.target.reset();
     });
 
@@ -475,6 +495,7 @@
       window.location.href = '/';
     }
 
+    MP_I18N.applyDOM(document);
     checkAdminAuth();
   </script>
 </body>
