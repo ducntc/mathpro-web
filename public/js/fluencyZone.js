@@ -8,28 +8,28 @@ window.renderFluencyZone = function (grade, launchFireworks) {
 
   const FACT_SETS = {
     1: [
-      { id: 'add10', label: '➕ Cộng phạm vi 10', gen: () => { const a = r(1, 9), b = r(0, 10 - a); return { q: `${a} + ${b}`, ans: a + b }; } },
-      { id: 'sub10', label: '➖ Trừ phạm vi 10', gen: () => { const a = r(2, 10), b = r(0, a); return { q: `${a} - ${b}`, ans: a - b }; } },
-      { id: 'mix10', label: '⚡ Cộng & Trừ phạm vi 10', gen: () => r(0, 1) ? FACT_SETS[1][0].gen() : FACT_SETS[1][1].gen() },
-      { id: 'add20', label: '🚀 Cộng phạm vi 20', gen: () => { const a = r(2, 12), b = r(1, 20 - a); return { q: `${a} + ${b}`, ans: a + b }; } }
+      { id: 'add10', label: isEn ? '➕ Add within 10' : '➕ Cộng phạm vi 10', gen: () => { const a = r(1, 9), b = r(0, 10 - a); return { q: `${a} + ${b}`, ans: a + b }; } },
+      { id: 'sub10', label: isEn ? '➖ Subtract within 10' : '➖ Trừ phạm vi 10', gen: () => { const a = r(2, 10), b = r(0, a); return { q: `${a} - ${b}`, ans: a - b }; } },
+      { id: 'mix10', label: isEn ? '⚡ Add & Sub within 10' : '⚡ Cộng & Trừ phạm vi 10', gen: () => r(0, 1) ? FACT_SETS[1][0].gen() : FACT_SETS[1][1].gen() },
+      { id: 'add20', label: isEn ? '🚀 Add within 20' : '🚀 Cộng phạm vi 20', gen: () => { const a = r(2, 12), b = r(1, 20 - a); return { q: `${a} + ${b}`, ans: a + b }; } }
     ],
     2: [
-      { id: 'add10', label: '➕ Cộng phạm vi 10', gen: () => { const a = r(1, 9), b = r(1, 10 - a); return { q: `${a} + ${b}`, ans: a + b }; } },
-      { id: 'add20', label: '➕ Cộng phạm vi 20', gen: () => { const a = r(3, 14), b = r(2, 20 - a); return { q: `${a} + ${b}`, ans: a + b }; } },
-      { id: 'sub20', label: '➖ Trừ phạm vi 20', gen: () => { const a = r(6, 20), b = r(1, a - 1); return { q: `${a} - ${b}`, ans: a - b }; } },
-      { id: 'mix20', label: '⚡ Cộng & Trừ hỗn hợp', gen: () => r(0, 1) ? FACT_SETS[2][0].gen() : FACT_SETS[2][2].gen() }
+      { id: 'add10', label: isEn ? '➕ Add within 10' : '➕ Cộng phạm vi 10', gen: () => { const a = r(1, 9), b = r(1, 10 - a); return { q: `${a} + ${b}`, ans: a + b }; } },
+      { id: 'add20', label: isEn ? '➕ Add within 20' : '➕ Cộng phạm vi 20', gen: () => { const a = r(3, 14), b = r(2, 20 - a); return { q: `${a} + ${b}`, ans: a + b }; } },
+      { id: 'sub20', label: isEn ? '➖ Subtract within 20' : '➖ Trừ phạm vi 20', gen: () => { const a = r(6, 20), b = r(1, a - 1); return { q: `${a} - ${b}`, ans: a - b }; } },
+      { id: 'mix20', label: isEn ? '⚡ Mixed Add & Sub' : '⚡ Cộng & Trừ hỗn hợp', gen: () => r(0, 1) ? FACT_SETS[2][0].gen() : FACT_SETS[2][2].gen() }
     ],
     3: [
-      { id: 'mul_easy', label: '✖️ Nhân 2, 3, 4, 5, 10', gen: () => { const a = [2, 3, 4, 5, 10][r(0, 4)], b = r(1, 10); return { q: `${a} × ${b}`, ans: a * b }; } },
-      { id: 'mul_hard', label: '🔥 Nhân 6, 7, 8, 9', gen: () => { const a = [6, 7, 8, 9][r(0, 3)], b = r(2, 10); return { q: `${a} × ${b}`, ans: a * b }; } },
-      { id: 'div_2510', label: '➗ Chia cho 2, 5, 10', gen: () => { const b = [2, 5, 10][r(0, 2)], q = r(1, 10); return { q: `${b * q} : ${b}`, ans: q }; } },
-      { id: 'mix_md', label: '⚡ Nhân & Chia tổng hợp', gen: () => r(0, 1) ? FACT_SETS[3][0].gen() : FACT_SETS[3][2].gen() }
+      { id: 'mul_easy', label: isEn ? '✖️ Multiply 2, 3, 4, 5, 10' : '✖️ Nhân 2, 3, 4, 5, 10', gen: () => { const a = [2, 3, 4, 5, 10][r(0, 4)], b = r(1, 10); return { q: `${a} × ${b}`, ans: a * b }; } },
+      { id: 'mul_hard', label: isEn ? '🔥 Multiply 6, 7, 8, 9' : '🔥 Nhân 6, 7, 8, 9', gen: () => { const a = [6, 7, 8, 9][r(0, 3)], b = r(2, 10); return { q: `${a} × ${b}`, ans: a * b }; } },
+      { id: 'div_2510', label: isEn ? '➗ Divide by 2, 5, 10' : '➗ Chia cho 2, 5, 10', gen: () => { const b = [2, 5, 10][r(0, 2)], q = r(1, 10); return { q: `${b * q} : ${b}`, ans: q }; } },
+      { id: 'mix_md', label: isEn ? '⚡ Mixed Mul & Div' : '⚡ Nhân & Chia tổng hợp', gen: () => r(0, 1) ? FACT_SETS[3][0].gen() : FACT_SETS[3][2].gen() }
     ],
     4: [
-      { id: 'mul_easy', label: '✖️ Nhân 2, 3, 4, 5, 10', gen: () => { const a = [2, 3, 4, 5, 10][r(0, 4)], b = r(2, 12); return { q: `${a} × ${b}`, ans: a * b }; } },
-      { id: 'mul_10', label: '🔥 Bảng nhân đến 10×10', gen: () => { const a = r(2, 10), b = r(2, 10); return { q: `${a} × ${b}`, ans: a * b }; } },
-      { id: 'div_10', label: '➗ Bảng chia đến 10', gen: () => { const b = r(2, 10), q = r(2, 10); return { q: `${b * q} : ${b}`, ans: q }; } },
-      { id: 'all_ops', label: '🏎️ Hỗn hợp 4 phép tính', gen: () => { const idx = r(0, 2); return idx === 0 ? FACT_SETS[4][0].gen() : (idx === 1 ? FACT_SETS[4][1].gen() : FACT_SETS[4][2].gen()); } }
+      { id: 'mul_easy', label: isEn ? '✖️ Multiply 2, 3, 4, 5, 10' : '✖️ Nhân 2, 3, 4, 5, 10', gen: () => { const a = [2, 3, 4, 5, 10][r(0, 4)], b = r(2, 12); return { q: `${a} × ${b}`, ans: a * b }; } },
+      { id: 'mul_10', label: isEn ? '🔥 Times Tables to 10×10' : '🔥 Bảng nhân đến 10×10', gen: () => { const a = r(2, 10), b = r(2, 10); return { q: `${a} × ${b}`, ans: a * b }; } },
+      { id: 'div_10', label: isEn ? '➗ Division up to 10' : '➗ Bảng chia đến 10', gen: () => { const b = r(2, 10), q = r(2, 10); return { q: `${b * q} : ${b}`, ans: q }; } },
+      { id: 'all_ops', label: isEn ? '🏎️ All 4 Operations' : '🏎️ Hỗn hợp 4 phép tính', gen: () => { const idx = r(0, 2); return idx === 0 ? FACT_SETS[4][0].gen() : (idx === 1 ? FACT_SETS[4][1].gen() : FACT_SETS[4][2].gen()); } }
     ]
   };
 
@@ -84,8 +84,8 @@ window.renderFluencyZone = function (grade, launchFireworks) {
       <div class="fz-card">
         <div class="fz-hud">
           <span class="fz-pill">⏱ <span id="fz-t">60</span>s</span>
-          <span class="fz-pill">✅ Đúng: <span id="fz-c">0</span></span>
-          <span class="fz-pill">🏆 Kỷ lục: <span id="fz-b">${localStorage.getItem(bestKey) || 0}</span></span>
+          <span class="fz-pill">✅ ${isEn ? 'Correct:' : 'Đúng:'} <span id="fz-c">0</span></span>
+          <span class="fz-pill">🏆 ${isEn ? 'Best:' : 'Kỷ lục:'} <span id="fz-b">${localStorage.getItem(bestKey) || 0}</span></span>
         </div>
         <div class="fz-track"><div class="fz-fill" id="fz-bar"></div></div>
         <div id="fz-stage"></div>
@@ -119,9 +119,9 @@ window.renderFluencyZone = function (grade, launchFireworks) {
     document.getElementById('fz-c').innerText = '0';
     document.getElementById('fz-bar').style.width = '0%';
     document.getElementById('fz-stage').innerHTML = `
-      <h2 style="margin-bottom:8px; color:#b45309;">🏎️ Đường Đua Phản Xạ (Raceway)</h2>
-      <p style="color:#475569; margin-bottom:18px;">Chủ đề: <strong>${currentSet.label}</strong> — Giải càng nhiều càng tốt trong 60 giây!</p>
-      <button class="btn-primary" style="font-size:17px; padding:14px 32px;" id="fz-go-btn">🚀 Bắt đầu đua!</button>
+      <h2 style="margin-bottom:8px; color:#b45309;">🏎️ ${isEn ? '60s Raceway' : 'Đường Đua Phản Xạ (Raceway)'}</h2>
+      <p style="color:#475569; margin-bottom:18px;">${isEn ? 'Topic:' : 'Chủ đề:'} <strong>${currentSet.label}</strong> — ${isEn ? 'Solve as many as you can in 60 seconds!' : 'Giải càng nhiều càng tốt trong 60 giây!'}</p>
+      <button class="btn-primary" style="font-size:17px; padding:14px 32px;" id="fz-go-btn">🚀 ${isEn ? 'Start Race!' : 'Bắt đầu đua!'}</button>
     `;
     document.getElementById('fz-go-btn').onclick = startRace;
   }
@@ -234,12 +234,12 @@ window.renderFluencyZone = function (grade, launchFireworks) {
     const acc = totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 0;
 
     document.getElementById('fz-stage').innerHTML = `
-      <h2 style="color:#059669; margin-bottom:8px;">🏁 Hoàn thành đường đua!</h2>
-      ${isNewBest ? `<div style="color:#d97706; font-weight:800; margin-bottom:10px;">🎉 KỶ LỤC MỚI: ${correctCount} câu!</div>` : ''}
+      <h2 style="color:#059669; margin-bottom:8px;">🏁 ${isEn ? 'Race Finished!' : 'Hoàn thành đường đua!'}</h2>
+      ${isNewBest ? `<div style="color:#d97706; font-weight:800; margin-bottom:10px;">🎉 ${isEn ? `NEW RECORD: ${correctCount} solved!` : `KỶ LỤC MỚI: ${correctCount} câu!`}</div>` : ''}
       <p style="font-size:18px; margin-bottom:18px;">
-        Đúng: <strong>${correctCount} câu</strong> &nbsp;|&nbsp; Độ chính xác: <strong>${acc}%</strong>
+        ${isEn ? 'Correct:' : 'Đúng:'} <strong>${correctCount} ${isEn ? 'questions' : 'câu'}</strong> &nbsp;|&nbsp; ${isEn ? 'Accuracy:' : 'Độ chính xác:'} <strong>${acc}%</strong>
       </p>
-      <button class="btn-primary" style="font-size:16px; padding:12px 28px;" id="fz-again-btn">🔄 Chơi lại ngay</button>
+      <button class="btn-primary" style="font-size:16px; padding:12px 28px;" id="fz-again-btn">🔄 ${isEn ? 'Play Again' : 'Chơi lại ngay'}</button>
     `;
     document.getElementById('fz-again-btn').onclick = startRace;
   }

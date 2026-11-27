@@ -27,7 +27,6 @@ window.renderMathArcade = function (grade, launchFireworks) {
       }
       .arcade-hud { display: flex; justify-content: center; gap: 14px; margin-bottom: 16px; font-weight: 800; color: #1e40af; }
       .hud-pill { background: #fff; padding: 5px 14px; border-radius: 99px; border: 1px solid #bfdbfe; font-size: 14px; }
-      /* Memory Match */
       .match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 520px; margin: 16px auto; }
       .match-card {
         height: 76px; border-radius: 14px; border: 2px solid #93c5fd; background: #1d4ed8; color: #fff;
@@ -35,7 +34,6 @@ window.renderMathArcade = function (grade, launchFireworks) {
       }
       .match-card.flipped { background: #fff; color: #0f172a; border-color: #059669; }
       .match-card.matched { background: #dcfce7; color: #15803d; border-color: #10b981; cursor: default; }
-      /* Ninja */
       .ninja-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 420px; margin: 16px auto; }
       .ninja-tile {
         padding: 18px; border-radius: 16px; border: 2px solid #fdba74; background: #fff7ed;
@@ -44,7 +42,6 @@ window.renderMathArcade = function (grade, launchFireworks) {
       .ninja-tile:hover { transform: scale(1.05); background: #ffedd5; }
       .ninja-tile.hit { background: #dcfce7; border-color: #10b981; color: #15803d; }
       .ninja-tile.miss { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
-      /* BINGO */
       .bingo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; margin: 16px auto; }
       .bingo-cell {
         height: 74px; border-radius: 14px; border: 2px solid #c4b5fd; background: #fff;
@@ -55,15 +52,15 @@ window.renderMathArcade = function (grade, launchFireworks) {
     </style>
     <div class="arcade-wrap">
       <div class="arcade-menu">
-        <button class="arcade-btn active" onclick="selectArcadeGame('balloon', this)">🎈 Bắn Bóng (Free)</button>
-        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('match', this)">${isVip ? '🎯' : '🔒'} Lật Thẻ Ghép Cặp</button>
-        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('ninja', this)">${isVip ? '🥷' : '🔒'} Ninja Chặt Số</button>
+        <button class="arcade-btn active" onclick="selectArcadeGame('balloon', this)">🎈 ${isEn ? 'Balloon Pop (Free)' : 'Bắn Bóng (Miễn phí)'}</button>
+        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('match', this)">${isVip ? '🎯' : '🔒'} ${isEn ? 'Math Match' : 'Lật Thẻ Ghép Cặp'}</button>
+        <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('ninja', this)">${isVip ? '🥷' : '🔒'} ${isEn ? 'Number Ninja' : 'Ninja Chặt Số'}</button>
         <button class="arcade-btn ${isVip ? '' : 'vip-locked'}" onclick="selectArcadeGame('bingo', this)">${isVip ? '🏆' : '🔒'} Math BINGO 3×3</button>
       </div>
       <div class="arcade-stage">
         <div class="arcade-hud">
-          <span class="hud-pill">🎮 Lớp ${grade}</span>
-          <span class="hud-pill">🏆 Tổng điểm Arcade: <span id="arc-score">0</span></span>
+          <span class="hud-pill">🎮 ${isEn ? `Grade ${grade}` : `Lớp ${grade}`}</span>
+          <span class="hud-pill">🏆 ${isEn ? 'Arcade Score:' : 'Tổng điểm Arcade:'} <span id="arc-score">0</span></span>
         </div>
         <div id="arcade-body"></div>
       </div>
@@ -77,7 +74,6 @@ window.renderMathArcade = function (grade, launchFireworks) {
   }
 
   window.selectArcadeGame = function (name, btn) {
-    // Chỉ cho phép chơi miễn phí 10% (1/4 game = Bắn Bóng), 3 game sau khóa VIP
     if (name !== 'balloon' && !(window.MathProVIP && window.MathProVIP.isVipUser)) {
       if (window.MathProVIP) window.MathProVIP.openVipModal();
       return;
@@ -104,7 +100,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
       { l: `🎈 ${a} ${op} ${b + 1}`, ok: false }
     ]);
     document.getElementById('arcade-body').innerHTML = `
-      <h3 style="color:#1e3a8a;">Tìm bóng có kết quả bằng <span style="font-size:26px;color:#059669;">${target}</span></h3>
+      <h3 style="color:#1e3a8a;">${isEn ? 'Pop the balloon equal to' : 'Tìm bóng có kết quả bằng'} <span style="font-size:26px;color:#059669;">${target}</span></h3>
       <div class="options-grid" style="margin-top:18px;" id="b-opts"></div>
       <div id="b-fb" class="feedback-msg"></div>
     `;
@@ -114,14 +110,21 @@ window.renderMathArcade = function (grade, launchFireworks) {
       btn.innerText = o.l;
       btn.onclick = () => {
         const fb = document.getElementById('b-fb');
-        if (o.ok) { addScore(10); fb.innerText = '💥 Bùm! Chính xác (+10đ)'; fb.className = 'feedback-msg fb-ok'; setTimeout(startBalloon, 750); }
-        else { fb.innerText = '😅 Trượt rồi, chọn lại nhé!'; fb.className = 'feedback-msg fb-err'; }
+        if (o.ok) {
+          addScore(10);
+          fb.innerText = isEn ? '💥 Pop! Correct (+10 pts)' : '💥 Bùm! Chính xác (+10đ)';
+          fb.className = 'feedback-msg fb-ok';
+          setTimeout(startBalloon, 750);
+        } else {
+          fb.innerText = isEn ? '😅 Missed! Try again!' : '😅 Trượt rồi, chọn lại nhé!';
+          fb.className = 'feedback-msg fb-err';
+        }
       };
       document.getElementById('b-opts').appendChild(btn);
     });
   }
 
-  // 2. Lật thẻ ghép cặp (Monster Mansion Match)
+  // 2. Lật thẻ ghép cặp
   function startMatch() {
     const pairs = [];
     const usedAns = new Set();
@@ -138,7 +141,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
     let flipped = [], matchedCount = 0;
 
     document.getElementById('arcade-body').innerHTML = `
-      <h3 style="color:#1e3a8a;">Lật thẻ ghép 4 cặp Phép tính ↔ Kết quả</h3>
+      <h3 style="color:#1e3a8a;">${isEn ? 'Match 4 pairs of Expressions ↔ Answers' : 'Lật thẻ ghép 4 cặp Phép tính ↔ Kết quả'}</h3>
       <div class="match-grid" id="m-grid"></div>
       <div id="m-fb" class="feedback-msg"></div>
     `;
@@ -158,7 +161,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
             f1.btn.classList.add('matched'); f2.btn.classList.add('matched');
             flipped = []; matchedCount++; addScore(15);
             if (matchedCount === 4) {
-              document.getElementById('m-fb').innerText = '🏆 Hoàn hảo! Bé đã ghép hết 4 cặp!';
+              document.getElementById('m-fb').innerText = isEn ? '🏆 Awesome! All 4 pairs matched!' : '🏆 Hoàn hảo! Bé đã ghép hết 4 cặp!';
               document.getElementById('m-fb').className = 'feedback-msg fb-ok';
               if (launchFireworks) launchFireworks();
               setTimeout(startMatch, 1500);
@@ -176,23 +179,25 @@ window.renderMathArcade = function (grade, launchFireworks) {
     });
   }
 
-  // 3. Ninja Chặt Số (Number Ninja)
+  // 3. Ninja Chặt Số
   function startNinja() {
     let ruleText = '', checkFn = null;
     if (grade <= 2) {
       const wantEven = r(0, 1) === 0;
-      ruleText = wantEven ? 'Chặt tất cả SỐ CHẴN!' : 'Chặt tất cả SỐ LẺ!';
+      ruleText = isEn
+        ? (wantEven ? 'Slice all EVEN numbers!' : 'Slice all ODD numbers!')
+        : (wantEven ? 'Chặt tất cả SỐ CHẴN!' : 'Chặt tất cả SỐ LẺ!');
       checkFn = n => wantEven ? n % 2 === 0 : n % 2 !== 0;
     } else if (grade === 3) {
       const m = [3, 5][r(0, 1)];
-      ruleText = `Chặt các số CHIA HẾT CHO ${m}!`;
+      ruleText = isEn ? `Slice numbers DIVISIBLE BY ${m}!` : `Chặt các số CHIA HẾT CHO ${m}!`;
       checkFn = n => n % m === 0;
     } else if (grade === 4) {
-      ruleText = 'Chặt các số CHIA HẾT CHO 9!';
+      ruleText = isEn ? 'Slice numbers DIVISIBLE BY 9!' : 'Chặt các số CHIA HẾT CHO 9!';
       checkFn = n => n % 9 === 0;
     } else {
       const primes = new Set([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43]);
-      ruleText = 'Chặt tất cả SỐ NGUYÊN TỐ!';
+      ruleText = isEn ? 'Slice all PRIME numbers!' : 'Chặt tất cả SỐ NGUYÊN TỐ!';
       checkFn = n => primes.has(n);
     }
 
@@ -220,13 +225,13 @@ window.renderMathArcade = function (grade, launchFireworks) {
         if (checkFn(n)) {
           btn.classList.add('hit'); hits++; addScore(10);
           if (hits === targetTotal) {
-            document.getElementById('n-fb').innerText = '🥷 Xuất sắc! Chặt sạch mục tiêu!';
+            document.getElementById('n-fb').innerText = isEn ? '🥷 Great! All targets cleared!' : '🥷 Xuất sắc! Chặt sạch mục tiêu!';
             document.getElementById('n-fb').className = 'feedback-msg fb-ok';
             setTimeout(startNinja, 1100);
           }
         } else {
           btn.classList.add('miss');
-          document.getElementById('n-fb').innerText = '💥 Ôi nhầm rồi!';
+          document.getElementById('n-fb').innerText = isEn ? '💥 Oops! Wrong number!' : '💥 Ôi nhầm rồi!';
           document.getElementById('n-fb').className = 'feedback-msg fb-err';
         }
       };
@@ -249,7 +254,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
     let queue = sh([...cells]), current = queue.pop();
 
     document.getElementById('arcade-body').innerHTML = `
-      <h3 style="color:#4c1d95;">🏆 Giải câu hỏi &amp; ghép 3 ô thẳng hàng để BINGO!</h3>
+      <h3 style="color:#4c1d95;">🏆 ${isEn ? 'Solve & get 3 in a row for BINGO!' : 'Giải câu hỏi & ghép 3 ô thẳng hàng để BINGO!'}</h3>
       <div id="bingo-q" style="font-size:24px;font-weight:800;margin:12px 0;color:#059669;">${current.q}</div>
       <div class="bingo-grid" id="bg-grid"></div>
       <div id="bg-fb" class="feedback-msg"></div>
@@ -266,16 +271,19 @@ window.renderMathArcade = function (grade, launchFireworks) {
         if (c.val === current.val) {
           c.won = true; btn.classList.add('won'); addScore(15);
           if (wins.some(w => w.every(i => cells[i].won))) {
-            fb.innerText = '🎉 BINGO!! Tuyệt vời quá!'; fb.className = 'feedback-msg fb-ok';
+            fb.innerText = isEn ? '🎉 BINGO!! Amazing job!' : '🎉 BINGO!! Tuyệt vời quá!';
+            fb.className = 'feedback-msg fb-ok';
             if (launchFireworks) launchFireworks();
             setTimeout(startBingo, 1600);
             return;
           }
           current = queue.pop();
           if (current) document.getElementById('bingo-q').innerText = current.q;
-          fb.innerText = '✅ Chuẩn rồi!'; fb.className = 'feedback-msg fb-ok';
+          fb.innerText = isEn ? '✅ Spot on!' : '✅ Chuẩn rồi!';
+          fb.className = 'feedback-msg fb-ok';
         } else {
-          fb.innerText = '❌ Chưa đúng, thử ô khác nhé!'; fb.className = 'feedback-msg fb-err';
+          fb.innerText = isEn ? '❌ Not quite, try another cell!' : '❌ Chưa đúng, thử ô khác nhé!';
+          fb.className = 'feedback-msg fb-err';
         }
       };
       grid.appendChild(btn);
