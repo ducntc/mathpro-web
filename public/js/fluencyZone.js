@@ -1,5 +1,6 @@
 // public/js/fluencyZone.js
 window.renderFluencyZone = function (grade, launchFireworks) {
+  const isEn = (localStorage.getItem('mathpro_lang') || 'vi') === 'en';
   const container = document.getElementById('tab-fluency');
   if (!container) return;
 

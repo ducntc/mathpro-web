@@ -87,6 +87,20 @@
     }
     .ixl-link:hover { text-decoration: underline; }
     .ixl-sep { color: #cbd5e1; }
+    .lang-pill {
+      display: inline-flex; align-items: center; background: #e2e8f0;
+      padding: 3px; border-radius: 999px; gap: 2px; margin-left: 12px;
+    }
+    .lang-opt {
+      border: none; background: transparent; color: #475569;
+      padding: 6px 12px; border-radius: 999px; font-size: 13px;
+      font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+    }
+    .lang-opt.active {
+      background: #ffffff; color: #059669;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    }
+    .lang-opt:hover:not(.active) { color: #0f172a; }
   </style>
 </head>
 <body>
@@ -102,10 +116,10 @@
       <span id="auth-nav">
         <a href="/login.html">Đăng nhập</a>
       </span>
-      <select id="langSelect" onchange="switchLang(this.value)" style="padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;font-weight:600;cursor:pointer;">
-        <option value="vi">🇻🇳 VN</option>
-        <option value="en">🇺🇸 EN</option>
-      </select>
+      <div class="lang-pill" role="group" aria-label="Language switcher">
+        <button type="button" class="lang-opt active" data-lang="vi" onclick="switchLang('vi')">🇻🇳</button>
+        <button type="button" class="lang-opt" data-lang="en" onclick="switchLang('en')">EN</button>
+      </div>
     </nav>
   </header>
 

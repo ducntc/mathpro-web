@@ -8,6 +8,7 @@ window.renderMathArcade = function (grade, launchFireworks) {
   const r = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
   const sh = arr => [...arr].sort(() => Math.random() - 0.5);
   const isVip = window.MathProVIP && window.MathProVIP.isVipUser;
+  const isEn = (localStorage.getItem('mathpro_lang') || 'vi') === 'en';
 
   container.innerHTML = `
     <style>

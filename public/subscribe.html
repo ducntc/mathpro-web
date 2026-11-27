@@ -150,10 +150,6 @@
     </a>
     <div class="nav-actions">
       <a href="/" class="nav-btn-home" data-i18n="backHome">🏠 Trang chủ</a>
-      <select id="langSelect" class="lang-select" onchange="applyLang(this.value)">
-        <option value="vi">🇻🇳 VN</option>
-        <option value="en">🇺🇸 EN</option>
-      </select>
     </div>
   </header>
 
@@ -314,7 +310,6 @@
       document.querySelectorAll("[data-i18n]").forEach(el => {
         if (t[el.dataset.i18n]) el.textContent = t[el.dataset.i18n];
       });
-      document.getElementById("langSelect").value = lang;
       updatePrices();
     }
 

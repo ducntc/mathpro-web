@@ -1,48 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Sign Up - MathPro</title>
+  <title>Đăng nhập - MathPro</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="logo"><a href="/" style="margin:0;">MATH<span>PRO</span></a></div>
-    <nav><a href="/">Back to Home</a></nav>
+    <nav><a href="/" id="back-home-link">← Trang chủ</a></nav>
   </header>
 
   <section class="container register-box" style="margin-top: 50px;">
-    <h2 id="form-title">Log In</h2>
+    <h2 id="form-title">Đăng nhập</h2>
     <form id="auth-form">
-      <input type="text" id="name" placeholder="Full Name" style="display:none;" />
-      <!-- <input type="email" id="email" placeholder="Email" required /> -->
-      <label>Email hoặc Số điện thoại (Zalo)</label>
+      <input type="text" id="name" placeholder="Họ và tên" style="display:none;" />
+      <label id="lbl-account">Email hoặc Số điện thoại (Zalo)</label>
       <input type="text" id="email" placeholder="Nhập email hoặc SĐT đã đăng ký" required />
-      <input type="password" id="password" placeholder="Password (min 6 chars)" required />
-      <button type="submit" class="btn-primary" id="submit-btn">Log In</button>
+      <input type="password" id="password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required />
+      <button type="submit" class="btn-primary" id="submit-btn">Đăng nhập</button>
     </form>
     <p id="auth-msg" style="margin-top:12px; text-align:center; font-weight:600;"></p>
     <p style="margin-top:16px; text-align:center;">
-      <a href="#" id="toggle-mode">Don't have an account? Sign Up</a>
+      <a href="#" id="toggle-mode">Chưa có tài khoản? Đăng ký ngay</a>
     </p>
   </section>
 
   <script>
+    const lang = localStorage.getItem('mathpro_lang') || 'vi';
+    const isEn = lang === 'en';
+
     let isSignup = false;
     const toggleLink = document.getElementById('toggle-mode');
     const nameInput = document.getElementById('name');
     const title = document.getElementById('form-title');
     const btn = document.getElementById('submit-btn');
 
+    function syncTexts() {
+      document.title = isEn ? 'Sign In / Sign Up - MathPro' : 'Đăng nhập / Đăng ký - MathPro';
+      document.getElementById('back-home-link').textContent = isEn ? '← Back to Home' : '← Trang chủ';
+      document.getElementById('lbl-account').textContent = isEn ? 'Email or Phone (Zalo)' : 'Email hoặc Số điện thoại (Zalo)';
+      document.getElementById('email').placeholder = isEn ? 'Enter registered email or phone' : 'Nhập email hoặc SĐT đã đăng ký';
+      document.getElementById('password').placeholder = isEn ? 'Password (min 6 chars)' : 'Mật khẩu (tối thiểu 6 ký tự)';
+      nameInput.placeholder = isEn ? 'Full Name' : 'Họ và tên';
+
+      if (isSignup) {
+        title.textContent = isEn ? 'Create Account' : 'Tạo tài khoản mới';
+        btn.textContent = isEn ? 'Sign Up' : 'Đăng ký';
+        toggleLink.textContent = isEn ? 'Already have an account? Log In' : 'Đã có tài khoản? Đăng nhập';
+      } else {
+        title.textContent = isEn ? 'Log In' : 'Đăng nhập';
+        btn.textContent = isEn ? 'Log In' : 'Đăng nhập';
+        toggleLink.textContent = isEn ? "Don't have an account? Sign Up" : 'Chưa có tài khoản? Đăng ký ngay';
+      }
+    }
+
     toggleLink.addEventListener('click', (e) => {
       e.preventDefault();
       isSignup = !isSignup;
       nameInput.style.display = isSignup ? 'block' : 'none';
       nameInput.required = isSignup;
-      title.textContent = isSignup ? 'Create Account' : 'Log In';
-      btn.textContent = isSignup ? 'Sign Up' : 'Log In';
-      toggleLink.textContent = isSignup ? 'Already have an account? Log In' : "Don't have an account? Sign Up";
+      syncTexts();
     });
 
     document.getElementById('auth-form').addEventListener('submit', async (e) => {
@@ -66,6 +85,8 @@
 
       if (res.ok) setTimeout(() => window.location.href = '/', 800);
     });
+
+    syncTexts();
   </script>
 </body>
 </html>

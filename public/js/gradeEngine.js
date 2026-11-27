@@ -567,7 +567,7 @@ window.initGradePage = function (config) {
       if (!voiceOn || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'vi-VN';
+      utter.lang = (localStorage.getItem('mathpro_lang') || 'vi') === 'en' ? 'en-US' : 'vi-VN';
       utter.rate = 0.95;
       window.speechSynthesis.speak(utter);
     }
@@ -642,9 +642,68 @@ window.initGradePage = function (config) {
     renderTopics();
   };
 
+  // === BỘ DỊCH CÂU HỎI TOÁN HỌC TỰ ĐỘNG (VI -> EN) ===
+  function translateMathText(str) {
+    if (!str || (localStorage.getItem('mathpro_lang') || 'vi') !== 'en') return str;
+    let s = String(str);
+    const dict = [
+      [/Tính nhanh:/g, 'Mental math:'],
+      [/Tính giá trị biểu thức:/g, 'Evaluate:'],
+      [/Tính giá trị lũy thừa:/g, 'Evaluate the power:'],
+      [/Tính:/g, 'Calculate:'],
+      [/Tìm x biết:/g, 'Find x:'],
+      [/Giải phương trình:/g, 'Solve:'],
+      [/Giải bất phương trình:/g, 'Solve the inequality:'],
+      [/So sánh:/g, 'Compare:'],
+      [/Chọn dấu thích hợp:/g, 'Choose the correct sign:'],
+      [/Làm tròn số/g, 'Round'],
+      [/Làm tròn/g, 'Round'],
+      [/đến hàng trăm nghìn:/g, 'to the nearest hundred thousand:'],
+      [/đến hàng nghìn:/g, 'to the nearest thousand:'],
+      [/đến hàng trăm:/g, 'to the nearest hundred:'],
+      [/đến hàng chục gần nhất:/g, 'to the nearest ten:'],
+      [/đến số tự nhiên gần nhất:/g, 'to the nearest whole number:'],
+      [/Số nào LỚN NHẤT/g, 'Which number is the GREATEST'],
+      [/Số nào NHỎ NHẤT/g, 'Which number is the LEAST'],
+      [/Số chẵn/g, 'Even number'],
+      [/Số lẻ/g, 'Odd number'],
+      [/là số chẵn hay số lẻ\?/g, 'is even or odd?'],
+      [/Số nào sau đây là SỐ NGUYÊN TỐ\?/g, 'Which of the following is a PRIME number?'],
+      [/Số nào sau đây là SỐ VÔ TỈ\?/g, 'Which of the following is an IRRATIONAL number?'],
+      [/ƯCLN của/g, 'GCF of'],
+      [/BCNN của/g, 'LCM of'],
+      [/và/g, 'and'],
+      [/là:/g, 'is:'],
+      [/bằng bao nhiêu\?/g, 'equals?'],
+      [/bằng:/g, 'equals:'],
+      [/nghìn đồng/g, 'k VND'],
+      [/giờ/g, 'h'],
+      [/phút/g, 'min'],
+      [/giây/g, 'sec'],
+      [/ngày/g, 'days'],
+      [/Hình tròn/g, 'Circle'],
+      [/Hình vuông/g, 'Square'],
+      [/Hình tam giác/g, 'Triangle'],
+      [/Hình chữ nhật/g, 'Rectangle'],
+      [/Vô nghiệm/g, 'No solution'],
+      [/Vô số nghiệm/g, 'Infinitely many solutions']
+    ];
+    dict.forEach(([re, rep]) => { s = s.replace(re, rep); });
+    return s;
+  }
+
+  function translateQuestionObj(qObj) {
+    if (!qObj || (localStorage.getItem('mathpro_lang') || 'vi') !== 'en') return qObj;
+    return {
+      q: translateMathText(qObj.q),
+      opts: (qObj.opts || []).map(o => translateMathText(o)),
+      ans: translateMathText(qObj.ans)
+    };
+  }
+
   function nextQuestion() {
     if (!currentSkill) return;
-    currentQuestion = generator(currentSkill.type, currentSkill.max);
+    currentQuestion = translateQuestionObj(generator(currentSkill.type, currentSkill.max));
     document.getElementById('q-text').innerText = currentQuestion.q;
     document.getElementById('q-feedback').innerText = '';
     const optBox = document.getElementById('q-options');
@@ -660,9 +719,12 @@ window.initGradePage = function (config) {
 
   async function checkAnswer(chosen) {
     const fb = document.getElementById('q-feedback');
+    const isEn = (localStorage.getItem('mathpro_lang') || 'vi') === 'en';
     if (String(chosen) === String(currentQuestion.ans)) {
       smartScore = Math.min(100, smartScore + 10);
-      fb.innerText = '🎉 Chính xác! Tuyệt vời quá!';
+      // Khi trả lời đúng:
+      fb.innerText = isEn ? '🎉 Correct! Great job!' : '🎉 Chính xác! Tuyệt vời quá!';
+
       fb.className = 'feedback-msg fb-ok';
       if (!isVipUser && smartScore >= 90) {
         smartScore = 90;
@@ -672,12 +734,14 @@ window.initGradePage = function (config) {
         return;
       }
       if (smartScore === 100) {
-        fb.innerText = '🏆 Xuất sắc! Bạn đã đạt 100% SmartScore!';
+        // Khi đạt 100%:
+        fb.innerText = isEn ? '🏆 Awesome! You reached 100% SmartScore!' : '🏆 Xuất sắc! Bạn đã đạt 100% điểm mục tiêu!';
         launchFireworks();
       }
     } else {
       smartScore = Math.max(0, smartScore - 5);
-      fb.innerText = `❌ Chưa đúng rồi! Đáp án đúng là: ${currentQuestion.ans}`;
+      // Khi trả lời sai:
+      fb.innerText = isEn ? `❌ Not quite! Correct answer: ${currentQuestion.ans}` : `❌ Chưa đúng rồi! Đáp án đúng là: ${currentQuestion.ans}`;
       fb.className = 'feedback-msg fb-err';
     }
     saveProgress(currentSkill.id, smartScore);
@@ -741,6 +805,56 @@ window.initGradePage = function (config) {
     animate();
   }
 
+  // === ĐỒNG BỘ ĐA NGÔN NGỮ TOÀN BỘ KHUNG HỌC TẬP (VN / EN) ===
+  function applyGradeI18n() {
+    const lang = localStorage.getItem('mathpro_lang') || 'vi';
+    const isEn = lang === 'en';
+
+    // 1. Header & Nút điều hướng
+    const homeBtn = document.querySelector('.home-nav-btn');
+    if (homeBtn) homeBtn.innerHTML = isEn ? '🏠 Home' : '🏠 Trang chủ';
+    const profBtn = document.querySelector('a[href="/profile.html"]');
+    if (profBtn) profBtn.innerHTML = isEn ? '👤 Profile' : '👤 Hồ sơ';
+    const vipBtn = document.querySelector('a[href="/subscribe.html"].nav-btn');
+    if (vipBtn) vipBtn.innerHTML = isEn ? '👑 Upgrade VIP' : '👑 Nâng cấp VIP';
+
+    // 2. Các Tab chính
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const oc = btn.getAttribute('onclick') || '';
+      const dt = btn.getAttribute('data-tab') || '';
+      if (oc.includes("'skills'")) btn.innerHTML = isEn ? '💎 Skills' : '💎 Kỹ năng';
+      else if (dt === 'lessons') btn.innerHTML = isEn ? '📖 Lessons' : '📖 Bài học';
+      else if (oc.includes("'videos'")) btn.innerHTML = isEn ? '🎬 Videos' : '🎬 Video bài giảng';
+      else if (oc.includes("'games'")) btn.innerHTML = isEn ? '🛸 Games' : '🛸 Trò chơi';
+      else if (oc.includes("'fluency'")) btn.innerHTML = isEn ? '🔥 Fluency Zone' : '🔥 Luyện phản xạ';
+    });
+
+    // 3. Khung làm bài (Practice Arena)
+    const backBtn = document.querySelector('#practice-arena .arena-top button');
+    if (backBtn) backBtn.innerHTML = isEn ? '⬅ Back' : '⬅ Quay lại';
+    const ssLabel = document.querySelector('.smartscore-box span');
+    if (ssLabel) ssLabel.innerText = isEn ? 'SmartScore:' : 'Điểm mục tiêu:';
+
+    // 4. Modal VIP
+    const vipTitle = document.querySelector('#vip-modal h2');
+    const vipDesc = document.querySelector('#vip-modal p');
+    const vipGo = document.querySelector('#vip-modal a.btn-primary');
+    const vipClose = document.querySelector('#vip-modal button.opt-btn');
+    if (vipTitle) vipTitle.innerText = isEn ? 'Unlock VIP to continue!' : 'Mở khóa VIP để tiếp tục!';
+    if (vipDesc) vipDesc.innerText = isEn
+      ? 'Upgrade to VIP to unlock all 44 skills, lessons, videos & earn 100% badges!'
+      : 'Nâng cấp VIP để mở khóa toàn bộ bài học, video và nhận huy hiệu 100%!';
+    if (vipGo) vipGo.innerText = isEn ? 'Upgrade VIP Now' : 'Nâng cấp VIP ngay';
+    if (vipClose) vipClose.innerText = isEn ? 'Close' : 'Đóng';
+
+    // 5. Tiêu đề trang
+    const gradeLabel = isEn ? `Grade ${grade}` : `Lớp ${grade}`;
+    const hdrTitle = document.getElementById('grade-header-title');
+    if (hdrTitle) hdrTitle.innerText = `| ${gradeLabel}`;
+    document.title = `MathPro - ${gradeLabel}`;
+  }
+
+  applyGradeI18n();
   checkUserStatus().then(() => {
     renderTopics();
     renderVideos();
