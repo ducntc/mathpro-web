@@ -392,32 +392,228 @@ window.initGradePage = function (config) {
     }).join('');
   }
 
+  // === TRÌNH PHÁT BÀI GIẢNG ĐỘNG + HỖ TRỢ YOUTUBE / MP4 ===
   window.openVideoModal = function (idx) {
     const list = videos || [];
     const v = list[idx];
     if (!v) return;
+
+    // 1. Tiêm CSS cho trình phát động (chỉ tiêm 1 lần)
+    if (!document.getElementById('mp-anim-player-css')) {
+      const st = document.createElement('style');
+      st.id = 'mp-anim-player-css';
+      st.textContent = `
+        .mp-player-stage {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #fff; border-radius: 16px; min-height: 270px;
+          padding: 22px; display: flex; flex-direction: column;
+          justify-content: space-between; position: relative; overflow: hidden;
+          margin-bottom: 14px; border: 2px solid #334155;
+        }
+        .mp-step-badge {
+          display: inline-block; background: rgba(16, 185, 129, 0.2);
+          color: #34d399; border: 1px solid #10b981;
+          font-size: 12px; font-weight: 700; padding: 4px 12px;
+          border-radius: 99px; align-self: flex-start;
+        }
+        .mp-slide-body {
+          text-align: center; padding: 16px 8px;
+          animation: mpFadeSlide 0.35s ease;
+        }
+        @keyframes mpFadeSlide {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .mp-slide-visual {
+          font-size: 32px; font-weight: 800; color: #fbbf24;
+          margin: 10px 0; letter-spacing: 0.5px;
+        }
+        .mp-slide-text { font-size: 16px; color: #e2e8f0; line-height: 1.55; }
+        .mp-progress-bar {
+          height: 6px; background: #334155; border-radius: 99px; overflow: hidden; margin-top: 10px;
+        }
+        .mp-progress-fill {
+          height: 100%; background: linear-gradient(90deg, #10b981, #3b82f6);
+          transition: width 0.35s ease;
+        }
+        .mp-controls {
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+        }
+        .mp-ctrl-btn {
+          padding: 8px 14px; border-radius: 10px; border: 1px solid #cbd5e1;
+          background: #f8fafc; color: #0f172a; font-weight: 700; font-size: 13px;
+          cursor: pointer; transition: 0.15s;
+        }
+        .mp-ctrl-btn:hover { background: #e2e8f0; }
+        .mp-ctrl-btn.primary { background: #059669; color: #fff; border-color: #059669; }
+        .mp-ctrl-btn.primary:hover { background: #047857; }
+        .mp-yt-wrap {
+          position: relative; padding-bottom: 56.25%; height: 0;
+          border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #000;
+        }
+        .mp-yt-wrap iframe, .mp-yt-wrap video {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+        }
+      `;
+      document.head.appendChild(st);
+    }
+
+    // 2. Tạo Modal nếu chưa có
     let modal = document.getElementById('video-player-modal');
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'video-player-modal';
       modal.className = 'modal-overlay';
       modal.innerHTML = `
-        <div class="modal-card" style="max-width:560px; text-align:left;">
-          <h3 id="vp-title" style="color:#059669; margin-bottom:8px;"></h3>
-          <div style="background:#0f172a; color:#fff; border-radius:14px; height:240px; display:grid; place-items:center; margin-bottom:14px;">
-            <div style="text-align:center;">
-              <div style="font-size:46px;">🎬</div>
-              <p style="font-size:14px; color:#cbd5e1; margin-top:8px;">Trình phát Video bài giảng MathPro</p>
-            </div>
+        <div class="modal-card" style="max-width:640px; text-align:left;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
+            <h3 id="vp-title" style="color:#059669; margin:0; font-size:19px;"></h3>
+            <button id="vp-close-x" style="border:none; background:#f1f5f9; width:32px; height:32px; border-radius:50%; cursor:pointer; font-weight:800;">✕</button>
           </div>
+          <div id="vp-media-slot"></div>
           <p id="vp-desc" style="color:#475569; font-size:14px; margin-bottom:14px;"></p>
-          <button class="btn-primary" onclick="document.getElementById('video-player-modal').classList.remove('open')">Đóng trình phát</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <button class="btn-primary" style="background:#3b82f6; border-color:#2563eb;" id="vp-go-skills">🎯 Thực hành Skills ngay</button>
+            <button class="btn-primary" id="vp-close-btn">Đóng trình phát</button>
+          </div>
         </div>`;
       document.body.appendChild(modal);
     }
-    document.getElementById('vp-title').innerText = v.title;
-    document.getElementById('vp-desc').innerText = v.desc;
+
+    // 3. Dọn dẹp timer / giọng đọc cũ khi đóng hoặc mở bài mới
+    let autoTimer = null;
+    function stopAllMedia() {
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+    const closeModal = () => {
+      stopAllMedia();
+      modal.classList.remove('open');
+      document.getElementById('vp-media-slot').innerHTML = '';
+    };
+    document.getElementById('vp-close-x').onclick = closeModal;
+    document.getElementById('vp-close-btn').onclick = closeModal;
+    document.getElementById('vp-go-skills').onclick = () => {
+      closeModal();
+      const skillsBtn = document.querySelector('.tab-btn[onclick*="\'skills\'"]');
+      if (skillsBtn) window.switchTab('skills', skillsBtn);
+    };
+
+    document.getElementById('vp-title').innerText = `🎬 ${v.title}`;
+    document.getElementById('vp-desc').innerText = v.desc || '';
+    const slot = document.getElementById('vp-media-slot');
+
+    // 4. Hàm tách YouTube ID nếu có link YouTube
+    function getYoutubeEmbed(url) {
+      if (!url) return null;
+      const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? `https://www.youtube.com/embed/${m}?rel=0` : null;
+    }
+
+    const ytEmbed = getYoutubeEmbed(v.videoUrl);
+    if (ytEmbed) {
+      slot.innerHTML = `<div class="mp-yt-wrap"><iframe src="${ytEmbed}" allowfullscreen></iframe></div>`;
+      modal.classList.add('open');
+      return;
+    }
+    if (v.videoUrl && v.videoUrl.endsWith('.mp4')) {
+      slot.innerHTML = `<div class="mp-yt-wrap"><video src="${v.videoUrl}" controls autoplay></video></div>`;
+      modal.classList.add('open');
+      return;
+    }
+
+    // 5. Trình phát Bài giảng Động Tiếng Việt (khi chưa gắn link YouTube)
+    const sampleByGrade = {
+      1: { visual: '3 + 4 = 7 🍎🍎🍎 + 🍎🍎🍎🍎', text: 'Gộp 3 quả táo với 4 quả táo, ta đếm được tất cả 7 quả táo.' },
+      2: { visual: '25 + 17 = 42', text: 'Cộng hàng đơn vị: 5 + 7 = 12 (viết 2 nhớ 1). Cộng hàng chục: 2 + 1 + 1 = 4.' },
+      3: { visual: '6 × 4 = 24', text: 'Lấy 6 được lặp lại 4 lần: 6 + 6 + 6 + 6 = 24.' },
+      4: { visual: '2/5 + 1/5 = 3/5', text: 'Khi cộng hai phân số cùng mẫu, ta giữ nguyên mẫu số và cộng tử số với nhau.' },
+      5: { visual: '25% của 80 = 20', text: 'Đổi 25% = 0,25 rồi lấy 80 × 0,25 = 20.' }
+    };
+    const gSample = sampleByGrade[grade] || { visual: 'a · x + b = c', text: 'Áp dụng quy tắc chuyển vế đổi dấu và rút gọn từng bước một cách cẩn thận.' };
+
+    const steps = Array.isArray(v.steps) && v.steps.length ? v.steps : [
+      { badge: 'Bước 1/4 • Mục tiêu', visual: `📘 ${v.title}`, text: `Chào mừng các em đến với bài giảng Lớp ${grade}. Hôm nay chúng ta sẽ cùng tìm hiểu: ${v.desc}` },
+      { badge: 'Bước 2/4 • Kiến thức cốt lõi', visual: '💡 Tư duy bản chất', text: `Hãy chú ý quan sát quy luật và từng con số trong bài "${v.title}" để hiểu rõ cách làm thay vì học vẹt nhé!` },
+      { badge: 'Bước 3/4 • Ví dụ minh họa', visual: gSample.visual, text: gSample.text },
+      { badge: 'Bước 4/4 • Tổng kết', visual: '🏆 Sẵn sàng thực hành!', text: 'Các em đã nắm vững kiến thức rồi! Hãy bấm "Thực hành Skills ngay" để chinh phục 100% SmartScore nhé!' }
+    ];
+
+    let curStep = 0;
+    let isPlaying = true;
+    let voiceOn = true;
+
+    slot.innerHTML = `
+      <div class="mp-player-stage">
+        <span class="mp-step-badge" id="mp-step-badge"></span>
+        <div class="mp-slide-body" id="mp-slide-body">
+          <div class="mp-slide-visual" id="mp-slide-visual"></div>
+          <div class="mp-slide-text" id="mp-slide-text"></div>
+        </div>
+        <div class="mp-progress-bar"><div class="mp-progress-fill" id="mp-prog-fill"></div></div>
+      </div>
+      <div class="mp-controls">
+        <div style="display:flex; gap:6px;">
+          <button class="mp-ctrl-btn" id="mp-prev">⏮ Trước</button>
+          <button class="mp-ctrl-btn primary" id="mp-play">⏸ Tạm dừng</button>
+          <button class="mp-ctrl-btn" id="mp-next">⏭ Tiếp</button>
+        </div>
+        <button class="mp-ctrl-btn" id="mp-voice">🔊 Giọng đọc: BẬT</button>
+      </div>
+    `;
+
+    function speakStep(text) {
+      if (!voiceOn || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'vi-VN';
+      utter.rate = 0.95;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function renderStep() {
+      const s = steps[curStep];
+      document.getElementById('mp-step-badge').innerText = s.badge;
+      const body = document.getElementById('mp-slide-body');
+      body.style.animation = 'none';
+      void body.offsetWidth;
+      body.style.animation = 'mpFadeSlide 0.35s ease';
+      document.getElementById('mp-slide-visual').innerText = s.visual;
+      document.getElementById('mp-slide-text').innerText = s.text;
+      document.getElementById('mp-prog-fill').style.width = `${((curStep + 1) / steps.length) * 100}%`;
+      speakStep(s.text);
+    }
+
+    function restartAuto() {
+      if (autoTimer) clearInterval(autoTimer);
+      if (isPlaying) {
+        autoTimer = setInterval(() => {
+          if (curStep < steps.length - 1) { curStep++; renderStep(); }
+          else { isPlaying = false; document.getElementById('mp-play').innerText = '🔄 Phát lại'; clearInterval(autoTimer); }
+        }, 5500);
+      }
+    }
+
+    document.getElementById('mp-prev').onclick = () => { if (curStep > 0) { curStep--; renderStep(); restartAuto(); } };
+    document.getElementById('mp-next').onclick = () => { if (curStep < steps.length - 1) { curStep++; renderStep(); restartAuto(); } };
+    document.getElementById('mp-play').onclick = () => {
+      if (curStep >= steps.length - 1 && !isPlaying) { curStep = 0; isPlaying = true; renderStep(); }
+      else { isPlaying = !isPlaying; }
+      document.getElementById('mp-play').innerText = isPlaying ? '⏸ Tạm dừng' : '▶ Tiếp tục';
+      if (!isPlaying && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+      restartAuto();
+    };
+    document.getElementById('mp-voice').onclick = () => {
+      voiceOn = !voiceOn;
+      document.getElementById('mp-voice').innerText = voiceOn ? '🔊 Giọng đọc: BẬT' : '🔇 Giọng đọc: TẮT';
+      if (!voiceOn && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+      else speakStep(steps[curStep].text);
+    };
+
     modal.classList.add('open');
+    renderStep();
+    restartAuto();
   };
 
   window.startSkill = function (skillId) {
