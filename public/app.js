@@ -61,6 +61,7 @@ function renderCourses(courses) {
     let href = `/course.html?id=${c.id}`;
     let lessonCount = c.lesson_count || 0;
     let style = { badge: 'M', color: '#0b5ed7' };
+    let gradeNum = 0;
 
     if (g.includes('mầm non')) {
       href = '/kindergarten.html';
@@ -71,11 +72,48 @@ function renderCourses(courses) {
         if (g.includes(`lớp ${i}`) || g.includes(`grade ${i}`)) {
           href = `/grade${i}.html`;
           lessonCount = 44;
+          gradeNum = i;
           style = gradeStyles[`lớp ${i}`] || style;
           break;
         }
       }
     }
+
+    const linksHtml = gradeNum >= 6
+      ? `
+        <div class="ixl-row">
+          <span class="ixl-row-label">Toán tư duy</span>
+          <div class="ixl-row-actions">
+            <a href="${href}?tab=skills" class="ixl-link">${lessonCount} skills &rsaquo;</a>
+            <span class="ixl-sep">|</span>
+            <a href="${href}?tab=lessons" class="ixl-link" style="color:#059669;">📖 Lessons &rsaquo;</a>
+          </div>
+        </div>
+        <div class="ixl-row">
+          <span class="ixl-row-label">Bài giảng</span>
+          <div class="ixl-row-actions">
+            <a href="${href}?tab=videos" class="ixl-link">🎬 Videos &rsaquo;</a>
+          </div>
+        </div>
+      `
+      : `
+        <div class="ixl-row">
+          <span class="ixl-row-label">Toán tư duy</span>
+          <div class="ixl-row-actions">
+            <a href="${href}?tab=skills" class="ixl-link">${lessonCount} skills &rsaquo;</a>
+            <span class="ixl-sep">|</span>
+            <a href="${href}?tab=videos" class="ixl-link">Videos &rsaquo;</a>
+          </div>
+        </div>
+        <div class="ixl-row">
+          <span class="ixl-row-label">Luyện tập</span>
+          <div class="ixl-row-actions">
+            <a href="${href}?tab=games" class="ixl-link">Games &rsaquo;</a>
+            <span class="ixl-sep">|</span>
+            <a href="${href}?tab=fluency" class="ixl-link">Fluency &rsaquo;</a>
+          </div>
+        </div>
+      `;
 
     return `
       <div class="ixl-card" style="--grade-color: ${style.color};">
@@ -87,22 +125,7 @@ function renderCourses(courses) {
           <p class="ixl-desc">${c.description}</p>
         </div>
         <div class="ixl-links">
-          <div class="ixl-row">
-            <span class="ixl-row-label">Toán tư duy</span>
-            <div class="ixl-row-actions">
-              <a href="${href}?tab=skills" class="ixl-link">${lessonCount} skills &rsaquo;</a>
-              <span class="ixl-sep">|</span>
-              <a href="${href}?tab=videos" class="ixl-link">Videos &rsaquo;</a>
-            </div>
-          </div>
-          <div class="ixl-row">
-            <span class="ixl-row-label">Luyện tập</span>
-            <div class="ixl-row-actions">
-              <a href="${href}?tab=games" class="ixl-link">Games &rsaquo;</a>
-              <span class="ixl-sep">|</span>
-              <a href="${href}?tab=fluency" class="ixl-link">Fluency &rsaquo;</a>
-            </div>
-          </div>
+          ${linksHtml}
         </div>
       </div>
     `;
